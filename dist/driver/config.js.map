@@ -1,0 +1,1 @@
+{"version":3,"file":"config.js","sourceRoot":"","sources":["../../src/driver/config.ts"],"names":[],"mappings":";AAAA,oCAAoC;;AAEpC,MAAa,MAAM;IAIf;QACI,IAAI,CAAC,MAAM,GAAG;YACV,GAAG,EAAE,IAAI;YACT,OAAO,EAAE,IAAI;YACb,SAAS,EAAE,IAAI;YACf,KAAK,EAAE,KAAK;SACf,CAAC;IACN,CAAC;CACJ;AAZD,wBAYC"}
