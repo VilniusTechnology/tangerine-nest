@@ -1,4 +1,4 @@
-import { DB_PATH } from './../../server/config';
+// import { DB_PATH } from './../../server/config';
 import * as Moment from 'moment';
 import * as MomentRange from 'moment-range';
 import * as _ from 'lodash';
@@ -13,13 +13,11 @@ export class TimedLightRegulator {
     private dbPath: string;
     private logger: Logger;
 
-    constructor(pwmDriver, logger: Logger) {
+    constructor(config: any, pwmDriver, logger: Logger) {
         this.pwmDriver = pwmDriver;
         this.timer = {};
         this.logger = logger;
-
-        // this.dbPath = '/home/madcatzx/projects/orange-nest-test/mandarinas-settings';
-        this.dbPath = DB_PATH;
+        this.dbPath = config.database.path;
         
     };
 

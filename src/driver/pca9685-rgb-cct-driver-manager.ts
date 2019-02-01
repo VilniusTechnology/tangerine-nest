@@ -1,8 +1,9 @@
-import { Config } from './config';
 import * as _ from 'lodash';
 import {Colors} from './entities/colors';
 import { Logger } from 'log4js';
-import { PwmDriverFacade, PwmDriverEmulator } from 'mandarin-nest-local-light-driver/dist/server';
+import { PwmDriverFacade, PwmDriverEmulator } from 'mandarin-nest-local-light-driver';
+import { LedServerConfig } from '../server/model/config-model';
+import { PwmDriverPca9685 } from './pwm-driver-pca9685';
 
 export class Pca9685RgbCctDriverManager {
     private logger: Logger;
@@ -17,37 +18,21 @@ export class Pca9685RgbCctDriverManager {
         this.colors = new Colors();
         this.logger = logger;
         this.config = config;
-        this.driver = new Config().driver;
-
-        this.pwm = new PwmDriverEmulator(this.config.contours, 7777, this.logger);
-
-        this.colors.red.value = 1;
-        this.colors.green.value = 2;
-        this.colors.blue.value = 3;
-
-        this.logger.info('PCA9685 ready');
     }
 
     public setup() {
-        return new Promise((resolve, reject) => {
+        if (this.config.ledDriver.driver_type == 'local') {
+            this.pwm = new PwmDriverEmulator(this.config, 7777, this.logger);
+            this.colors.red.value = 1;
+            this.colors.green.value = 2;
+            this.colors.blue.value = 3;
+            this.logger.info('Local (websockets) LED driver ready! ');
+        }
 
-            this.logger.info('Will setup PWM driver.');
-
-                // this.pwm = new Pca9685Driver(
-                //     this.driver, 
-                //     (err) => {
-                //         if (err) {
-                //             console.error("Error initializing PCA9685");
-                //             process.exit(-1);
-                //             reject('fail');
-                //         }
-                //         let msg = "PCA9685 Initialization done";
-                //         console.log(msg);
-
-                //         resolve(this.pwm);
-                //     }
-                // );
-        });
+        if (this.config.ledDriver.driver_type == 'i2c') {
+            this.pwm = new PwmDriverPca9685(this.config);
+            this.logger.info('PCA9685 PWM driver ready! ');
+        }
     }
 
     public setColor(colorName: string, value: number) {

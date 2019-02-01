@@ -7,13 +7,22 @@ const request_processor_1 = require("./request-processor");
 const rgb_controller_1 = require("../controller/rgb-controller");
 const log4js_1 = require("log4js");
 const module_timed_light_settings_api_1 = require("../module/timed-lighting/module-timed-light-settings-api");
+const config_loader_1 = require("./config-loader");
 class LedServer {
-    constructor(port = null) {
-        this.port = port || LedServer.PORT;
+    constructor(configJson, port = null) {
         // configure('./filename.log');
         this.logger = log4js_1.getLogger();
         this.logger.level = 'debug';
-        const controller = new rgb_controller_1.RgbController(this.logger);
+        if (configJson == undefined) {
+            this.config = config_loader_1.config;
+            this.logger.info('Loading config from file in config directory depending on env.');
+        }
+        else {
+            this.config = configJson;
+            this.logger.info('Loading config from constructor params.');
+        }
+        this.port = port || LedServer.PORT;
+        const controller = new rgb_controller_1.RgbController(this.config, this.logger);
         this.requestHandler = new request_processor_1.RequestProcessor(controller, this.logger);
     }
     createServer() {
@@ -23,7 +32,7 @@ class LedServer {
         return false;
     }
     registerModulesRoutes() {
-        const settingApiModule = new module_timed_light_settings_api_1.TimedLightSettingsApi(this.logger);
+        const settingApiModule = new module_timed_light_settings_api_1.TimedLightSettingsApi(this.config.ledTimer, this.logger);
         settingApiModule.bootstrap();
         settingApiModule.getRoutesForRegistration().forEach((layer) => {
             if (layer.route !== undefined) {

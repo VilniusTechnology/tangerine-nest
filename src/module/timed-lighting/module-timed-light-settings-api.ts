@@ -2,21 +2,20 @@ import * as sqlite3 from "sqlite3";
 import * as bodyParser from "body-parser";
 import * as express from 'express';
 import * as os from 'os';
-import { DB_PATH } from "../../server/config";
-
+import { Logger } from "log4js";
 
 export class TimedLightSettingsApi {
-    private db;
+    private db: sqlite3;
     private restapi;
     private port: number;
     private hostname: string;
-    private logger;
+    private logger: Logger;
 
     static readonly tableName: string = 'light_time_programs'; 
     
-    constructor(logger = null) {
+    constructor(config: any, logger = null) {
         this.logger = logger;
-        this.db = new sqlite3.Database(DB_PATH);
+        this.db = new sqlite3.Database(config.database.path);
         this.restapi = express();
 
         // let hostname = os.hostname();

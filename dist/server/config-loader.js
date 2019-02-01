@@ -1,7 +1,6 @@
 "use strict";
 // // import * as dotenv from "dotenv";
 // import * as dotenv from "dotenv-json";
-Object.defineProperty(exports, "__esModule", { value: true });
 // dotenv.config();
 // let path;
 // switch (process.env.NODE_ENV) {
@@ -16,10 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // }
 // dotenv.config({ path: path });
 // export const DB_PATH = process.env.DB_PATH;
-const _ = require("lodash");
-const config = require('./config/development/config.js');
+Object.defineProperty(exports, "__esModule", { value: true });
+const config = require(`../../config/${process.env.NODE_ENV}/config.js`);
 exports.config = config;
-_.forEach(config, (value) => {
-    console.log('-', value);
-});
-//# sourceMappingURL=config.js.map
+//# sourceMappingURL=config-loader.js.map

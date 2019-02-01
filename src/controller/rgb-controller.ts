@@ -5,6 +5,7 @@ import { TimedLightRegulator } from './regulator/timed-light-regulator';
 import { Pca9685RgbCctDriverManager } from "../driver/pca9685-rgb-cct-driver-manager";
 import * as _ from 'lodash';
 import { Logger } from "log4js";
+import { LedServerConfig } from '../server/model/config-model';
 
 export class RgbController {
     public static readonly AUTO_MODE_CODE = 0;
@@ -12,7 +13,7 @@ export class RgbController {
     public static readonly TIMED_MODE_CODE = 2;
     public static readonly CHECK_MODE_CODE = 3;
 
-    protected pwmDriver: Pca9685RgbCctDriverManager;
+    protected pwmManager: Pca9685RgbCctDriverManager;
     protected logger: Logger;
     protected colors;
     protected lightSource;
@@ -21,91 +22,62 @@ export class RgbController {
     protected fader: Fader;
     protected lightRegulator;
 
-    constructor(logger: Logger) {
-        let pwmDriverconfig = {
-            driver_type: 'local',
-            // driver_type: 'i2c',
-            driver : {
-                i2c: null, 
-                // i2c: i2cBus.openSync(0),
-                address: 0x40,
-                frequency: 4800,
-                debug: false,
-            },
-            contours : {
-                main : {
-                    red: 0,
-                    green: 1,
-                    blue: 2,
-                    coldWhite: 3,
-                    warmWhite: 4,
-                }
-            }
-        };
+    constructor(config: any, logger: Logger) {
+        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);
 
-        this.pwmDriver = new Pca9685RgbCctDriverManager(pwmDriverconfig, logger);
-        this.pwmDriver.setup().then((response) => {
-            console.log('response', response);
-        });
+        this.pwmManager.setup();
+
+        // this.pwmManager.setup().then((response) => {
+        //     console.log('response', response);
+        // });
+        
         this.logger = logger;
-        this.colors = this.pwmDriver.getState();
+        this.colors = this.pwmManager.getState();
         this.lightSource = new LightSource();
-        this.timedRegulator = new TimedLightRegulator(this.pwmDriver, this.logger);
+        this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
 
-        this.pwmDriver.setLedMode(RgbController.MANUAL_MODE_CODE);
+        this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
 
-        this.fader = new Fader(this.pwmDriver, this.logger);
+        this.fader = new Fader(this.pwmManager, this.logger);
         this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
 
-        this.logger.info('debug', 'RgbController initialized');
+        this.logger.info('RgbController initialized');
     };
-
-    async init() {
-        // return Promise.all([
-        //     this.pwmDriver.setup()
-        // ]).then(function(vals) {
-        //     vals.forEach((val) => {
-        //         // this.pwmDriver.getState() = val;
-        //         this.logger.error(`WTF IS HAPPENING: ${val}`);
-        //     });
-        //     return vals;
-        // });
-    }
 
     setColours(colors) {
         _.forEach(colors, (val, key) => {
             if (key !== 'state' && key !== 'mode' && key !== 'ledMode') {
-                this.pwmDriver.setColor(key, val);
+                this.pwmManager.setColor(key, val);
             }
         });
     };
 
     switchAllLedsOff() {
         this.colors = JSON.parse(
-            JSON.stringify(this.pwmDriver.getState())
+            JSON.stringify(this.pwmManager.getState())
         );
 
-        this.pwmDriver.setColor('red', 0);
-        this.pwmDriver.setColor('green', 0);
-        this.pwmDriver.setColor('blue', 0);
-        this.pwmDriver.setColor('warmWhite', 0);
-        this.pwmDriver.setColor('coldWhite', 0);
+        this.pwmManager.setColor('red', 0);
+        this.pwmManager.setColor('green', 0);
+        this.pwmManager.setColor('blue', 0);
+        this.pwmManager.setColor('warmWhite', 0);
+        this.pwmManager.setColor('coldWhite', 0);
 
-        this.pwmDriver.setLedState(0) ;
+        this.pwmManager.setLedState(0) ;
     };
 
     switchAllLedsOn() {
-        this.pwmDriver.setColor('red', this.colors.red.value);
-        this.pwmDriver.setColor('green', this.colors.green.value);
-        this.pwmDriver.setColor('blue', this.colors.blue.value);
-        this.pwmDriver.setColor('warmWhite', this.colors.warmWhite.value);
-        this.pwmDriver.setColor('coldWhite', this.colors.coldWhite.value);
+        this.pwmManager.setColor('red', this.colors.red.value);
+        this.pwmManager.setColor('green', this.colors.green.value);
+        this.pwmManager.setColor('blue', this.colors.blue.value);
+        this.pwmManager.setColor('warmWhite', this.colors.warmWhite.value);
+        this.pwmManager.setColor('coldWhite', this.colors.coldWhite.value);
 
-        this.pwmDriver.setLedState(1) ;
+        this.pwmManager.setLedState(1) ;
     };
 
     getState() {
-        return JSON.parse(JSON.stringify(this.pwmDriver.getState()));
+        return JSON.parse(JSON.stringify(this.pwmManager.getState()));
     };
 
     clearTimersIntervals() {
@@ -127,15 +99,15 @@ export class RgbController {
     }
 
     getLedMode() {
-        return this.pwmDriver.getLedMode();
+        return this.pwmManager.getLedMode();
     };
 
     setMode(mode) {
-        this.pwmDriver.setLedMode(mode);
+        this.pwmManager.setLedMode(mode);
     };
 
     getRgbCctLedDriver() {
-        return this.pwmDriver;
+        return this.pwmManager;
     }
     
 };

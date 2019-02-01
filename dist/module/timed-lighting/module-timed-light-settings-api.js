@@ -3,11 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sqlite3 = require("sqlite3");
 const bodyParser = require("body-parser");
 const express = require("express");
-const config_1 = require("../../server/config");
 class TimedLightSettingsApi {
-    constructor(logger = null) {
+    constructor(config, logger = null) {
         this.logger = logger;
-        this.db = new sqlite3.Database(config_1.DB_PATH);
+        this.db = new sqlite3.Database(config.database.path);
         this.restapi = express();
         // let hostname = os.hostname();
         this.hostname = 'localhost';

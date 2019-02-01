@@ -1,17 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = require("./../../server/config");
+// import { DB_PATH } from './../../server/config';
 const Moment = require("moment");
 const MomentRange = require("moment-range");
 const _ = require("lodash");
 const sqlite3 = require('sqlite3').verbose();
 class TimedLightRegulator {
-    constructor(pwmDriver, logger) {
+    constructor(config, pwmDriver, logger) {
         this.pwmDriver = pwmDriver;
         this.timer = {};
         this.logger = logger;
-        // this.dbPath = '/home/madcatzx/projects/orange-nest-test/mandarinas-settings';
-        this.dbPath = config_1.DB_PATH;
+        this.dbPath = config.database.path;
     }
     ;
     clearTimersIntervals() {

@@ -1,3 +1,4 @@
+import { LedServerConfig } from './model/config-model';
 import { createServer, Server } from 'http';
 import * as express from 'express';
 import * as url from 'url';
@@ -8,6 +9,8 @@ import { RgbController } from '../controller/rgb-controller';
 import { getLogger, Logger  } from 'log4js';
 import { TimedLightSettingsApi } from '../module/timed-lighting/module-timed-light-settings-api';
 
+import { config  } from './config-loader';
+
 export class LedServer {
     public static readonly PORT:number = 8081;
 
@@ -17,15 +20,24 @@ export class LedServer {
 
     private requestHandler: RequestProcessor;
     public logger: Logger;
+    public config: any;
 
-    constructor(port: number = null) {
-        this.port = port || LedServer.PORT;
-
+    constructor(configJson: LedServerConfig, port: number = null) {
         // configure('./filename.log');
         this.logger = getLogger();
         this.logger.level = 'debug';
+        
+        if (configJson == undefined) {
+            this.config = config;
+            this.logger.info('Loading config from file in config directory depending on env.');
+        } else {
+            this.config = configJson;
+            this.logger.info('Loading config from constructor params.');
+        }
 
-        const controller = new RgbController(this.logger);
+        this.port = port || LedServer.PORT;
+
+        const controller = new RgbController(this.config, this.logger);
         this.requestHandler = new RequestProcessor(controller, this.logger);
     }
 
@@ -38,7 +50,7 @@ export class LedServer {
     }
 
     private registerModulesRoutes() {
-        const settingApiModule = new TimedLightSettingsApi(this.logger);
+        const settingApiModule = new TimedLightSettingsApi(this.config.ledTimer, this.logger);
         settingApiModule.bootstrap();
 
         settingApiModule.getRoutesForRegistration().forEach((layer) => {

@@ -7,35 +7,15 @@ const timed_light_regulator_1 = require("./regulator/timed-light-regulator");
 const pca9685_rgb_cct_driver_manager_1 = require("../driver/pca9685-rgb-cct-driver-manager");
 const _ = require("lodash");
 class RgbController {
-    constructor(logger) {
-        let pwmDriverconfig = {
-            driver_type: 'local',
-            // driver_type: 'i2c',
-            driver: {
-                i2c: null,
-                // i2c: i2cBus.openSync(0),
-                address: 0x40,
-                frequency: 4800,
-                debug: false,
-            },
-            contours: {
-                main: {
-                    red: 0,
-                    green: 1,
-                    blue: 2,
-                    coldWhite: 3,
-                    warmWhite: 4,
-                }
-            }
-        };
-        this.pwmDriver = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(pwmDriverconfig, logger);
-        this.pwmDriver.setup().then((response) => {
-            console.log('response', response);
-        });
+    constructor(config, logger) {
+        this.pwmDriver = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
+        // this.pwmDriver.setup().then((response) => {
+        //     console.log('response', response);
+        // });
         this.logger = logger;
         this.colors = this.pwmDriver.getState();
         this.lightSource = new light_source_1.LightSource();
-        this.timedRegulator = new timed_light_regulator_1.TimedLightRegulator(this.pwmDriver, this.logger);
+        this.timedRegulator = new timed_light_regulator_1.TimedLightRegulator(config.ledTimer, this.pwmDriver, this.logger);
         this.pwmDriver.setLedMode(RgbController.MANUAL_MODE_CODE);
         this.fader = new fader_1.Fader(this.pwmDriver, this.logger);
         this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);

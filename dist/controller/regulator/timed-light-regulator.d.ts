@@ -4,7 +4,7 @@ export declare class TimedLightRegulator {
     private timer;
     private dbPath;
     private logger;
-    constructor(pwmDriver: any, logger: Logger);
+    constructor(config: any, pwmDriver: any, logger: Logger);
     clearTimersIntervals(): void;
     checkIntervalsAndAjustLightSetting(): void;
     performCheck(): void;
