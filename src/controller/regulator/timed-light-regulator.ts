@@ -18,7 +18,6 @@ export class TimedLightRegulator {
         this.timer = {};
         this.logger = logger;
         this.dbPath = config.database.path;
-        
     };
 
     clearTimersIntervals() {
@@ -74,6 +73,8 @@ export class TimedLightRegulator {
 
     getTimeModesIntervals(){
         return new Promise((resolve, reject) => {
+            this.logger.debug(`Will load DB for time intervals from: ${this.dbPath}`);
+
             const db = new sqlite3.Database(this.dbPath);
             db.serialize(() => {
                 db.all("SELECT * FROM light_time_programs", (err, rows) => {

@@ -50,8 +50,6 @@ export class Fader {
             await sleep(speed);
             await this.performValueChange('down', color, speed, colorValue);
             colorValue--;
-
-            console.log();
         }
 
         return new Promise((resolve, reject)=> {resolve('ok')});

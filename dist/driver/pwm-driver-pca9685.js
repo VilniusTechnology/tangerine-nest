@@ -1,20 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const i2c_bus_1 = require("i2c-bus");
 const pca9685_1 = require("pca9685");
 const mandarin_nest_local_light_driver_1 = require("mandarin-nest-local-light-driver");
 class PwmDriverPca9685 extends mandarin_nest_local_light_driver_1.PwmDriverFacade {
     constructor(config, logger) {
         super();
         this.config = {};
-        this.driver = new pca9685_1.default(config, (err) => {
-            if (err) {
-                console.error("Error initializing PCA9685");
-                process.exit(-1);
-                // reject('fail');
-            }
-            let msg = "PCA9685 Initialization done";
-            console.log(msg);
-            // resolve(this.driver);
+        this.logger = logger;
+        this.logger.debug('PCA9685 config loaded: ', config.address, config.frequency);
+        this.config = config;
+    }
+    init() {
+        console.log('this.config', this.config);
+        return new Promise((resolve, reject) => {
+            this.driver = new pca9685_1.default(this.config, (err) => {
+                if (err) {
+                    this.logger.error(`Error initializing PCA9685: ${err}`, err);
+                    console.log(this.config, err);
+                    // process.exit(-1);
+                    reject({ err: err, config: this.config });
+                }
+                let msg = "PCA9685 Initialization done";
+                this.logger.info(msg);
+                resolve(msg);
+            });
         });
     }
     setDutyCycle(colourPin, prepared_value) {

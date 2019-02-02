@@ -34,6 +34,7 @@
     "log4js": "^3.0.6",
     "mandarin-nest-local-light-driver": "^1.2.3",
     "moment-range": "^4.0.1",
+    "os-utils": "0.0.14",
     "pca9685": "^4.0.3",
     "rxjs": "^6.3.3",
     "socket.io": "^2.2.0",

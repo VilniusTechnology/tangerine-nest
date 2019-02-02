@@ -9,20 +9,23 @@ const _ = require("lodash");
 class RgbController {
     constructor(config, logger) {
         this.pwmManager = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
-        this.pwmManager.setup();
-        // this.pwmManager.setup().then((response) => {
-        //     console.log('response', response);
-        // });
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new light_source_1.LightSource();
         this.timedRegulator = new timed_light_regulator_1.TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
-        this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
-        this.fader = new fader_1.Fader(this.pwmManager, this.logger);
-        this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
-        this.logger.info('RgbController initialized');
     }
     ;
+    init() {
+        return new Promise((resolve, reject) => {
+            this.pwmManager.setup().then((response) => {
+                console.log('this.pwmManager.setup - response', response);
+                this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
+                this.fader = new fader_1.Fader(this.pwmManager, this.logger);
+                this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
+                this.logger.info('RgbController initialized');
+            });
+        });
+    }
     setColours(colors) {
         _.forEach(colors, (val, key) => {
             if (key !== 'state' && key !== 'mode' && key !== 'ledMode') {

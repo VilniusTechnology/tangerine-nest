@@ -10,17 +10,27 @@ class Pca9685RgbCctDriverManager {
         this.config = config.ledDriver;
     }
     setup() {
-        if (this.config.driver_type == 'local') {
-            this.colors.red.value = 1;
-            this.colors.green.value = 2;
-            this.colors.blue.value = 3;
-            this.pwm = new mandarin_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
-            this.logger.info('Local (websockets) LED driver ready! ');
-        }
-        if (this.config.driver_type == 'i2c') {
-            this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);
-            this.logger.info('PCA9685 PWM driver ready! ');
-        }
+        return new Promise((resolve, reject) => {
+            if (this.config.driver_type == 'local') {
+                this.colors.red.value = 1;
+                this.colors.green.value = 2;
+                this.colors.blue.value = 3;
+                this.pwm = new mandarin_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
+                this.logger.info('Local (websockets) LED driver ready! ');
+                resolve(true);
+            }
+            if (this.config.driver_type == 'i2c') {
+                this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);
+                this.pwm.init().then((data) => {
+                    this.logger.info('PCA9685 PWM driver ready! ');
+                    resolve(data);
+                })
+                    .catch((data) => {
+                    this.logger.error(`PCA9685 PWM driver error! : ${data} `);
+                    resolve(data);
+                });
+            }
+        });
     }
     setColor(colorName, value) {
         if (value > 255) {

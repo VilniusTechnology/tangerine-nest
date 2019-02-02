@@ -23,26 +23,27 @@ export class RgbController {
     protected lightRegulator;
 
     constructor(config: any, logger: Logger) {
-        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);
-
-        this.pwmManager.setup();
-
-        // this.pwmManager.setup().then((response) => {
-        //     console.log('response', response);
-        // });
-        
+        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);      
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSource();
-        this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
-
-        this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
-
-        this.fader = new Fader(this.pwmManager, this.logger);
-        this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
-
-        this.logger.info('RgbController initialized');
+        this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);   
     };
+
+    init() {
+        return new Promise( (resolve, reject) => {
+            this.pwmManager.setup().then((response) => {    
+                this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
+    
+                this.fader = new Fader(this.pwmManager, this.logger);
+                this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
+    
+                this.logger.info('RgbController initialized');
+
+                resolve(true);
+            }); 
+        });
+    }
 
     setColours(colors) {
         _.forEach(colors, (val, key) => {

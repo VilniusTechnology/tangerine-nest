@@ -1,29 +1,43 @@
 const i2cBus = require('i2c-bus');
 
 const config = {
+    logger: {
+        level: 'info',
+    },
     ledDriver : {
         driver_type: 'i2c',
         driver : {
-            i2c: i2cBus.openSync(0),
-            address: 0x40,
-            frequency: 4800,
+            i2c: i2cBus.openSync(1),
+            address: 0x60,
+            frequency: 50,
             debug: false,
         },
         contours : {
             main : {
-                red: 0,
-                green: 1,
-                blue: 2,
-                coldWhite: 3,
-                warmWhite: 4,
+                green: 0,
+                coldWhite: 1,
+
+                red: 4,
+                blue: 5,
+                warmWhite: 6,
             }
         },
+        hardwareLoader: true,
     },
     ledTimer: {
         database: {
-            path: '/Users/lukas.mikelionis/Projects/mandarin-nest/mandarinas-settings',
-        }
+            path: '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+        },
+        hardwareLoader: true,
     },
+    bme280: {
+        address: 0x76,
+        hardwareLoader: true,
+    },
+    lightLvl: {
+        address: 0x4A,
+        hardwareLoader: true,
+    }
 };
 
 module.exports = config;

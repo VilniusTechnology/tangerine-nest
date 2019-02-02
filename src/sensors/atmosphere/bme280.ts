@@ -8,7 +8,7 @@ export class Bme280Sensor {
     constructor(config, logger) {
         const options = {
             i2cBusNo   : 1, // defaults to 1
-            i2cAddress : 0x76, //BME280.BME280_DEFAULT_I2C_ADDRESS() // defaults to 0x77
+            i2cAddress : 0x76, //BME280.BME280_DEFAULT_I2C_ADDRESS()
         };
         this.bme280 = new BME280(options);
     }

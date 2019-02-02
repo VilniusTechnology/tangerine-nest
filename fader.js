@@ -21,21 +21,7 @@ function fade() {
     
         console.log(`EXEC TIME: ${execTime}`);
     
-        // const prDown = faderAdvanced.fadeDown(255, 253, 1, 1);
-        // prDown.then((data) => {
-        //     console.log('fadeDown Top LVL finished.', data);
-        // }).catch((data) => {
-        //     console.log('fadeDown Top LVL finished with err.', data);
-        // });
-    
     }).catch((data) => {
         console.log('fadeUp Top LVL finished with err.', data);
     });
 }
-
-// const prDown = faderAdvanced.fadeDown(253, 0, 5, 1);
-// prDown.then((data) => {
-//     console.log('fadeDown Top LVL finished.', data);
-// }).catch((data) => {
-//     console.log('fadeDown Top LVL finished with err.', data);
-// });

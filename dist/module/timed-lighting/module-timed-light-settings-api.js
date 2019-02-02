@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sqlite3 = require("sqlite3");
+// import * as sqlite3 from "sqlite3";
 const bodyParser = require("body-parser");
 const express = require("express");
+const sqlite3 = require('sqlite3').verbose();
 class TimedLightSettingsApi {
     constructor(config, logger = null) {
         this.logger = logger;
+        console.log(`TimedLightSettingsApi will load DB on path: ${config.database.path}`);
+        this.logger.debug(`TimedLightSettingsApi will load DB on path: ${config.database.path}`);
         this.db = new sqlite3.Database(config.database.path);
         this.restapi = express();
         // let hostname = os.hostname();
