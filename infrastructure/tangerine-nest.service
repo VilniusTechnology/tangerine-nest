@@ -1,0 +1,32 @@
+# sudo nano /etc/systemd/system/tangerine-nest.service
+#
+#
+#
+# systemctl daemon-reload
+# systemctl start tangerine-nest
+# systemctl stop tangerine-nest
+# systemctl restart tangerine-nest
+# systemctl enable tangerine-nest
+#
+# journalctl -u tangerine-nest
+
+[Unit]
+Description=tangerine-nest-description
+After=network.target
+
+[Service]
+WorkingDirectory=/home/madcatzx/projects/tangerine-nest
+ExecStart=/usr/bin/node /home/madcatzx/projects/tangerine-nest npm start
+Restart=always
+
+User=madcatzx
+#Group=group
+
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+
+# Setting up APP as a deamon https://stackoverflow.com/questions/4903570/how-does-one-start-a-node-js-server-as-a-daemon-process
+

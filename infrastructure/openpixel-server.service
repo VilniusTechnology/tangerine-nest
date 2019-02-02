@@ -1,0 +1,33 @@
+# sudo nano /etc/systemd/system/openpixel-server.service
+#
+# TODO: symlink it
+# sudo cp /home/madcatzx/projects/tangerine-nest/infrastructure/openpixel-server.service /etc/systemd/system
+#
+# sudo systemctl enable openpixel-server
+# sudo systemctl daemon-reload
+# sudo systemctl start openpixel-server
+# sudo systemctl stop openpixel-server
+# sudo systemctl restart openpixel-server
+#
+# sudo journalctl -u openpixel-server
+
+[Unit]
+Description=openpixel-server-description
+After=network.target
+
+[Service]
+WorkingDirectory=/home/madcatzx/projects/tangerine-nest
+ExecStart=/usr/local/bin/node /home/madcatzx/projects/tangerine-nest/workers/openpixel-server.js
+
+Restart=always
+#User=root
+#Group=root
+
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+
+# Setting up APP as a deamon https://stackoverflow.com/questions/4903570/how-does-one-start-a-node-js-server-as-a-daemon-process
+

@@ -1,0 +1,32 @@
+# sudo nano /etc/systemd/system/data-collector.service
+#
+#
+#
+# systemctl daemon-reload
+# systemctl start data-collector
+# systemctl restart data-collector
+# systemctl stop data-collector
+# systemctl enable data-collector
+#
+# journalctl -u data-collector
+
+[Unit]
+Description=data-collector-description
+After=network.target
+
+[Service]
+WorkingDirectory=/home/madcatzx/projects/tangerine-nest
+ExecStart=/usr/bin/node /home/madcatzx/projects/tangerine-nest/workers/data-collector.js
+
+Restart=always
+User=madcatzx
+#Group=group
+
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+
+# Setting up APP as a deamon https://stackoverflow.com/questions/4903570/how-does-one-start-a-node-js-server-as-a-daemon-process
+
