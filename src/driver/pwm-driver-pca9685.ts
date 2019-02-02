@@ -1,12 +1,13 @@
 import Pca9685Driver from "pca9685";
 import { PwmDriverFacade } from 'mandarin-nest-local-light-driver';
+import { Logger } from 'log4js';
 
 export class PwmDriverPca9685 extends PwmDriverFacade {
 
     private driver: Pca9685Driver;
     public config: any = {};
 
-    constructor(config: any) {
+    constructor(config: any, logger: Logger) {
         super();
 
         this.driver = new Pca9685Driver(

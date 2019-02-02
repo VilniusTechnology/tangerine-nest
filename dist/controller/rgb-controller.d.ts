@@ -7,7 +7,7 @@ export declare class RgbController {
     static readonly MANUAL_MODE_CODE = 1;
     static readonly TIMED_MODE_CODE = 2;
     static readonly CHECK_MODE_CODE = 3;
-    protected pwmDriver: Pca9685RgbCctDriverManager;
+    protected pwmManager: Pca9685RgbCctDriverManager;
     protected logger: Logger;
     protected colors: any;
     protected lightSource: any;
@@ -15,7 +15,6 @@ export declare class RgbController {
     protected fader: Fader;
     protected lightRegulator: any;
     constructor(config: any, logger: Logger);
-    init(): Promise<void>;
     setColours(colors: any): void;
     switchAllLedsOff(): void;
     switchAllLedsOn(): void;

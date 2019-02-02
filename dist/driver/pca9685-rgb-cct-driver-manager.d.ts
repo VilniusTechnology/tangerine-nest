@@ -9,6 +9,7 @@ export declare class Pca9685RgbCctDriverManager {
     driver: any;
     mode: string;
     constructor(config: any, logger: Logger);
+    setup(): void;
     setColor(colorName: string, value: number): void;
     getRgbValueInPercents(raw: number): number;
     setLedState(newState: number): void;

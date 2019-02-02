@@ -23,6 +23,7 @@
     "@types/lodash": "^4.14.119",
     "@types/node": "^10.12.12",
     "@types/socket.io": "^2.1.2",
+    "bme280-sensor": "^0.1.6",
     "delay": "^4.1.0",
     "demo-emoji-search": "^2.0.0",
     "dotenv": "^6.2.0",
