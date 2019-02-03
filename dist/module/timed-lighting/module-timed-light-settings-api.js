@@ -7,10 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
 class TimedLightSettingsApi {
     constructor(config, logger = null) {
         this.logger = logger;
-        console.log(`TimedLightSettingsApi will load DB on path: ${config.database.path}`);
-        this.logger.debug(`TimedLightSettingsApi will load DB on path: ${config.database.path}`);
-        this.db = new sqlite3.Database(config.database.path);
-        this.restapi = express();
+        this.config = config;
         // let hostname = os.hostname();
         this.hostname = 'localhost';
         this.port = 3002;
@@ -21,6 +18,9 @@ class TimedLightSettingsApi {
         // });
     }
     bootstrap() {
+        this.logger.debug(`TimedLightSettingsApi will load DB on path: ${this.config.database.path}`);
+        this.db = new sqlite3.Database(this.config.database.path);
+        this.restapi = express();
         this.restapi.all('/get-light-time-programs', bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /get-light-time-programs');
             this.getPrograms(req, res).then((rows) => {
@@ -37,13 +37,13 @@ class TimedLightSettingsApi {
         });
         this.restapi.all('/reload-db', (req, res) => {
             this.logger.debug('On route: /reload-db');
-            this.reset_db(req, res);
+            // this.reset_db(req, res);  
         });
         this.restapi.post('/edit-light-time-program', bodyParser.json(), (req, res) => {
             this.update(req, res);
         });
         this.restapi.post('/delete-light-time-program', bodyParser.json(), (req, res) => {
-            this.removeProgram(req, res);
+            // this.removeProgram(req, res);
         });
     }
     listen() {
@@ -132,41 +132,6 @@ class TimedLightSettingsApi {
             }
         });
         res.json(req.body);
-    }
-    removeProgram(req, res) {
-        const deleteQuery = `DELETE FROM ${TimedLightSettingsApi.tableName} WHERE id=?`;
-        this.logger.debug(deleteQuery, req.body.id);
-        this.db.run(deleteQuery, req.body.id, (err) => {
-            if (err) {
-                this.logger.error(err.message);
-                return err.message;
-            }
-            this.logger.info(`Row(s) deleted !`);
-        });
-    }
-    reset_db(req, res) {
-        this.logger.info('Will reset_db !!!');
-        try {
-            const queryDrop = `DROP TABLE ${TimedLightSettingsApi.tableName}`;
-            this.db.run(queryDrop, {}, (e) => {
-                this.logger.info(queryDrop, e);
-            });
-        }
-        catch (e) {
-            this.logger.error(e);
-            res.json({ e });
-        }
-        try {
-            const queryCreate = `CREATE TABLE ${TimedLightSettingsApi.tableName}(id int, title text, 'from' text, 'to' text, settings text)`;
-            this.db.run(queryCreate, {}, (e) => {
-                this.logger.info(queryCreate, e);
-            });
-        }
-        catch (e) {
-            this.logger.error(e);
-            res.json({ e });
-        }
-        this.getPrograms(req, res);
     }
 }
 TimedLightSettingsApi.tableName = 'light_time_programs';

@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import { LightSource } from '../../sensors/light-source';
+import { LightSourceSensor } from '../../sensors/light-source';
 
 export class LightRegulator {
-    private lightSource: LightSource;
+    private lightSource: LightSourceSensor;
     private fader;
 
     public desiredLevelBottom = 4000;
@@ -10,7 +10,7 @@ export class LightRegulator {
 
     constructor(fader, lightSource) {
         this.fader = fader;
-        this.lightSource = new LightSource();
+        this.lightSource = new LightSourceSensor();
     }
 
     async adaptToConditions() {

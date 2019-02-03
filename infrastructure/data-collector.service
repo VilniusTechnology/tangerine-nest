@@ -1,14 +1,15 @@
 # sudo nano /etc/systemd/system/data-collector.service
 #
+# TODO: symlink it
+# sudo cp /home/madcatzx/projects/tangerine-nest/infrastructure/data-collector.service /etc/systemd/system
 #
+# sudo systemctl enable data-collector
+# sudo systemctl daemon-reload
+# sudo systemctl start data-collector
+# sudo systemctl stop data-collector
+# sudo systemctl restart data-collector
 #
-# systemctl daemon-reload
-# systemctl start data-collector
-# systemctl restart data-collector
-# systemctl stop data-collector
-# systemctl enable data-collector
-#
-# journalctl -u data-collector
+# sudo journalctl -u data-collector
 
 [Unit]
 Description=data-collector-description
@@ -16,7 +17,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/madcatzx/projects/tangerine-nest
-ExecStart=/usr/bin/node /home/madcatzx/projects/tangerine-nest/workers/data-collector.js
+ExecStart=/usr/local/bin/node /home/madcatzx/projects/tangerine-nest/workers/data-collector.js
 
 Restart=always
 User=madcatzx

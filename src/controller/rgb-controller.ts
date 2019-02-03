@@ -1,4 +1,3 @@
-import { LightSource } from './../sensors/light-source';
 import { Fader } from './../effector/fader';
 import { LightRegulator } from './regulator/light-regulator';
 import { TimedLightRegulator } from './regulator/timed-light-regulator';
@@ -6,6 +5,7 @@ import { Pca9685RgbCctDriverManager } from "../driver/pca9685-rgb-cct-driver-man
 import * as _ from 'lodash';
 import { Logger } from "log4js";
 import { LedServerConfig } from '../server/model/config-model';
+import { LightSourceSensor } from '../sensors/light-source';
 
 export class RgbController {
     public static readonly AUTO_MODE_CODE = 0;
@@ -26,7 +26,7 @@ export class RgbController {
         this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);      
         this.logger = logger;
         this.colors = this.pwmManager.getState();
-        this.lightSource = new LightSource();
+        this.lightSource = new LightSourceSensor();
         this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);   
     };
 

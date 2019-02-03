@@ -16,14 +16,16 @@ class LedServer {
         if (configJson == undefined) {
             this.config = config_loader_1.config;
             this.logger.info('Loading config from file in config directory depending on env.');
+            this.logger.level = this.config.logger.level;
         }
         else {
             this.config = configJson;
             this.logger.info('Loading config from constructor params.');
+            this.logger.level = this.config.logger.level;
         }
         this.port = port || LedServer.PORT;
-        const controller = new rgb_controller_1.RgbController(this.config, this.logger);
-        this.requestHandler = new request_processor_1.RequestProcessor(controller, this.logger);
+        this.controller = new rgb_controller_1.RgbController(this.config, this.logger);
+        this.requestHandler = new request_processor_1.RequestProcessor(this.controller, this.logger);
     }
     createServer() {
         this.server = http_1.createServer(this.app);
@@ -57,22 +59,27 @@ class LedServer {
         });
     }
     launch() {
-        this.app = express();
-        this.createServer();
-        this.app.use(function (req, res, next) {
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-            res.setHeader('Access-Control-Allow-Credentials', 'false');
-            if ('OPTIONS' === req.method) {
-                res.sendStatus(200);
-            }
-            else {
-                // Pass to next layer of middleware.
-                next();
-            }
+        this.controller.init().then(() => {
+            this.app = express();
+            this.createServer();
+            this.app.use(function (req, res, next) {
+                res.header('Access-Control-Allow-Origin', '*');
+                res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+                res.setHeader('Access-Control-Allow-Credentials', 'false');
+                if ('OPTIONS' === req.method) {
+                    res.sendStatus(200);
+                }
+                else {
+                    // Pass to next layer of middleware.
+                    next();
+                }
+            });
+            this.listen();
+            this.logger.info('Will start boot DEMO.');
+            this.controller.getRgbCctLedDriver().setColor('green', 150);
+            this.controller.getRgbCctLedDriver().setColor('coldWhite', 5);
         });
-        this.listen();
     }
 }
 LedServer.PORT = 8081;

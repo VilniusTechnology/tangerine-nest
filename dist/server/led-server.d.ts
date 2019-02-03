@@ -1,4 +1,5 @@
 import { LedServerConfig } from './model/config-model';
+import { RgbController } from '../controller/rgb-controller';
 import { Logger } from 'log4js';
 export declare class LedServer {
     static readonly PORT: number;
@@ -8,6 +9,7 @@ export declare class LedServer {
     private requestHandler;
     logger: Logger;
     config: any;
+    controller: RgbController;
     constructor(configJson: LedServerConfig, port?: number);
     private createServer;
     private resgisterModules;

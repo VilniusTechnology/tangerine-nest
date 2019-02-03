@@ -21,7 +21,8 @@ class Pca9685RgbCctDriverManager {
             }
             if (this.config.driver_type == 'i2c') {
                 this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);
-                this.pwm.init().then((data) => {
+                this.pwm.init()
+                    .then((data) => {
                     this.logger.info('PCA9685 PWM driver ready! ');
                     resolve(data);
                 })

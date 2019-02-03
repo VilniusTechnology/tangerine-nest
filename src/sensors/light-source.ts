@@ -1,57 +1,50 @@
-// const i2c = require('i2c-bus');
+const i2c = require('i2c-bus');
 
-export class LightSource {
+export class LightSourceSensor {
+    constructor() {}
 
-    public light_lvl = 100;
+    init() {
+        return new Promise((resolve, reject) => {
+            resolve(true);
+        });
+    }
 
-  constructor(// logger
-    ) {
-        // this.logger = logger;
-  }
+    read() {
+        const i2c1 = i2c.openSync(1);
+
+        return new Promise((resolve, reject) => {
+            i2c1.writeByte(0x4A, 0x01, 0x0, () => {
+                i2c1.writeByte(0x4A, 0x02, 0x00, () => {
+                    i2c1.readWord(0x4A, 0x3, (err, rawLight) => {
+                        resolve({'light_lvl': rawLight});
+                    });
+                });
+            });
+        });
+    }
 
   async getStuff() {
-    // const i2c1 = i2c.openSync(0);
+    const i2c1 = i2c.openSync(1);
 
-    // i2c1.writeByteSync(0x4A, 0x01, 0x0);
-    // i2c1.writeByteSync(0x4A, 0x02, 0x00);
+    i2c1.writeByteSync(0x4A, 0x01, 0x0);
+    i2c1.writeByteSync(0x4A, 0x02, 0x00);
 
-    // const light_lvl = i2c1.readWordSync(0x4A, 0x02);
-
-    // // this.logger.info('RAW LIGHT LVL: ' +  light_lvl );
+    const light_lvl = i2c1.readWordSync(0x4A, 0x02);
 
     
-    return {'light_lvl': this.light_lvl};
+    return {'light_lvl': light_lvl};
    }
 
-  getLightLvlInSync() {
-    // const i2c1 = i2c.openSync(0);
+//   getLightLvlInSync() {
+//     const i2c1 = i2c.openSync(0);
 
-    // i2c1.writeByteSync(0x4A, 0x01, 0x0);
-    // i2c1.writeByteSync(0x4A, 0x02, 0x00);
+//     i2c1.writeByteSync(0x4A, 0x01, 0x0);
+//     i2c1.writeByteSync(0x4A, 0x02, 0x00);
 
-    // const light_lvl = i2c1.readWordSync(0x4A, 0x02);
+//     const light_lvl = i2c1.readWordSync(0x4A, 0x02);
 
-    // // this.logger.info('RAW LIGHT LVL: ' +  light_lvl );
+//     // this.logger.info('RAW LIGHT LVL: ' +  light_lvl );
 
-    return {'light_lvl': this.light_lvl};
-   }
-
-   
-
-   async getLightLevel() {
-    // const i2c1 = i2c.openSync(0);
-
-    return new Promise((resolve, reject) => {
-
-    //   i2c1.writeByte(0x4A, 0x01, 0x0, function() {
-    //     i2c1.writeByte(0x4A, 0x02, 0x00, function() {
-    //       i2c1.readWord(0x4A, 0x3, (err, rawLight) => {
-    //         resolve({'light_lvl': rawLight});
-    //       });
-    //     });
-    //   });
-
-    resolve({'light_lvl': this.light_lvl});
-    });
-   }
+//     return {'light_lvl': this.light_lvl};
+//    }
 }

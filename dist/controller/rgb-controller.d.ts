@@ -15,6 +15,7 @@ export declare class RgbController {
     protected fader: Fader;
     protected lightRegulator: any;
     constructor(config: any, logger: Logger);
+    init(): Promise<{}>;
     setColours(colors: any): void;
     switchAllLedsOff(): void;
     switchAllLedsOn(): void;

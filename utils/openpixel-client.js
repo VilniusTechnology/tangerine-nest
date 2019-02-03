@@ -34,8 +34,10 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     const red = rgb2Int(255, 0, 0);
     const green = rgb2Int(0, 255, 0);
     const blue = rgb2Int(0, 0, 255);
-    const yellow = rgb2Int(100, 55, 0);
+    const yellow = rgb2Int(250, 218, 94);
     const turquise = rgb2Int(0, 100, 100);
+    const violet = rgb2Int(155, 0, 100);
+    const orange = rgb2Int(253, 106, 2);
 
     let colors = [
         red,
@@ -43,36 +45,44 @@ var socket = net.createConnection(opts.port, opts.host, function() {
         blue,
         yellow,
         turquise,
+        violet,
+        orange,
     ]
 
-    let i = 0;
+    // let i = 0;
     let a = 0;
     let startCounter = 0;
 
-    setInterval(function () {
-        console.log(startCounter);
-        a = startCounter;
-        for (var i = 0; i < pixels; i++) {
-            data[i] = colors[a];
-            console.log(i, a, data[i]);
-            a = closedCounter(a);
-        }
-        startCounter = closedCounter(startCounter);
-
-        console.log(' --- --- --- --- ---');
-
-        client.setPixelColors(opts.channel, data);
-    }, 100);
-
-    // function 
-
-    function closedCounter(i) {
-        i++;
-        if (i >= 5) {
-            return 0;
-        }
-        return i;
+    for (var i = 0; i < pixels; i++) {
+        data[i] = rgb2Int(0, 0, 0);
     }
+    client.setPixelColors(opts.channel, data);
+
+    // setInterval(function () {
+    //     console.log(startCounter);
+    //     a = startCounter;
+    //     for (var i = 0; i < pixels; i++) {
+    //         data[i] = colors[a];
+    //         a = closedCounter(a, 7);
+    //     }
+    //     startCounter = closedCounter(startCounter);
+
+    //     client.setPixelColors(opts.channel, data);
+    // }, 1000);
+
+    // setInterval(function () {
+    //     for (var i = 0; i < pixels; i++) {
+    //         data[a] = colorwheel((offset + i) % 256);
+    //         offset = (offset + 1) % 256;
+    //         a = closedCounter(a);
+    //         console.log(a);
+    //     }
+    //     console.log('--- --- ---');
+
+    //     client.setPixelColors(opts.channel, data);
+        
+    // }, 100);
+    
 
     // setInterval(function () {
     //     for (var i = 0; i < pixels; i++) {
@@ -84,6 +94,14 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     //     offset = (offset + 1) % 256;
     // }, 100);
 });
+
+function closedCounter(i, limit = 5) {
+    i++;
+    if (i >= limit) {
+        return 0;
+    }
+    return i;
+}
 
 
 // rainbow-colors, taken from http://goo.gl/Cs3H0v

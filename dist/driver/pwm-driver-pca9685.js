@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const i2c_bus_1 = require("i2c-bus");
 const pca9685_1 = require("pca9685");
 const mandarin_nest_local_light_driver_1 = require("mandarin-nest-local-light-driver");
 class PwmDriverPca9685 extends mandarin_nest_local_light_driver_1.PwmDriverFacade {
@@ -12,7 +11,6 @@ class PwmDriverPca9685 extends mandarin_nest_local_light_driver_1.PwmDriverFacad
         this.config = config;
     }
     init() {
-        console.log('this.config', this.config);
         return new Promise((resolve, reject) => {
             this.driver = new pca9685_1.default(this.config, (err) => {
                 if (err) {

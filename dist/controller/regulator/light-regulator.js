@@ -6,7 +6,7 @@ class LightRegulator {
         this.desiredLevelBottom = 4000;
         this.desiredLevelTop = 8000;
         this.fader = fader;
-        this.lightSource = new light_source_1.LightSource();
+        this.lightSource = new light_source_1.LightSourceSensor();
     }
     async adaptToConditions() {
         let lightLevel = await this.getLightevel();

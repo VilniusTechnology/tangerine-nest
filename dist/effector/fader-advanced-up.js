@@ -47,7 +47,7 @@ class FaderAdvancedUp {
             return step;
         }
         if (futureFrom > 255 && step > 0) {
-            console.log('Will ajust increase: ', step);
+            // console.log('Will ajust increase: ', step);
             step--;
             return this.getPossibleIncrease(from, to, step);
         }

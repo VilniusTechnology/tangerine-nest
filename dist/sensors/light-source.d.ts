@@ -1,11 +1,5 @@
-export declare class LightSource {
-    light_lvl: number;
+export declare class LightSourceSensor {
     constructor();
-    getStuff(): Promise<{
-        'light_lvl': number;
-    }>;
-    getLightLvlInSync(): {
-        'light_lvl': number;
-    };
-    getLightLevel(): Promise<{}>;
+    init(): void;
+    read(): Promise<{}>;
 }
