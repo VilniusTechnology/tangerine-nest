@@ -2,7 +2,7 @@ var ParseStream = require('openpixelcontrol-stream').OpcParseStream;
 var net = require('net');
 var ws281x = require('rpi-ws281x-native');
 
-console.log('Preparations...')
+console.log('Starting...')
 
 var server = net.createServer(function(conn) {
 
@@ -14,7 +14,10 @@ var server = net.createServer(function(conn) {
     });
 
     parser.on('setpixelcolors', function(data) {
-        console.log('Should process setpixelcolors...');
+        console.log(data);
+        console.log('Got REQUEST - should process setpixelcolors...');
+        console.log(data);
+
         ws281x.render(data);
     });
 

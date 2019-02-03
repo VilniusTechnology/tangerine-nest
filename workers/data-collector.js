@@ -1,4 +1,5 @@
 const Bme280Sensor = require('../dist/sensors/bme280').Bme280Sensor;
+const BME280 = require('bme280-sensor');
 const LightLvlSensor = require('../dist/sensors/light-source').LightSourceSensor;
 
 const sqlite3 = require('sqlite3').verbose();
@@ -9,7 +10,6 @@ var log4js = require('log4js');
 setTimeout(function() {
     logSensors();
 }, 1000);
-
 
 function logSensors() {
     var logger = log4js.getLogger();
@@ -25,34 +25,42 @@ function logSensors() {
     
         Promise.all([pr1, pr2])
         .then(data => {
+
+            console.log('Atmo: ', data[0]);
+
             console.log('Atmosphere temperature_C: ', data[0].temperature_C);
             console.log('Atmosphere humidity: ', data[0].humidity);
             console.log('Atmosphere pressure_hPa: ', data[0].pressure_hPa);
             console.log('Light: ', data[1].light_lvl);
     
+            const temperature_F = BME280.convertCelciusToFahrenheit(data[0].temperature_C);
+            console.log('temperature_F: ', temperature_F);
+
             const inputData = [
                 data[1].light_lvl,
                 data[0].temperature_C,
                 data[0].humidity,
                 data[0].pressure_hPa,
             ];
+
+            console.log(inputData);
     
-            db.run(
-                `INSERT INTO 'home_data' ('light', 'temperature', 'humidity', 'pressure') VALUES(?,?,?,?)`, 
-                inputData, 
-                (err) => {
-                    if (err) {
-                        logger.info(err)
-                    }
-                    logger.info('Data was inserted')
-                }
-            );
+            // db.run(
+            //     `INSERT INTO 'home_data' ('light', 'temperature', 'humidity', 'pressure') VALUES(?,?,?,?)`, 
+            //     inputData, 
+            //     (err) => {
+            //         if (err) {
+            //             logger.info(err)
+            //         }
+            //         logger.info('Data was inserted')
+            //     }
+            // );
     
-            db.serialize(() => {
-                db.all("SELECT * FROM `home_data`", (err, rows) => {
-                    console.log(rows);
-                });
-            });
+            // db.serialize(() => {
+            //     db.all("SELECT * FROM `home_data`", (err, rows) => {
+            //         console.log(rows);
+            //     });
+            // });
         });
     });
 }

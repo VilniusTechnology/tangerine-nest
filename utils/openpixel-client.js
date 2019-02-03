@@ -56,6 +56,12 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     for (var i = 0; i < pixels; i++) {
         data[i] = rgb2Int(0, 0, 0);
     }
+
+    // console.log('Channel options: ');
+    // console.log(opts.channel);
+    // console.log('Will dispatch data: ');
+    // console.log(data);
+
     client.setPixelColors(opts.channel, data);
 
     // setInterval(function () {
@@ -70,18 +76,18 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     //     client.setPixelColors(opts.channel, data);
     // }, 1000);
 
-    // setInterval(function () {
-    //     for (var i = 0; i < pixels; i++) {
-    //         data[a] = colorwheel((offset + i) % 256);
-    //         offset = (offset + 1) % 256;
-    //         a = closedCounter(a);
-    //         console.log(a);
-    //     }
-    //     console.log('--- --- ---');
+    setInterval(function () {
+        for (var i = 0; i < pixels; i++) {
+            data[a] = colorwheel((offset + i) % 256);
+            offset = (offset + 1) % 256;
+            a = closedCounter(a);
+            console.log(a);
+        }
+        console.log('--- --- ---');
 
-    //     client.setPixelColors(opts.channel, data);
+        client.setPixelColors(opts.channel, data);
         
-    // }, 100);
+    }, 100);
     
 
     // setInterval(function () {

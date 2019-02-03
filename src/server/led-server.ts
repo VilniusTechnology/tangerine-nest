@@ -78,7 +78,7 @@ export class LedServer {
         });
 
         this.app.listen(this.port, () => {
-            this.logger.debug( `server started at http://localhost:${this.port}` );
+            this.logger.info( `server started at http://localhost:${this.port}` );
             this.logger.info('Listening...');
         } );
     }
