@@ -10,7 +10,7 @@ npm run build
 ``
 
 ``
-node demo-server.js
+node server.js
 ``
 
 Update Mandarin Nest home automator by setting 
