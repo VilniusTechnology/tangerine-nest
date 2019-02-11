@@ -1,4 +1,4 @@
-import { PwmDriverFacade } from 'mandarin-nest-local-light-driver';
+import { PwmDriverFacade } from 'tangerine-nest-local-light-driver';
 import { Logger } from 'log4js';
 export declare class PwmDriverPca9685 extends PwmDriverFacade {
     private driver;

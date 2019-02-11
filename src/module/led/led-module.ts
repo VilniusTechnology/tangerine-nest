@@ -1,13 +1,13 @@
-import { Fader } from './../effector/fader';
-import { LightRegulator } from './regulator/light-regulator';
-import { TimedLightRegulator } from './regulator/timed-light-regulator';
-import { Pca9685RgbCctDriverManager } from "../driver/pca9685-rgb-cct-driver-manager";
+import { Fader } from '../../effector/fader';
+import { LightRegulator } from '../../controller/regulator/light-regulator';
+import { TimedLightRegulator } from '../../controller/regulator/timed-light-regulator';
+import { Pca9685RgbCctDriverManager } from "../../driver/pca9685-rgb-cct-driver-manager";
 import * as _ from 'lodash';
 import { Logger } from "log4js";
-import { LedServerConfig } from '../server/model/config-model';
-import { LightSourceSensor } from '../sensors/light-source';
+import { LedServerConfig } from '../../server/model/config-model';
+import { LightSourceSensor } from '../../sensors/light-source';
 
-export class RgbController {
+export class LedModule {
     public static readonly AUTO_MODE_CODE = 0;
     public static readonly MANUAL_MODE_CODE = 1;
     public static readonly TIMED_MODE_CODE = 2;
@@ -33,12 +33,12 @@ export class RgbController {
     init() {
         return new Promise( (resolve, reject) => {
             this.pwmManager.setup().then((response) => {    
-                this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
+                this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
     
                 this.fader = new Fader(this.pwmManager, this.logger);
                 this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
     
-                this.logger.info('RgbController initialized');
+                this.logger.info('LedModule initialized');
 
                 resolve(true);
             }); 

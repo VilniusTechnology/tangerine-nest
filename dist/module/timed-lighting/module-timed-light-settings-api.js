@@ -45,6 +45,9 @@ class TimedLightSettingsApi {
         this.restapi.post('/delete-light-time-program', bodyParser.json(), (req, res) => {
             // this.removeProgram(req, res);
         });
+        this.restapi.all('/sensors/get-all', bodyParser.json(), (req, res) => {
+            this.getAllSensorData(req, res);
+        });
     }
     listen() {
         this.restapi.listen(this.port);
@@ -132,6 +135,18 @@ class TimedLightSettingsApi {
             }
         });
         res.json(req.body);
+    }
+    getAllSensorData(req, res) {
+        const getQuery = `SELECT * FROM 'home_data' `;
+        this.db.all(getQuery, (err, rows) => {
+            if (rows == undefined) {
+                rows = [];
+            }
+            if (err) {
+                this.logger.error(err);
+            }
+            res.json(rows);
+        });
     }
 }
 TimedLightSettingsApi.tableName = 'light_time_programs';

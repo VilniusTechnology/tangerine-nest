@@ -1,7 +1,7 @@
 {
-  "name": "mandarin-nest",
-  "version": "1.0.3",
-  "description": "mandarin-nest",
+  "name": "tangerine-nest",
+  "version": "1.0.4",
+  "description": "tangerine-nest",
   "private": false,
   "repository": {
     "type": "git",
@@ -19,10 +19,6 @@
   "author": "Lukas Mikelionis MadCatzx",
   "license": "ISC",
   "dependencies": {
-    "@types/dotenv": "^6.1.0",
-    "@types/lodash": "^4.14.119",
-    "@types/node": "^10.12.12",
-    "@types/socket.io": "^2.1.2",
     "bme280-sensor": "^0.1.6",
     "delay": "^4.1.0",
     "demo-emoji-search": "^2.0.0",
@@ -32,7 +28,7 @@
     "i2c-bus": "^4.0.7",
     "lodash": "^4.17.11",
     "log4js": "^3.0.6",
-    "mandarin-nest-local-light-driver": "^1.2.3",
+    "mockery": "^2.1.0",
     "moment-range": "^4.0.1",
     "nomnom": "^1.8.1",
     "openpixelcontrol-stream": "^0.1.2",
@@ -42,11 +38,16 @@
     "rxjs": "^6.3.3",
     "socket.io": "^2.2.0",
     "sqlite3": "^4.0.6",
+    "tangerine-nest-local-light-driver": "^1.2.9",
     "ts-loader": "^5.3.1",
     "url": "^0.11.0",
     "webpack-permissions-plugin": "^1.0.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.0",
+    "@types/lodash": "^4.14.119",
+    "@types/node": "^10.12.12",
+    "@types/socket.io": "^2.1.2",
     "@types/express": "^4.16.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",

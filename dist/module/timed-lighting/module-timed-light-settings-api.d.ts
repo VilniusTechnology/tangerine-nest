@@ -13,4 +13,5 @@ export declare class TimedLightSettingsApi {
     private getPrograms;
     private createProgram;
     private update;
+    getAllSensorData(req: any, res: any): void;
 }

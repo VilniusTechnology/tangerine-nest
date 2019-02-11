@@ -26,7 +26,7 @@ class Bme280Sensor {
             this.bme280
                 .readSensorData()
                 .then((data) => {
-                data.temperature_F = BME280.convertCelciusToFahrenheit(data.temperature_C);
+                data.temperature_Fa = BME280.convertCelciusToFahrenheit(data.temperature_C);
                 data.pressure_inHg = BME280.convertHectopascalToInchesOfMercury(data.pressure_hPa);
                 resolve(data);
             })

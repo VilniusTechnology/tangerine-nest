@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const pca9685_1 = require("pca9685");
-const mandarin_nest_local_light_driver_1 = require("mandarin-nest-local-light-driver");
-class PwmDriverPca9685 extends mandarin_nest_local_light_driver_1.PwmDriverFacade {
+const tangerine_nest_local_light_driver_1 = require("tangerine-nest-local-light-driver");
+class PwmDriverPca9685 extends tangerine_nest_local_light_driver_1.PwmDriverFacade {
     constructor(config, logger) {
         super();
         this.config = {};

@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fader_1 = require("./../effector/fader");
-const light_regulator_1 = require("./regulator/light-regulator");
-const timed_light_regulator_1 = require("./regulator/timed-light-regulator");
-const pca9685_rgb_cct_driver_manager_1 = require("../driver/pca9685-rgb-cct-driver-manager");
+const fader_1 = require("../../effector/fader");
+const light_regulator_1 = require("../../controller/regulator/light-regulator");
+const timed_light_regulator_1 = require("../../controller/regulator/timed-light-regulator");
+const pca9685_rgb_cct_driver_manager_1 = require("../../driver/pca9685-rgb-cct-driver-manager");
 const _ = require("lodash");
-const light_source_1 = require("../sensors/light-source");
-class RgbController {
+const light_source_1 = require("../../sensors/light-source");
+class LedModule {
     constructor(config, logger) {
         this.pwmManager = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
         this.logger = logger;
@@ -18,10 +18,10 @@ class RgbController {
     init() {
         return new Promise((resolve, reject) => {
             this.pwmManager.setup().then((response) => {
-                this.pwmManager.setLedMode(RgbController.MANUAL_MODE_CODE);
+                this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
                 this.fader = new fader_1.Fader(this.pwmManager, this.logger);
                 this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
-                this.logger.info('RgbController initialized');
+                this.logger.info('LedModule initialized');
                 resolve(true);
             });
         });
@@ -86,10 +86,10 @@ class RgbController {
         return this.pwmManager;
     }
 }
-RgbController.AUTO_MODE_CODE = 0;
-RgbController.MANUAL_MODE_CODE = 1;
-RgbController.TIMED_MODE_CODE = 2;
-RgbController.CHECK_MODE_CODE = 3;
-exports.RgbController = RgbController;
+LedModule.AUTO_MODE_CODE = 0;
+LedModule.MANUAL_MODE_CODE = 1;
+LedModule.TIMED_MODE_CODE = 2;
+LedModule.CHECK_MODE_CODE = 3;
+exports.LedModule = LedModule;
 ;
-//# sourceMappingURL=rgb-controller.js.map
+//# sourceMappingURL=led-module.js.map

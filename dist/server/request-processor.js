@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const rgb_controller_1 = require("./../controller/rgb-controller");
+const led_module_1 = require("../module/led/led-module");
 class RequestProcessor {
-    constructor(rgbController, logger) {
+    constructor(LedModule, logger) {
         this.wereLightsRevived = false;
-        this.rgbController = rgbController;
+        this.ledModule = LedModule;
         this.logger = logger;
         this.logger.log('info', 'RequestProcessor initialized');
     }
     ;
-    getRgbController() {
-        return this.rgbController;
+    getLedModule() {
+        return this.ledModule;
     }
     resolveLedMode(query) {
         let ledModeObj = {
-            ledMode: Number(this.rgbController.getLedMode())
+            ledMode: Number(this.ledModule.getLedMode())
         };
         return ledModeObj;
     }
@@ -22,36 +22,36 @@ class RequestProcessor {
     manageModes(query) {
         this.logger.log('debug', 'Will manage modes');
         // AUTO mode.
-        if (query.mode == rgb_controller_1.RgbController.AUTO_MODE_CODE) {
+        if (query.mode == led_module_1.LedModule.AUTO_MODE_CODE) {
             this.logger.log('info', '-------------  Auto mode -------------');
-            this.rgbController.clearTimersIntervals();
+            this.ledModule.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
-            this.rgbController.setMode(query.mode);
-            this.rgbController.switchAllLedsOff();
+            this.ledModule.setMode(query.mode);
+            this.ledModule.switchAllLedsOff();
             let colors = {
                 "coldWhite": 2,
                 "warmWhite": 2,
             };
-            this.rgbController.setColours(colors);
+            this.ledModule.setColours(colors);
             this.timerOfLightAdaptor = setInterval(() => {
                 this.logger.log('info', 'Adapting Light');
-                this.rgbController.adaptLight();
+                this.ledModule.adaptLight();
             }, 5700).unref();
         }
         // Manual mode.
-        if (query.mode == rgb_controller_1.RgbController.MANUAL_MODE_CODE) {
+        if (query.mode == led_module_1.LedModule.MANUAL_MODE_CODE) {
             this.logger.log('info', '---------- Manual mode  -------------');
-            this.rgbController.clearTimersIntervals();
+            this.ledModule.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
-            this.rgbController.setMode(query.mode);
+            this.ledModule.setMode(query.mode);
             this.handleManualMode(query);
         }
         // Timed mode.
-        if (query.mode == rgb_controller_1.RgbController.TIMED_MODE_CODE) {
+        if (query.mode == led_module_1.LedModule.TIMED_MODE_CODE) {
             this.logger.log('info', '---------- Timed mode  -------------');
-            this.rgbController.clearTimersIntervals();
+            this.ledModule.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
-            this.rgbController.setMode(query.mode);
+            this.ledModule.setMode(query.mode);
             this.handleTimedMode(query);
         }
     }
@@ -60,32 +60,32 @@ class RequestProcessor {
     }
     handleTimedMode(query) {
         let ledState = query.state;
-        this.rgbController.setTimedSettings();
+        this.ledModule.setTimedSettings();
     }
     handleManualMode(query) {
         let ledState = query.state;
         // Turn light on.
-        if (ledState === '1' && this.rgbController.getState().ledState === 0) {
+        if (ledState === '1' && this.ledModule.getState().ledState === 0) {
             this.logger.debug('!!! WILL REVIVE !!!');
-            this.rgbController.switchAllLedsOn();
+            this.ledModule.switchAllLedsOn();
             this.wereLightsRevived = true;
         }
         // Set lights colours.
         if (ledState === '1' && this.wereLightsRevived === false) {
             this.logger.debug('WILL SET Colours ');
-            this.rgbController.setColours(query);
+            this.ledModule.setColours(query);
         }
         // Turn light off.
         if (ledState === '0') {
             this.logger.debug('!!! WILL SWITCH OFF !!!');
-            this.rgbController.switchAllLedsOff();
+            this.ledModule.switchAllLedsOff();
         }
         this.wereLightsRevived = false;
     }
     ;
     returnState(query) {
         let ledModeObj = this.resolveLedMode(query);
-        return Object.assign(this.rgbController.getState(), ledModeObj);
+        return Object.assign(this.ledModule.getState(), ledModeObj);
     }
     ;
     prepareResponse(res, data) {

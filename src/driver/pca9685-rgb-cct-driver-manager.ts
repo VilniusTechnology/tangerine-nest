@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import {Colors} from './entities/colors';
 import { Logger } from 'log4js';
-import { PwmDriverFacade, PwmDriverEmulator } from 'mandarin-nest-local-light-driver';
+import { PwmDriverFacade, PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
 import { LedServerConfig } from '../server/model/config-model';
 import { PwmDriverPca9685 } from './pwm-driver-pca9685';
+import { Colors } from 'tangerine-nest-local-light-driver/dist/model/color/colors';
 
 export class Pca9685RgbCctDriverManager {
     private logger: Logger;

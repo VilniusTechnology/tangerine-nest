@@ -1,8 +1,8 @@
-import { Fader } from './../effector/fader';
-import { TimedLightRegulator } from './regulator/timed-light-regulator';
-import { Pca9685RgbCctDriverManager } from "../driver/pca9685-rgb-cct-driver-manager";
+import { Fader } from '../../effector/fader';
+import { TimedLightRegulator } from '../../controller/regulator/timed-light-regulator';
+import { Pca9685RgbCctDriverManager } from "../../driver/pca9685-rgb-cct-driver-manager";
 import { Logger } from "log4js";
-export declare class RgbController {
+export declare class LedModule {
     static readonly AUTO_MODE_CODE = 0;
     static readonly MANUAL_MODE_CODE = 1;
     static readonly TIMED_MODE_CODE = 2;

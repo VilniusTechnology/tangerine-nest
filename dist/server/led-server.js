@@ -4,7 +4,7 @@ const http_1 = require("http");
 const express = require("express");
 const url = require("url");
 const request_processor_1 = require("./request-processor");
-const rgb_controller_1 = require("../controller/rgb-controller");
+const led_module_1 = require("../module/led/led-module");
 const log4js_1 = require("log4js");
 const module_timed_light_settings_api_1 = require("../module/timed-lighting/module-timed-light-settings-api");
 const config_loader_1 = require("./config-loader");
@@ -17,6 +17,8 @@ class LedServer {
             this.config = config_loader_1.config;
             this.logger.info('Loading config from file in config directory depending on env.');
             this.logger.level = this.config.logger.level;
+            this.logger.info(`Current env is: ${this.config.activeEnv}`);
+            console.log(this.config);
         }
         else {
             this.config = configJson;
@@ -24,7 +26,7 @@ class LedServer {
             this.logger.level = this.config.logger.level;
         }
         this.port = port || LedServer.PORT;
-        this.controller = new rgb_controller_1.RgbController(this.config, this.logger);
+        this.controller = new led_module_1.LedModule(this.config, this.logger);
         this.requestHandler = new request_processor_1.RequestProcessor(this.controller, this.logger);
     }
     createServer() {
@@ -54,7 +56,7 @@ class LedServer {
             this.requestHandler.prepareResponse(res, ledStateObj);
         });
         this.app.listen(this.port, () => {
-            this.logger.debug(`server started at http://localhost:${this.port}`);
+            this.logger.info(`server started at http://localhost:${this.port}`);
             this.logger.info('Listening...');
         });
     }

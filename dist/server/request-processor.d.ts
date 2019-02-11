@@ -1,11 +1,11 @@
-import { RgbController } from './../controller/rgb-controller';
+import { LedModule } from '../module/led/led-module';
 export declare class RequestProcessor {
     private wereLightsRevived;
-    private rgbController;
+    private ledModule;
     private logger;
     private timerOfLightAdaptor;
-    constructor(rgbController: RgbController, logger: any);
-    getRgbController(): RgbController;
+    constructor(LedModule: LedModule, logger: any);
+    getLedModule(): LedModule;
     resolveLedMode(query: any): {
         ledMode: number;
     };

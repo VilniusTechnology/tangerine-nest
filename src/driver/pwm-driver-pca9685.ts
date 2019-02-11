@@ -1,6 +1,5 @@
-import { i2cBus } from 'i2c-bus';
 import Pca9685Driver from "pca9685";
-import { PwmDriverFacade } from 'mandarin-nest-local-light-driver';
+import { PwmDriverFacade } from 'tangerine-nest-local-light-driver';
 import { Logger } from 'log4js';
 
 export class PwmDriverPca9685 extends PwmDriverFacade {

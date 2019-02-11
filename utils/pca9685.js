@@ -1,4 +1,11 @@
-var i2cBus = require("i2c-bus");
+// const i2c = require('i2c-bus');
+let i2cBus = require('../dist/i2c.mock.js');
+let os = require('os');
+// If working on raspberry-pi.
+if (os.arch() == 'arm') {
+    let i2cBus = require('i2c-bus')
+}
+
 var Pca9685Driver = require("pca9685").Pca9685Driver;
  
 var options = {

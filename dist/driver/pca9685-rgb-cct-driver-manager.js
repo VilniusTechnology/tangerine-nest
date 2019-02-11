@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = require("./entities/colors");
-const mandarin_nest_local_light_driver_1 = require("mandarin-nest-local-light-driver");
+const tangerine_nest_local_light_driver_1 = require("tangerine-nest-local-light-driver");
 const pwm_driver_pca9685_1 = require("./pwm-driver-pca9685");
+const colors_1 = require("tangerine-nest-local-light-driver/dist/model/color/colors");
 class Pca9685RgbCctDriverManager {
     constructor(config, logger) {
         this.colors = new colors_1.Colors();
@@ -15,7 +15,7 @@ class Pca9685RgbCctDriverManager {
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
-                this.pwm = new mandarin_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
+                this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
                 this.logger.info('Local (websockets) LED driver ready! ');
                 resolve(true);
             }

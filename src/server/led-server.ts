@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as url from 'url';
 import * as _ from "lodash"
 import { RequestProcessor } from './request-processor';
-import { RgbController } from '../controller/rgb-controller';
+import { LedModule } from '../module/led/led-module';
 
 import { getLogger, Logger  } from 'log4js';
 import { TimedLightSettingsApi } from '../module/timed-lighting/module-timed-light-settings-api';
@@ -21,17 +21,20 @@ export class LedServer {
     private requestHandler: RequestProcessor;
     public logger: Logger;
     public config: any;
-    public controller: RgbController; 
+    public controller: LedModule; 
 
     constructor(configJson: LedServerConfig, port: number = null) {
         // configure('./filename.log');
         this.logger = getLogger();
         this.logger.level = 'debug';
-        
+
         if (configJson == undefined) {
             this.config = config;
             this.logger.info('Loading config from file in config directory depending on env.');
             this.logger.level = this.config.logger.level;
+            this.logger.info(`Current env is: ${this.config.activeEnv}`);
+
+            console.log(this.config);
         } else {
             this.config = configJson;
             this.logger.info('Loading config from constructor params.');
@@ -40,7 +43,7 @@ export class LedServer {
 
         this.port = port || LedServer.PORT;
 
-        this.controller = new RgbController(this.config, this.logger);
+        this.controller = new LedModule(this.config, this.logger);
         this.requestHandler = new RequestProcessor(this.controller, this.logger);
     }
 
