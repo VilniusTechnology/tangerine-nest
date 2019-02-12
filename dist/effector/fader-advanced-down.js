@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FaderAdvancedDown {
+    constructor(pwmDriver) {
+        this.pwmDriver = pwmDriver;
+    }
     fadeDown(from, to, timeout, step = 1) {
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -12,7 +15,6 @@ class FaderAdvancedDown {
     initFading(from, to, timeout, step) {
         const validStep = this.getPossibleDecrease(from, to, step);
         if (from == to) {
-            // console.log('Should resolve down', {from: from, to: to});
             this.resolve({ from: from, to: to });
             return true;
         }

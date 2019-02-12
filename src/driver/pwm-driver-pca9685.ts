@@ -16,7 +16,7 @@ export class PwmDriverPca9685 extends PwmDriverFacade {
         this.config = config;
     }
 
-    init() {
+    public init() {
         return new Promise((resolve, reject) => {
             this.driver = new Pca9685Driver(this.config, (err) => {
                 if (err) {
@@ -32,7 +32,7 @@ export class PwmDriverPca9685 extends PwmDriverFacade {
         });
     }
 
-    setDutyCycle(colourPin, prepared_value) {
+    public setDutyCycle(colourPin, prepared_value) {
         this.driver.setDutyCycle(colourPin, prepared_value);
     }
 }

@@ -1,18 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FaderAdvancedUp {
-    fadeUp(from, to, timeout, step = 1) {
+    constructor(pwmDriver) {
+        this.pwmDriver = pwmDriver;
+    }
+    fadeUp(from, to, channel, timeout, step = 1) {
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
             const validStep = this.getPossibleIncrease(from, to, step);
-            this.initFading(from, to, timeout, step, validStep);
+            this.initFading(from, to, channel, timeout, step, validStep);
         });
     }
-    initFading(from, to, timeout, step, validStep) {
+    initFading(from, to, channel, timeout, step, validStep) {
         if (validStep) {
             setTimeout(() => {
-                this.performFadeUp(from, to, timeout, step, validStep);
+                this.performFadeUp(from, to, channel, timeout, step, validStep);
             }, timeout);
         }
         if (from == to) {
@@ -24,9 +27,11 @@ class FaderAdvancedUp {
             return false;
         }
     }
-    performFadeUp(from, to, timeout, step, validStep) {
-        // Implement real fading here.
-        console.log(from, to, timeout);
+    performFadeUp(from, to, channel, timeout, step, validStep) {
+        // Will do actual light change.
+        const percentVal = (from / 100 / 3);
+        this.pwmDriver.setDutyCycle(channel, percentVal);
+        console.log(channel, percentVal);
         from = from + validStep;
         if (from > 255) {
             this.resolve({ from: from, to: to });
@@ -36,7 +41,7 @@ class FaderAdvancedUp {
             this.resolve({ from: from, to: to });
             return true;
         }
-        return this.initFading(from, to, timeout, step, validStep);
+        return this.initFading(from, to, channel, timeout, step, validStep);
     }
     getPossibleIncrease(from, to, step) {
         if (step == 0) {

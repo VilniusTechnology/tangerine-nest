@@ -1,22 +1,29 @@
+import { PwmDriverFacade } from "tangerine-nest-local-light-driver";
+
 export class FaderAdvancedUp {
 
     private resolve: any;
     private reject: any;
+    private pwmDriver: PwmDriverFacade;
 
-    public fadeUp(from: number, to: number, timeout: number, step: number = 1) {
+    constructor(pwmDriver: PwmDriverFacade) {
+        this.pwmDriver = pwmDriver;
+    }
+
+    public fadeUp(from: number, to: number, channel: number, timeout: number, step: number = 1) {
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
 
             const validStep = this.getPossibleIncrease(from, to, step);
-            this.initFading(from, to, timeout, step, validStep);
+            this.initFading(from, to, channel, timeout, step, validStep);
         });
     }
 
-    private initFading(from: number, to: number, timeout: number, step: number, validStep: number) {
+    private initFading(from: number, to: number, channel: number, timeout: number, step: number, validStep: number) {
         if(validStep) {
             setTimeout(()=> {
-                this.performFadeUp(from, to, timeout, step, validStep);
+                this.performFadeUp(from, to, channel, timeout, step, validStep);
             }, timeout);
         } 
 
@@ -31,9 +38,12 @@ export class FaderAdvancedUp {
         }
     }
 
-    private performFadeUp(from: number, to: number, timeout: number, step: number, validStep: number) {
-        // Implement real fading here.
-        console.log(from, to, timeout);
+    private performFadeUp(from: number, to: number, channel: number, timeout: number, step: number, validStep: number) {
+        
+        // Will do actual light change.
+        const percentVal = (from / 100 / 3);
+        this.pwmDriver.setDutyCycle(channel, percentVal);
+        console.log(channel, percentVal);
         
         from = from + validStep;
 
@@ -46,7 +56,7 @@ export class FaderAdvancedUp {
             this.resolve({from: from, to: to});
             return true;
         }
-        return this.initFading(from, to, timeout, step, validStep);
+        return this.initFading(from, to, channel, timeout, step, validStep);
     }
 
     private getPossibleIncrease(from: number, to: number, step: number) {

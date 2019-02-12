@@ -1,7 +1,13 @@
-export class FaderAdvancedDown {
+import { PwmDriverFacade } from "tangerine-nest-local-light-driver";
 
+export class FaderAdvancedDown {
     private resolve: any;
     private reject: any;
+    private pwmDriver: PwmDriverFacade;
+
+    constructor(pwmDriver: PwmDriverFacade) {
+        this.pwmDriver = pwmDriver;
+    }
 
     public fadeDown(from: number, to: number, timeout: number, step: number = 1) { 
         return new Promise((resolve, reject) => {
@@ -17,7 +23,6 @@ export class FaderAdvancedDown {
         const validStep = this.getPossibleDecrease(from, to, step);
 
         if (from == to) {
-            // console.log('Should resolve down', {from: from, to: to});
             this.resolve({from: from, to: to});
             return true;
         }
@@ -36,6 +41,7 @@ export class FaderAdvancedDown {
 
     private performFadeDown(from: number, to: number, timeout: number, step: number, validStep: number) {
         from = from - validStep;
+
         // Implement real fading here.
         console.log(from, to, timeout);
 
