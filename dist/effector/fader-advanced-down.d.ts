@@ -4,7 +4,7 @@ export declare class FaderAdvancedDown {
     private reject;
     private pwmDriver;
     constructor(pwmDriver: PwmDriverFacade);
-    fadeDown(from: number, to: number, timeout: number, step?: number): Promise<{}>;
+    fadeDown(from: number, to: number, channel: number, timeout: number, step?: number): Promise<{}>;
     private initFading;
     private performFadeDown;
     private getPossibleDecrease;

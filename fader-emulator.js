@@ -31,32 +31,71 @@ const pwmDriver = new PwmDriverEmulator(config, 7777, logger);
 const faderAdvanced = new FaderAdvanced(pwmDriver);
 
 pwmDriver.onClientConnect().then( (rsp) => {
-    console.log('CONNECTED', rsp);
-
-    const prUp = faderAdvanced.fadeUp(0, 100, 1, 10);
-    prUp.then((data) => {
-        console.log('Splash DONE', data);
-        fade();
-    });
+    // console.log('CONNECTED', rsp);
+    GWfade().then( () => {
+        GWfade().then( () => {
+            setTimeout( () => {
+                blinkChain().then( () => {
+                    setTimeout( () => {
+                        blinkChain().then( () => {
+                            finalAction();
+                        }); 
+                    }, 300);
+                });
+            }, 100);
+        });
+    }); 
 });
 
+function GWfade() {
+    const delay = 3;
+    const step = 3;
+    return new Promise( (resolve, reject) => {
+        faderAdvanced.fadeUp(50, 255, 1, delay, step).then(() => {
+            (new FaderAdvanced(pwmDriver)).fadeUp(50, 255, 3, delay, step).then( () => {
+                (new FaderAdvanced(pwmDriver)).fadeDown(255, 0, 3, delay, step).then( () => {
+                    resolve(true);
+                });
+            });
+            (new FaderAdvanced(pwmDriver)).fadeDown(255, 0, 1, delay, step);
+        });
+    });
+}
 
+function blinkChain() {
+    return new Promise((resolve, reject) => {
+        blinkSequence().then( () => {
+            blinkSequence().then( () => {
+                resolve(true);
+            });
+        });
+    }); 
+}
 
-function fade() {
-    const faderAdvanced = new FaderAdvanced(pwmDriver);
-    const prUp = faderAdvanced.fadeUp(250, 255, 3, 6, 1);
+function blinkSequence() {
+    return new Promise((resolve, reject) => {
+        blink(1, 150, 1).then(() => {
+            blink(3, 150, 1).then( () => {
+                blink(1, 150, 1).then(() => {
+                    blink(3, 150, 1).then( () => {
+                        resolve(true);
+                    });
+                });
+            });
+        });
+    })
+}
 
-    let start = new Date().getTime()
-    prUp.then((data) => {
-        console.log('fadeUp Top LVL finished.', data);
-    
-        let finish = new Date().getTime();
-        const execTime = finish - start;
-    
-        console.log(`EXEC TIME: ${execTime}`);
-        finalAction();
-    }).catch((data) => {
-        console.log('fadeUp Top LVL finished with err.', data);
+function blink(color, max, delay) {
+    return new Promise((resolve, reject) => {
+        const faderAdvanced = new FaderAdvanced(pwmDriver);
+        const prUp = faderAdvanced.fadeUp(0, max, color, delay, 5)
+            .then( () => {
+                faderAdvanced.fadeDown(max, 0, color, delay, 5)
+                    .then( () => {
+                        resolve(true);
+                    });
+            });
     });
 }
 

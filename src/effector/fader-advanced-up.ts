@@ -43,7 +43,7 @@ export class FaderAdvancedUp {
         // Will do actual light change.
         const percentVal = (from / 100 / 3);
         this.pwmDriver.setDutyCycle(channel, percentVal);
-        console.log(channel, percentVal);
+        // console.log(channel, percentVal);
         
         from = from + validStep;
 

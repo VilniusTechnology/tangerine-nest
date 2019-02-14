@@ -9,17 +9,17 @@ export class FaderAdvancedDown {
         this.pwmDriver = pwmDriver;
     }
 
-    public fadeDown(from: number, to: number, timeout: number, step: number = 1) { 
+    public fadeDown(from: number, to: number, channel: number,  timeout: number, step: number = 1) { 
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
 
             // const validStep = this.getPossibleDecrease(from, to, step);
-            this.initFading(from, to, timeout, step);
+            this.initFading(from, to, channel, timeout, step);
         });
     }
 
-    private initFading(from: number, to: number, timeout: number, step: number) {
+    private initFading(from: number, to: number, channel: number, timeout: number, step: number) {
         const validStep = this.getPossibleDecrease(from, to, step);
 
         if (from == to) {
@@ -29,7 +29,7 @@ export class FaderAdvancedDown {
         
         if(validStep) {
             setTimeout(()=> {
-                this.performFadeDown(from, to, timeout, step, validStep);
+                this.performFadeDown(from, to, channel, timeout, step, validStep);
             }, timeout);
         } 
 
@@ -39,17 +39,19 @@ export class FaderAdvancedDown {
         }
     }
 
-    private performFadeDown(from: number, to: number, timeout: number, step: number, validStep: number) {
+    private performFadeDown(from: number, to: number, channel: number, timeout: number, step: number, validStep: number) {
         from = from - validStep;
 
-        // Implement real fading here.
-        console.log(from, to, timeout);
+        // Will do actual light change.
+        const percentVal = (from / 100 / 3);
+        this.pwmDriver.setDutyCycle(channel, percentVal);
+        // console.log(channel, percentVal);
 
         if (from <= 0 || from < to) {
             this.resolve({from: from, to: to});
             return true;
         }
-        return this.initFading(from, to, timeout, step);
+        return this.initFading(from, to, channel, timeout, step);
     }
 
     private getPossibleDecrease(from: number, to: number, step: number) {
@@ -64,7 +66,7 @@ export class FaderAdvancedDown {
         }
 
         if (futureFrom <= 0 && step > 0) {
-            console.log('Will ajust increase: ', step);
+            // console.log('Will ajust increase: ', step);
             step--;
             return this.getPossibleDecrease(from, to, step);
         }   

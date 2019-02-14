@@ -4,15 +4,15 @@ class FaderAdvancedDown {
     constructor(pwmDriver) {
         this.pwmDriver = pwmDriver;
     }
-    fadeDown(from, to, timeout, step = 1) {
+    fadeDown(from, to, channel, timeout, step = 1) {
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
             // const validStep = this.getPossibleDecrease(from, to, step);
-            this.initFading(from, to, timeout, step);
+            this.initFading(from, to, channel, timeout, step);
         });
     }
-    initFading(from, to, timeout, step) {
+    initFading(from, to, channel, timeout, step) {
         const validStep = this.getPossibleDecrease(from, to, step);
         if (from == to) {
             this.resolve({ from: from, to: to });
@@ -20,7 +20,7 @@ class FaderAdvancedDown {
         }
         if (validStep) {
             setTimeout(() => {
-                this.performFadeDown(from, to, timeout, step, validStep);
+                this.performFadeDown(from, to, channel, timeout, step, validStep);
             }, timeout);
         }
         if (!validStep) {
@@ -28,15 +28,17 @@ class FaderAdvancedDown {
             return false;
         }
     }
-    performFadeDown(from, to, timeout, step, validStep) {
+    performFadeDown(from, to, channel, timeout, step, validStep) {
         from = from - validStep;
-        // Implement real fading here.
-        console.log(from, to, timeout);
+        // Will do actual light change.
+        const percentVal = (from / 100 / 3);
+        this.pwmDriver.setDutyCycle(channel, percentVal);
+        // console.log(channel, percentVal);
         if (from <= 0 || from < to) {
             this.resolve({ from: from, to: to });
             return true;
         }
-        return this.initFading(from, to, timeout, step);
+        return this.initFading(from, to, channel, timeout, step);
     }
     getPossibleDecrease(from, to, step) {
         if (step == 0) {
@@ -48,7 +50,7 @@ class FaderAdvancedDown {
             return step;
         }
         if (futureFrom <= 0 && step > 0) {
-            console.log('Will ajust increase: ', step);
+            // console.log('Will ajust increase: ', step);
             step--;
             return this.getPossibleDecrease(from, to, step);
         }

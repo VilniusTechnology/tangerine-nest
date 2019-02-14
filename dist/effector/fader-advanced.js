@@ -19,9 +19,9 @@ class FaderAdvanced {
             });
         });
     }
-    fadeDown(from, to, timeout, step = 1) {
+    fadeDown(from, to, channel, timeout, step = 1) {
         return new Promise((resolve, reject) => {
-            this.faderDown.fadeDown(from, to, timeout, step)
+            this.faderDown.fadeDown(from, to, channel, timeout, step)
                 .then((data) => {
                 resolve(data);
             })
@@ -29,6 +29,12 @@ class FaderAdvanced {
                 reject(data);
             });
         });
+    }
+    fullOn(channel) {
+        this.pwmDriver.setDutyCycle(channel, 1);
+    }
+    fullOff(channel) {
+        this.pwmDriver.setDutyCycle(channel, 0);
     }
 }
 exports.FaderAdvanced = FaderAdvanced;

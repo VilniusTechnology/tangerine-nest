@@ -26,9 +26,9 @@ export class FaderAdvanced {
         });
     }
 
-    public fadeDown(from: number, to: number, timeout: number, step: number = 1) {
+    public fadeDown(from: number, to: number, channel: number, timeout: number, step: number = 1) {
         return new Promise((resolve, reject) => {
-            this.faderDown.fadeDown(from, to, timeout, step)
+            this.faderDown.fadeDown(from, to, channel, timeout, step)
             .then( (data) => {
                 resolve(data);
             })
@@ -36,5 +36,13 @@ export class FaderAdvanced {
                 reject(data);
             });
         });
+    }
+
+    public fullOn(channel: number) {
+        this.pwmDriver.setDutyCycle(channel, 1);
+    }
+
+    public fullOff(channel: number) {
+        this.pwmDriver.setDutyCycle(channel, 0);
     }
 }
