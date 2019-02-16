@@ -1,15 +1,18 @@
 import { PwmDriverFacade } from "tangerine-nest-local-light-driver";
+import { Pca9685RgbCctDriverManager } from "../driver/pca9685-rgb-cct-driver-manager";
 
 export class FaderAdvancedDown {
     private resolve: any;
     private reject: any;
-    private pwmDriver: PwmDriverFacade;
+    private pwmDriver: Pca9685RgbCctDriverManager;
+    private logger; 
 
-    constructor(pwmDriver: PwmDriverFacade) {
+    constructor(pwmDriver: Pca9685RgbCctDriverManager, logger) {
         this.pwmDriver = pwmDriver;
+        this.logger = logger; 
     }
 
-    public fadeDown(from: number, to: number, channel: number,  timeout: number, step: number = 1) { 
+    public fadeDown(from: number, to: number, channel: string,  timeout: number, step: number = 1) { 
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -19,7 +22,7 @@ export class FaderAdvancedDown {
         });
     }
 
-    private initFading(from: number, to: number, channel: number, timeout: number, step: number) {
+    private initFading(from: number, to: number, channel: string, timeout: number, step: number) {
         const validStep = this.getPossibleDecrease(from, to, step);
 
         if (from == to) {
@@ -39,13 +42,13 @@ export class FaderAdvancedDown {
         }
     }
 
-    private performFadeDown(from: number, to: number, channel: number, timeout: number, step: number, validStep: number) {
+    private performFadeDown(from: number, to: number, channel: string, timeout: number, step: number, validStep: number) {
         from = from - validStep;
 
         // Will do actual light change.
-        const percentVal = (from / 100 / 3);
-        this.pwmDriver.setDutyCycle(channel, percentVal);
-        // console.log(channel, percentVal);
+        // const percentVal = this.pwmDriver.getRgbValueInPercents(from); // (Math.round(from*100)/100);
+        this.pwmDriver.setColor(channel, from);
+        this.logger.debug(channel, from);
 
         if (from <= 0 || from < to) {
             this.resolve({from: from, to: to});

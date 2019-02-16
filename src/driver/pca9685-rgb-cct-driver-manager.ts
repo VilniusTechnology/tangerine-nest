@@ -28,8 +28,12 @@ export class Pca9685RgbCctDriverManager {
                 this.colors.blue.value = 3;
 
                 this.pwm = new PwmDriverEmulator(this.config, 7777, this.logger);
-                this.logger.info('Local (websockets) LED driver ready! ');
-                resolve(true);
+                this.pwm.onClientConnect()
+                    .then( (connected) => {
+                        this.logger.info(`Local (websockets) LED driver ready!`);
+                        this.logger.info(`First client IP: ${connected}`);
+                        resolve(true);
+                    });
             }
 
             if (this.config.driver_type == 'i2c') {

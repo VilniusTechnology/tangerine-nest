@@ -16,7 +16,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/madcatzx/projects/tangerine-nest
-ExecStart=/usr/bin/node /home/madcatzx/projects/tangerine-nest npm start
+ExecStart=/usr/local/bin/node /home/madcatzx/projects/tangerine-nest NODE_ENV=production npm start
 Restart=always
 
 User=madcatzx

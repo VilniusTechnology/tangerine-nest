@@ -16,8 +16,12 @@ class Pca9685RgbCctDriverManager {
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
                 this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
-                this.logger.info('Local (websockets) LED driver ready! ');
-                resolve(true);
+                this.pwm.onClientConnect()
+                    .then((connected) => {
+                    this.logger.info(`Local (websockets) LED driver ready!`);
+                    this.logger.info(`First client IP: ${connected}`);
+                    resolve(true);
+                });
             }
             if (this.config.driver_type == 'i2c') {
                 this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);

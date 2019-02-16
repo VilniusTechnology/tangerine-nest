@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class FaderAdvancedUp {
-    constructor(pwmDriver) {
+    constructor(pwmDriver, logger) {
         this.pwmDriver = pwmDriver;
+        this.logger = logger;
     }
     fadeUp(from, to, channel, timeout, step = 1) {
         return new Promise((resolve, reject) => {
@@ -29,9 +30,9 @@ class FaderAdvancedUp {
     }
     performFadeUp(from, to, channel, timeout, step, validStep) {
         // Will do actual light change.
-        const percentVal = (from / 100 / 3);
-        this.pwmDriver.setDutyCycle(channel, percentVal);
-        // console.log(channel, percentVal);
+        // const percentVal = this.pwmDriver.getRgbValueInPercents(from);
+        this.pwmDriver.setColor(channel, from);
+        this.logger.debug(channel, from);
         from = from + validStep;
         if (from > 255) {
             this.resolve({ from: from, to: to });

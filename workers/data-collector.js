@@ -7,9 +7,8 @@ const db = new sqlite3.Database('/home/madcatzx/projects/tangerine-nest/mandarin
 var log4js = require('log4js');
 
 setTimeout(function() {
-    logSensors();
+   logSensors();
 }, 1000 * 60 * 5);
-
 
 function logSensors() {
     var logger = log4js.getLogger();
@@ -23,7 +22,10 @@ function logSensors() {
         lightLvlSensor.init();
         const pr2 = lightLvlSensor.read();
     
-        Promise.all([pr1, pr2])
+        Promise.all([
+                pr1, 
+                pr2
+            ])
         .then(data => {
             console.log('Atmosphere temperature_C: ', data[0].temperature_C);
             console.log('Atmosphere humidity: ', data[0].humidity);

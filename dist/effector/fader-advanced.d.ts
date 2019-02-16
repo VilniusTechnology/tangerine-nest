@@ -1,11 +1,12 @@
-import { PwmDriverFacade } from 'tangerine-nest-local-light-driver';
+import { Pca9685RgbCctDriverManager } from '../driver/pca9685-rgb-cct-driver-manager';
 export declare class FaderAdvanced {
     private faderUp;
     private faderDown;
     private pwmDriver;
-    constructor(pwmDriver: PwmDriverFacade);
-    fadeUp(from: number, to: number, channel: number, timeout: number, step?: number): Promise<{}>;
-    fadeDown(from: number, to: number, channel: number, timeout: number, step?: number): Promise<{}>;
-    fullOn(channel: number): void;
-    fullOff(channel: number): void;
+    private logger;
+    constructor(pwmDriver: Pca9685RgbCctDriverManager, logger: any);
+    fadeUp(from: number, to: number, channel: string, timeout: number, step?: number): Promise<{}>;
+    fadeDown(from: number, to: number, channel: string, timeout: number, step?: number): Promise<{}>;
+    fullOn(channel: string): void;
+    fullOff(channel: string): void;
 }

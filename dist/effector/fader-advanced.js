@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fader_advanced_up_1 = require("./fader-advanced-up");
 const fader_advanced_down_1 = require("./fader-advanced-down");
 class FaderAdvanced {
-    constructor(pwmDriver) {
+    constructor(pwmDriver, logger) {
         this.pwmDriver = pwmDriver;
-        this.faderUp = new fader_advanced_up_1.FaderAdvancedUp(this.pwmDriver);
-        this.faderDown = new fader_advanced_down_1.FaderAdvancedDown(this.pwmDriver);
+        this.logger = logger;
+        this.faderUp = new fader_advanced_up_1.FaderAdvancedUp(this.pwmDriver, logger);
+        this.faderDown = new fader_advanced_down_1.FaderAdvancedDown(this.pwmDriver, logger);
     }
     fadeUp(from, to, channel, timeout, step = 1) {
         return new Promise((resolve, reject) => {
@@ -31,10 +32,10 @@ class FaderAdvanced {
         });
     }
     fullOn(channel) {
-        this.pwmDriver.setDutyCycle(channel, 1);
+        this.pwmDriver.setColor(channel, 1);
     }
     fullOff(channel) {
-        this.pwmDriver.setDutyCycle(channel, 0);
+        this.pwmDriver.setColor(channel, 0);
     }
 }
 exports.FaderAdvanced = FaderAdvanced;
