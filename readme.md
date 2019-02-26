@@ -31,9 +31,9 @@ Light intensity data
 
 1. Connect [hardware](docs/hardware.md).
 
-1. Prepare [rasberry Pi](docs/rasberry.md).
+2. Prepare [rasberry Pi](docs/rasberry.md).
 
-2. Install tangerine NEST
+3. Install tangerine NEST
 
 ```bash
 npm install
@@ -46,7 +46,7 @@ node server.js
 
 http://localhost:8081/?red=90&green=15&blue=150
 ```
-
+4. (Optional) Setup [client](https://github.com/VilniusTechnology/orange-home-automator-ui).
 
 ## Configuration
 
@@ -111,6 +111,6 @@ Each color has its correspondign pin connected to PCA9685 mapped.
 
 ## Launching an UI (Client app)
 
-Use [these](docs/client.md)instructions to launch UI.
+Use [these] (docs/client.md)instructions to launch UI.
 
 ## Running in emulated mode
