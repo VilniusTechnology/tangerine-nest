@@ -111,6 +111,6 @@ Each color has its correspondign pin connected to PCA9685 mapped.
 
 ## Launching an UI (Client app)
 
-Use [these] (docs/client.md)instructions to launch UI.
+Use [these](https://github.com/VilniusTechnology/orange-home-automator-ui) instructions to launch UI.
 
 ## Running in emulated mode
