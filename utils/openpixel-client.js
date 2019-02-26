@@ -1,6 +1,7 @@
-var ClientStream = require('openpixelcontrol-stream').OpcClientStream,
-    net = require('net');
+var ClientStream = require('openpixelcontrol-stream').OpcClientStream;
+var net = require('net');
 
+const config = require('../dist/server/config-loader');
 
 var opts = require('nomnom')
     .options({
@@ -28,7 +29,7 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     client.pipe(socket);
 
     var offset = 0;
-    const pixels = 5;
+    const pixels = config.neopixel.lenght;
     var data = new Uint32Array(pixels);
 
     const red = rgb2Int(255, 0, 0);

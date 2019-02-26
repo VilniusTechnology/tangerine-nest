@@ -2,6 +2,7 @@
 let path = require('path');
 let i2cBus = require('../../dist/i2c.mock.js');
 let os = require('os');
+
 // If working on raspberry-pi.
 if (os.arch() == 'arm') {
     let i2cBus = require('i2c-bus')
@@ -37,6 +38,26 @@ const config = {
         database: {
             path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
         }
+    },
+    bme280: {
+        i2cBusNo: 1,
+        i2cAddress: 0x76,
+        hardwareLoader: true,
+    },
+    lightLvl: {
+        address: 0x4A,
+        hardwareLoader: true,
+    },
+    sensorData: {
+        database: {
+            path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
+        }
+    },
+    settingsDb: {
+        path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
+    },
+    neopixel: {
+        lenght: 5,
     },
     activeEnv: process.env.NODE_ENV || 'development',
 };

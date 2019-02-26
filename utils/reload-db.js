@@ -4,6 +4,8 @@ var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
 
+const config = require('../dist/server/config-loader');
+
 const Confirm = require('prompt-confirm');
 const prompt = new Confirm('Are you sure that You want to reload DB? \n This would result in current data loss !!!');
 prompt.ask((answer) => {
@@ -13,7 +15,7 @@ prompt.ask((answer) => {
 });
 
 function performReload() {
-    const db = new sqlite3.Database('/home/madcatzx/projects/tangerine-nest/mandarinas-settings');
+    const db = new sqlite3.Database(config.config.settingsDb.path);
 
     let queryDrop = `DROP TABLE 'light_time_programs'`;
     db.run(queryDrop, {}, (e) => {
@@ -43,6 +45,26 @@ function performReload() {
             'temperature' text, 
             'humidity' text, 
             'pressure' text)`;
+        db.run(queryCreate, {}, (e) => {
+            if (e) {
+                logger.error(queryCreate, e);
+            } 
+        });
+    });
+
+
+    queryDrop = `DROP TABLE 'users'`;
+    db.run(queryDrop, {}, (e) => {
+        if (e) {
+            logger.error(queryDrop, e);   
+        } 
+    
+        const queryCreate = `CREATE TABLE 'users' (
+            'id' int, 
+            'timestamp' DATETIME DEFAULT CURRENT_TIMESTAMP, 
+            'name' text, 
+            'password' text, 
+            'email' text`;
         db.run(queryCreate, {}, (e) => {
             if (e) {
                 logger.error(queryCreate, e);

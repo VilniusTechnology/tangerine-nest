@@ -1,16 +1,18 @@
 import * as BME280 from 'bme280-sensor';
-import { resolve } from 'dns';
 
 export class Bme280Sensor {
 
     private bme280: BME280;
 
-    constructor(config, logger) {
-        const options = {
-            i2cBusNo   : 1, // defaults to 1
-            i2cAddress : 0x76, //BME280.BME280_DEFAULT_I2C_ADDRESS()
-        };
-        this.bme280 = new BME280(options);
+    constructor(config: any, logger) {
+        
+        if(config == null) {
+            config = {
+                i2cBusNo   : 1,
+                i2cAddress : BME280.BME280_DEFAULT_I2C_ADDRESS(),
+            };
+        }
+        this.bme280 = new BME280(config);
     }
 
     public init() {

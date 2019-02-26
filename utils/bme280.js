@@ -1,13 +1,10 @@
 const BME280 = require('bme280-sensor');
 
 // The BME280 constructor options are optional.
-// 
-const options = {
-  i2cBusNo   : 1, // defaults to 1
-  i2cAddress : 0x76
-};
+//
+const config = require('../dist/server/config-loader');
 
-const bme280 = new BME280(options);
+const bme280 = new BME280(config.config.bme280);
 
 // Read BME280 sensor data, repeat
 //

@@ -2,6 +2,7 @@ var ParseStream = require('openpixelcontrol-stream').OpcParseStream;
 var net = require('net');
 var ws281x = require('rpi-ws281x-native');
 
+const config = require('../dist/server/config-loader');
 console.log('Starting...')
 
 var server = net.createServer(function(conn) {

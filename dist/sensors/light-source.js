@@ -5,9 +5,8 @@ let i2cBus = require('../../dist/i2c.mock.js').openSync;
 let os = require('os');
 // If working on raspberry-pi.
 if (os.arch() == 'arm') {
-    i2cBus = require('i2c-bus');
+    let i2cBus = require('i2c-bus');
 }
-
 class LightSourceSensor {
     constructor() { }
     init() {
@@ -15,10 +14,8 @@ class LightSourceSensor {
             resolve(true);
         });
     }
-
     read() {
-        let i2c1 = i2cBus.openSync(1);
-
+        const i2c1 = i2cBus.openSync(1);
         return new Promise((resolve, reject) => {
             i2c1.writeByte(0x4A, 0x01, 0x0, () => {
                 i2c1.writeByte(0x4A, 0x02, 0x00, () => {

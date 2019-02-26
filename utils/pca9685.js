@@ -1,6 +1,6 @@
-// const i2c = require('i2c-bus');
 let i2cBus = require('../dist/i2c.mock.js');
 let os = require('os');
+
 // If working on raspberry-pi.
 if (os.arch() == 'arm') {
     let i2cBus = require('i2c-bus')
@@ -8,12 +8,10 @@ if (os.arch() == 'arm') {
 
 var Pca9685Driver = require("pca9685").Pca9685Driver;
  
-var options = {
-    i2c: i2cBus.openSync(1),
-    address: 0x60,
-    frequency: 50,
-    debug: true
-};
+const config = require('../dist/server/config-loader');
+
+var options = config.config.ledDriver.driver;
+
 pwm = new Pca9685Driver(options, function(err) {
     if (err) {
         console.error("Error initializing PCA9685");

@@ -3,11 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const BME280 = require("bme280-sensor");
 class Bme280Sensor {
     constructor(config, logger) {
-        const options = {
-            i2cBusNo: 1,
-            i2cAddress: 0x76,
-        };
-        this.bme280 = new BME280(options);
+        if (config == null) {
+            config = {
+                i2cBusNo: 1,
+                i2cAddress: BME280.BME280_DEFAULT_I2C_ADDRESS(),
+            };
+        }
+        this.bme280 = new BME280(config);
     }
     init() {
         return new Promise((resolve, reject) => {
