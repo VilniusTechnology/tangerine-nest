@@ -37,10 +37,10 @@ export class LightRegulator {
 
             let data = this.fader.pwmDriver.getState();
 
-            await this.fader.fadeColorUp(['coldWhite'], data.coldWhite.value, data.coldWhite.value + 3, 1);
-            await this.fader.fadeColorUp(['warmWhite'], data.warmWhite.value, data.warmWhite.value + 3, 1);
-            await this.fader.fadeColorUp(['red'], data.red.value, data.red.value + 10, 1);
-            await this.fader.fadeColorUp(['green'], data.green.value, data.green.value + 1, 1);
+            await this.fader.fadeUp(['coldWhite'], data.coldWhite.value, data.coldWhite.value + 3, 1);
+            await this.fader.fadeUp(['warmWhite'], data.warmWhite.value, data.warmWhite.value + 3, 1);
+            await this.fader.fadeUp(['red'], data.red.value, data.red.value + 10, 1);
+            await this.fader.fadeUp(['green'], data.green.value, data.green.value + 1, 1);
 
             i++;
         }
@@ -57,10 +57,10 @@ export class LightRegulator {
 
             let data = this.fader.pwmDriver.getState();
 
-            await this.fader.fadeColorDown(['coldWhite'], data.coldWhite.value, data.coldWhite.value - 5, 10);
-            await this.fader.fadeColorDown(['warmWhite'], data.warmWhite.value, data.warmWhite.value - 5, 10);
-            await this.fader.fadeColorDown(['red'], data.red.value, data.red.value - 10, 5);
-            await this.fader.fadeColorDown(['green'], data.green.value, data.green.value - 1, 1);
+            await this.fader.fadeDown(['coldWhite'], data.coldWhite.value, data.coldWhite.value - 5, 10);
+            await this.fader.fadeDown(['warmWhite'], data.warmWhite.value, data.warmWhite.value - 5, 10);
+            await this.fader.fadeDown(['red'], data.red.value, data.red.value - 10, 5);
+            await this.fader.fadeDown(['green'], data.green.value, data.green.value - 1, 1);
 
             i++;
         }

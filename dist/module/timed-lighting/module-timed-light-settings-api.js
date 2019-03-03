@@ -68,8 +68,8 @@ class TimedLightSettingsApi {
                     rows = [];
                 }
                 if (err) {
-                    this.logger.error(err);
-                    reject(err);
+                    this.logger.error(err.message);
+                    reject(err.message);
                 }
                 this.logger.debug('Will getPrograms: ', rows);
                 resolve(rows);
@@ -94,6 +94,7 @@ class TimedLightSettingsApi {
                 ];
                 this.db.run(`INSERT INTO ${TimedLightSettingsApi.tableName} (id, title, 'from', 'to', settings) VALUES(?,?,?,?,?)`, data, (err) => {
                     if (err) {
+                        this.logger.error(err.message);
                         reject(err.message);
                     }
                     resolve('Inserted');
@@ -143,7 +144,7 @@ class TimedLightSettingsApi {
                 rows = [];
             }
             if (err) {
-                this.logger.error(err);
+                this.logger.error(err.message);
             }
             res.json(rows);
         });

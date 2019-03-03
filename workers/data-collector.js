@@ -46,7 +46,7 @@ function logSensors() {
                 inputData, 
                 (err) => {
                     if (err) {
-                        logger.info(err)
+                        logger.info(err.message)
                     }
                     logger.info('Data was inserted')
                 }
@@ -54,7 +54,10 @@ function logSensors() {
     
             db.serialize(() => {
                 db.all("SELECT * FROM `home_data`", (err, rows) => {
-                    console.log(rows);
+                    if (err) {
+                        logger.info(err.message)
+                    }
+                    logger.debug(rows);
                 });
             });
         });

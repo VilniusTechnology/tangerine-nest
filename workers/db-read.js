@@ -6,11 +6,15 @@ const config = require('../dist/server/config-loader');
 
 const db = new sqlite3.Database(config.config.sensorData.database.path);
 
-var log4js = require('log4js');
+var logger = require('log4js');
+logger.level = config.config.logger.level;
 
 db.serialize(() => {
     db.all("SELECT * FROM `home_data`", (err, rows) => {
-        console.log(rows);
+        if (err) {
+            logger.info(err.message)
+        }
+        logger.debug(rows);    
     });
 });
 

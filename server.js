@@ -1,7 +1,7 @@
 // process.env.NODE_ENV = 'development';
 // process.env.NODE_ENV = 'production';
 
-const LedServer = require('./dist/server/led-server').LedServer;
+const TangerineNestServer = require('./dist/server/tangerine-nest-server').TangerineNestServer;
 
-let ledServer = new LedServer();
-ledServer.launch();
+let tangerineNestServer = new TangerineNestServer();
+tangerineNestServer.launch();

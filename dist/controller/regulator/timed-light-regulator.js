@@ -62,6 +62,10 @@ class TimedLightRegulator {
             const db = new sqlite3.Database(this.dbPath);
             db.serialize(() => {
                 db.all("SELECT * FROM light_time_programs", (err, rows) => {
+                    if (err) {
+                        this.logger.error(err.message);
+                        reject(err.message);
+                    }
                     resolve(rows);
                 });
             });

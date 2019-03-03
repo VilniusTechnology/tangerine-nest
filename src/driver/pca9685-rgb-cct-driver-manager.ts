@@ -23,9 +23,12 @@ export class Pca9685RgbCctDriverManager {
     public setup() {
         return new Promise( (resolve, reject) => {
             if (this.config.driver_type == 'local') {
+                this.logger.info('pwmManager will launch in local (emulated mode).'); 
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
+
+                this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
 
                 this.pwm = new PwmDriverEmulator(this.config, 7777, this.logger);
                 this.pwm.onClientConnect()
@@ -37,6 +40,7 @@ export class Pca9685RgbCctDriverManager {
             }
 
             if (this.config.driver_type == 'i2c') {
+                this.logger.info('pwmManager will launch in i2c.'); 
                 this.pwm = new PwmDriverPca9685(this.config.driver, this.logger);
                 this.pwm.init()
                 .then( (data: any) =>{

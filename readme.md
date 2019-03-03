@@ -109,6 +109,10 @@ contours:
 currently only main countour is supported.
 Each color has its correspondign pin connected to PCA9685 mapped.
 
+## Launch
+
+``node server.js``
+
 ## Launching an UI (Client app)
 
 Use [these](https://github.com/VilniusTechnology/orange-home-automator-ui) instructions to launch UI.

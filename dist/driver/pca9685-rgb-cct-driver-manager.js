@@ -12,9 +12,11 @@ class Pca9685RgbCctDriverManager {
     setup() {
         return new Promise((resolve, reject) => {
             if (this.config.driver_type == 'local') {
+                this.logger.info('pwmManager will launch in local (emulated mode).');
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
+                this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
                 this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
                 this.pwm.onClientConnect()
                     .then((connected) => {
@@ -24,6 +26,7 @@ class Pca9685RgbCctDriverManager {
                 });
             }
             if (this.config.driver_type == 'i2c') {
+                this.logger.info('pwmManager will launch in i2c.');
                 this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);
                 this.pwm.init()
                     .then((data) => {

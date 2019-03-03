@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fader_1 = require("../../effector/fader");
 const light_regulator_1 = require("../../controller/regulator/light-regulator");
 const timed_light_regulator_1 = require("../../controller/regulator/timed-light-regulator");
 const pca9685_rgb_cct_driver_manager_1 = require("../../driver/pca9685-rgb-cct-driver-manager");
 const _ = require("lodash");
 const light_source_1 = require("../../sensors/light-source");
+const fader_advanced_1 = require("../effector/effector/fader-advanced");
 class LedModule {
     constructor(config, logger) {
         this.pwmManager = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
@@ -16,12 +16,14 @@ class LedModule {
     }
     ;
     init() {
+        this.logger.info('Will init LED module!');
         return new Promise((resolve, reject) => {
             this.pwmManager.setup().then((response) => {
+                this.logger.debug('pwmManager is UP!');
                 this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
-                this.fader = new fader_1.Fader(this.pwmManager, this.logger);
+                this.fader = new fader_advanced_1.FaderAdvanced(this.pwmManager, this.logger);
                 this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
-                this.logger.info('LedModule initialized');
+                this.logger.info('LED Module fully initialized');
                 resolve(true);
             });
         });

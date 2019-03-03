@@ -4,7 +4,7 @@ export declare class TimedLightSettingsApi {
     private port;
     private hostname;
     private logger;
-    config: any;
+    private config;
     static readonly tableName: string;
     constructor(config: any, logger?: any);
     bootstrap(): void;

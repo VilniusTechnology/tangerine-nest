@@ -12,7 +12,7 @@ export class TimedLightSettingsApi {
     private port: number;
     private hostname: string;
     private logger: Logger;
-    config;
+    private config;
 
     static readonly tableName: string = 'light_time_programs'; 
     
@@ -92,9 +92,9 @@ export class TimedLightSettingsApi {
                 }
     
                 if (err) {
-                    this.logger.error(err);
-                    reject(err);
-                }
+                    this.logger.error(err.message);
+                    reject(err.message);
+                } 
     
                 this.logger.debug('Will getPrograms: ', rows);
                 resolve(rows);
@@ -126,8 +126,9 @@ export class TimedLightSettingsApi {
                     data, 
                     (err) => {
                         if (err) {
+                            this.logger.error(err.message);
                             reject(err.message);
-                        }
+                        } 
                         resolve('Inserted');
                     }
                 );
@@ -185,15 +186,14 @@ export class TimedLightSettingsApi {
             }
 
             if (err) {
-                this.logger.error(err);
+                this.logger.error(err.message);
             }
 
             res.json(rows);
         });
     }
 
-    // private removeProgram(req, res) {  
-
+    // private removeProgram(req, res) {
     //     const deleteQuery = `DELETE FROM ${TimedLightSettingsApi.tableName} WHERE id=?`;
     //     this.logger.debug(deleteQuery, req.body.id);
 

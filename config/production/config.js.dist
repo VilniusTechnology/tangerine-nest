@@ -1,27 +1,65 @@
+let path = require('path');
+let i2cBus = require('../../dist/i2c.mock.js');
+let os = require('os');
+
+// If working on raspberry-pi.
+if (os.arch() == 'arm') {
+    let i2cBus = require('i2c-bus')
+}
+
+require('dotenv').config({path: path.resolve(process.cwd(), 'config/production/.env')});
+
 const config = {
+    logger: {
+        level: 'debug',
+    },
     ledDriver : {
         driver_type: 'i2c',
         driver : {
-            i2c: i2cBus.openSync(0),
-            address: 0x40,
-            frequency: 4800,
+            i2c: i2cBus.openSync(1),
+            address: 0x60,
+            frequency: 50,
             debug: false,
         },
         contours : {
             main : {
-                red: 0,
-                green: 1,
-                blue: 2,
-                coldWhite: 3,
-                warmWhite: 4,
+                green: 0,
+                coldWhite: 1,
+
+                red: 4,
+                blue: 5,
+                warmWhite: 6,
             }
         },
+        hardwareLoader: true,
     },
     ledTimer: {
         database: {
-            path: '/Users/lukas.mikelionis/Projects/mandarin-nest/mandarinas-settings',
+            path: process.env.LED_TIMER_DB_PATH || '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+        },
+        hardwareLoader: true,
+    },
+    bme280: {
+        i2cBusNo: 1,
+        i2cAddress: 0x76,
+        hardwareLoader: true,
+    },
+    lightLvl: {
+        address: 0x4A,
+        hardwareLoader: true,
+    },
+    sensorData: {
+        database: {
+            path: '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
         }
     },
+    settingsDb: {
+        path: '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+    },
+    neopixel: {
+        lenght: 5,
+    },
+    activeEnv: process.env.NODE_ENV || 'production',
 };
 
 module.exports = config;

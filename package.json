@@ -19,11 +19,13 @@
   "author": "Lukas Mikelionis MadCatzx",
   "license": "ISC",
   "dependencies": {
+    "@types/sqlite3": "^3.1.4",
     "bme280-sensor": "^0.1.6",
     "delay": "^4.1.0",
     "demo-emoji-search": "^2.0.0",
     "dotenv": "^6.2.0",
     "dotenv-json": "^1.0.0",
+    "enquirer": "^2.3.0",
     "express": "^4.16.4",
     "i2c-bus": "^4.0.7",
     "lodash": "^4.17.11",
