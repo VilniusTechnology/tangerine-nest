@@ -7,7 +7,7 @@ export declare class TimedLightSettingsApi {
     private config;
     static readonly tableName: string;
     constructor(config: any, logger?: any);
-    bootstrap(): void;
+    init(): Promise<{}>;
     listen(): void;
     getRoutesForRegistration(): any;
     private getPrograms;

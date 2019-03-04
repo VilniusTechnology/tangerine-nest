@@ -111,7 +111,11 @@ Each color has its correspondign pin connected to PCA9685 mapped.
 
 ## Launch
 
-``node server.js``
+``NODE_ENV='production' node server.js``
+
+## Develop
+
+`` sh deploy-sync.sh `` will sync files with remote
 
 ## Launching an UI (Client app)
 

@@ -1,27 +1,28 @@
 import { LedModule } from '../module/led/led-module';
 import { Logger } from 'log4js';
+import { LedModuleManager } from '../module/led/led/led-module-manager';
 
 export class RequestProcessor {
 
     private wereLightsRevived: boolean = false;
-    private ledModule: LedModule;
+    private ledModuleManager: LedModuleManager;
     private logger: Logger;
     private timerOfLightAdaptor;
     
-    constructor(LedModule: LedModule, logger) {
-        this.ledModule = LedModule;
+    constructor(ledModuleManager: LedModuleManager, logger) {
+        this.ledModuleManager = ledModuleManager;
         this.logger = logger;
 
-        this.logger.log('info', 'RequestProcessor initialized');
+        this.logger.info('RequestProcessor initialized');
     };
 
     public getLedModule() {
-        return this.ledModule;
+        return this.ledModuleManager;
     }
 
     public resolveLedMode(query) {
         let ledModeObj = {
-            ledMode: Number(this.ledModule.getLedMode())
+            ledMode: Number(this.ledModuleManager.getLedMode())
         };
 
         return ledModeObj;
@@ -35,20 +36,20 @@ export class RequestProcessor {
         if (query.mode == LedModule.AUTO_MODE_CODE) {
             this.logger.log('info', '-------------  Auto mode -------------');
             
-            this.ledModule.clearTimersIntervals();
+            this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
-            this.ledModule.setMode(query.mode);
+            this.ledModuleManager.setMode(query.mode);
             
-            this.ledModule.switchAllLedsOff();
+            this.ledModuleManager.switchAllLedsOff();
             let colors = {
                 "coldWhite" : 2,
                 "warmWhite" : 2, 
             };
-            this.ledModule.setColours(colors);
+            this.ledModuleManager.setColours(colors);
             this.timerOfLightAdaptor = setInterval( () => {  
                 this.logger.log('info', 'Adapting Light');
-                this.ledModule.adaptLight();
+                this.ledModuleManager.adaptLight();
             }, 5700).unref();
 
         }
@@ -57,10 +58,10 @@ export class RequestProcessor {
         if (query.mode == LedModule.MANUAL_MODE_CODE) {
             this.logger.log('info', '---------- Manual mode  -------------');
             
-            this.ledModule.clearTimersIntervals();
+            this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
-            this.ledModule.setMode(query.mode);
+            this.ledModuleManager.setMode(query.mode);
 
             this.handleManualMode(query);
         }
@@ -69,10 +70,10 @@ export class RequestProcessor {
         if (query.mode == LedModule.TIMED_MODE_CODE) {
             this.logger.log('info', '---------- Timed mode  -------------');
             
-            this.ledModule.clearTimersIntervals();
+            this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
-            this.ledModule.setMode(query.mode);
+            this.ledModuleManager.setMode(query.mode);
     
             this.handleTimedMode(query);
         }
@@ -84,29 +85,29 @@ export class RequestProcessor {
 
     public handleTimedMode(query) {     
         let ledState = query.state;
-        this.ledModule.setTimedSettings();
+        this.ledModuleManager.setTimedSettings();
     }
 
     public handleManualMode(query) {     
         let ledState = query.state;
 
         // Turn light on.
-        if (ledState === '1' && this.ledModule.getState().ledState === 0) {
+        if (ledState === '1' && this.ledModuleManager.getState().ledState === 0) {
             this.logger .debug('!!! WILL REVIVE !!!');
-            this.ledModule.switchAllLedsOn();
+            this.ledModuleManager.switchAllLedsOn();
             this.wereLightsRevived = true;
         }
 
         // Set lights colours.
         if (ledState === '1' && this.wereLightsRevived === false) {
             this.logger.debug('WILL SET Colours ');
-            this.ledModule.setColours(query);
+            this.ledModuleManager.setColours(query);
         }
 
         // Turn light off.
         if (ledState === '0') {
             this.logger .debug('!!! WILL SWITCH OFF !!!');
-            this.ledModule.switchAllLedsOff();
+            this.ledModuleManager.switchAllLedsOff();
         }
 
         this.wereLightsRevived = false;
@@ -115,7 +116,7 @@ export class RequestProcessor {
     public returnState(query) {
         let ledModeObj = this.resolveLedMode(query);
         return Object.assign(
-            this.ledModule.getState(),
+            this.ledModuleManager.getState(),
             ledModeObj,
         );
     };

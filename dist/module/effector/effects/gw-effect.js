@@ -7,19 +7,22 @@ class GWEffect {
     }
     ;
     performEffect() {
-        this.GWfade().then(() => {
+        return new Promise((resolve, reject) => {
             this.GWfade().then(() => {
-                setTimeout(() => {
-                    this.blinkChain().then(() => {
-                        setTimeout(() => {
-                            this.blinkChain().then(() => {
+                this.GWfade().then(() => {
+                    setTimeout(() => {
+                        this.blinkChain().then(() => {
+                            setTimeout(() => {
                                 this.blinkChain().then(() => {
-                                    this.finalAction();
+                                    this.blinkChain().then(() => {
+                                        this.finalAction();
+                                        resolve(true);
+                                    });
                                 });
-                            });
-                        }, 300);
-                    });
-                }, 100);
+                            }, 300);
+                        });
+                    }, 100);
+                });
             });
         });
     }

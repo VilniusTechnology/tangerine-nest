@@ -1,4 +1,5 @@
 import { FaderAdvanced } from './../effector/fader-advanced';
+import { resolve } from 'path';
 
 export class GWEffect {
 
@@ -9,21 +10,27 @@ export class GWEffect {
     };
 
     performEffect() {
-        this.GWfade().then( () => {
+
+        return new Promise((resolve, reject) => {
+
             this.GWfade().then( () => {
-                setTimeout( () => {
-                    this.blinkChain().then( () => {
-                        setTimeout( () => {
-                            this.blinkChain().then( () => {
+                this.GWfade().then( () => {
+                    setTimeout( () => {
+                        this.blinkChain().then( () => {
+                            setTimeout( () => {
                                 this.blinkChain().then( () => {
-                                    this.finalAction();
-                                });
-                            }); 
-                        }, 300);
-                    });
-                }, 100);
-            });
-        });  
+                                    this.blinkChain().then( () => {
+                                        this.finalAction();
+                                        resolve(true);
+                                    });
+                                }); 
+                            }, 300);
+                        });
+                    }, 100);
+                });
+            });  
+
+        });
     }
     
     GWfade() {

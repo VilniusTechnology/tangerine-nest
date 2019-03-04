@@ -23,17 +23,18 @@ export class TimedLightSettingsApi {
         // let hostname = os.hostname();
         this.hostname = 'localhost';
         this.port = 3002;
-
-        // this.restapi.use((req, res, next) =>{
-        //     res.header("Access-Control-Allow-Origin", "*");
-        //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        //     next();
-        // });
     }
 
-    public bootstrap() {
+    init() {
+        this.logger.info('Will init TimedLightSettingsApi module!');
+
         this.logger.debug(`TimedLightSettingsApi will load DB on path: ${this.config.database.path}`);
-        this.db = new sqlite3.Database(this.config.database.path);
+        this.db = new sqlite3.Database(this.config.database.path, (err) => {
+            if (err) {
+                return this.logger.error(`TimedLightSettingsApi DB error on path: ${this.config.database.path}: `, err.message);
+            }
+            this.logger.debug('TimedLightSettingsApi loaded DB OK.');
+        });
         this.restapi = express();
 
         this.restapi.all('/get-light-time-programs', bodyParser.json(), (req, res) => {
@@ -68,13 +69,18 @@ export class TimedLightSettingsApi {
         this.restapi.all('/sensors/get-all', bodyParser.json(), (req, res) => {
             this.getAllSensorData(req, res);
         });
+
+        return new Promise((resolve, reject) => {
+            this.logger.debug('\x1b[42m \x1b[40m TimedLightSettingsApi was loaded. \x1b[0m');
+            resolve({'module': 'TimedLightSettingsApi', container: this});
+        })
     }
 
     public listen() {
         this.restapi.listen(this.port);
         this.restapi._router.stack.forEach(function(r){
             if (r.route && r.route.path){
-                console.log(`Submit GET or POST to http://${this.hostname}:${this.port}${r.route.path}`);
+                this.logger.debug(`Submit GET or POST to http://${this.hostname}:${this.port}${r.route.path}`);
             }
         });
     }
@@ -205,30 +211,5 @@ export class TimedLightSettingsApi {
 
     //         this.logger.info(`Row(s) deleted !`);
     //     });
-    // }
-
-    // private reset_db(req, res) {
-    //     this.logger.info('Will reset_db !!!');
-    //     try {
-    //         const queryDrop = `DROP TABLE ${TimedLightSettingsApi.tableName}`;
-    //         this.db.run(queryDrop, {}, (e) => {
-    //             this.logger.info(queryDrop, e);
-    //         });
-    //     } catch (e) {
-    //         this.logger.error(e);
-    //         res.json({e});
-    //     }
-
-    //     try {
-    //         const queryCreate = `CREATE TABLE ${TimedLightSettingsApi.tableName}(id int, title text, 'from' text, 'to' text, settings text)`;
-    //         this.db.run(queryCreate, {}, (e) => {
-    //             this.logger.info(queryCreate, e);
-    //         });
-    //     } catch (e) {
-    //         this.logger.error(e);
-    //         res.json({e});
-    //     }
-
-    //     this.getPrograms(req, res);
     // }
 }

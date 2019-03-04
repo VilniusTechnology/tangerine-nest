@@ -5,8 +5,10 @@ export class RoutesModuleBase {
     public ROUTE_PREFIX = '';
 
     public restapi;
+    public logger;
 
-    constructor() {
+    constructor(logger) {
+        this.logger = logger;
         this.restapi = express();
     }
 

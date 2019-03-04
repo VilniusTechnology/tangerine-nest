@@ -1,17 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const http_1 = require("http");
 const express = require("express");
-const url = require("url");
-const request_processor_1 = require("./request-processor");
-const led_module_1 = require("../module/led/led-module");
+const _ = require("lodash");
 const log4js_1 = require("log4js");
-const module_timed_light_settings_api_1 = require("../module/timed-lighting/module-timed-light-settings-api");
 const config_loader_1 = require("./config-loader");
-const auth_module_1 = require("../module/auth/auth-module");
-const effector_module_1 = require("../module/effector/effector-module");
+const module_1 = require("../module");
 class TangerineNestServer {
     constructor(configJson, port = null) {
+        this.modules = {};
         // configure('./filename.log');
         this.logger = log4js_1.getLogger();
         this.logger.level = 'debug';
@@ -19,8 +15,7 @@ class TangerineNestServer {
             this.config = config_loader_1.config;
             this.logger.info('Loading config from file in config directory depending on env.');
             this.logger.level = this.config.logger.level;
-            this.logger.info(`Current env is: ${this.config.activeEnv}`);
-            console.log(this.config);
+            this.logger.info(`\x1b[5m \x1b[47m \x1b[0m Current env is: ${this.config.activeEnv}`);
         }
         else {
             this.config = configJson;
@@ -28,81 +23,99 @@ class TangerineNestServer {
             this.logger.level = this.config.logger.level;
         }
         this.port = port || TangerineNestServer.PORT;
-        this.controller = new led_module_1.LedModule(this.config, this.logger);
-        this.requestHandler = new request_processor_1.RequestProcessor(this.controller, this.logger);
+        this.logger.debug('\x1b[5m \x1b[46m \x1b[0m TangerineNestServer was constructed..');
     }
-    createServer() {
-        this.server = http_1.createServer(this.app);
+    getModule(module) {
+        this.logger.debug(`getModule: ${module} - ${this.modules[module]}`);
+        return this.modules[module];
+    }
+    getContainer() {
+        return (() => this.modules);
     }
     resgisterModules() {
-        return false;
+        this.logger.debug('\x1b[42m \x1b[0m Will register modules.');
+        return new Promise((resolve, reject) => {
+            const rawModules = [
+                { id: 'LedModule', params: [this.config, this.logger, this.getContainer()] },
+                { id: 'AuthModule', params: [this.logger, this.getContainer()] },
+                { id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger] },
+                { id: 'EffectorModule', params: [this.logger, this.getContainer()] },
+            ];
+            // Instantiate modules objects.
+            let objects = [];
+            rawModules.forEach((objectDesc) => {
+                const object = new module_1.Modules[objectDesc.id](...objectDesc.params);
+                objects.push(object);
+            });
+            // Instantiate modules logic ".init()".
+            let promises = [];
+            objects.forEach((module) => {
+                const prom = module.init();
+                promises.push(prom);
+            });
+            // After all modules were instantiated.
+            Promise.all(promises).then((responses) => {
+                responses.forEach((module) => {
+                    // Push them to container.
+                    this.modules[module.module] = module.container;
+                });
+                this.logger.info('\x1b[41m \x1b[0m All modules were loaded.');
+                resolve(this.modules);
+            });
+        });
     }
     registerModulesRoutes() {
-        const settingApiModule = new module_timed_light_settings_api_1.TimedLightSettingsApi(this.config.ledTimer, this.logger);
-        settingApiModule.bootstrap();
-        settingApiModule.getRoutesForRegistration().forEach((layer) => {
-            if (layer.route !== undefined) {
-                this.logger.debug(`Will push route: ${layer.route.path}`);
-                this.app._router.stack.push(layer);
-            }
-        });
-        this.logger.debug('routes 4 TimedLightSettingsApi were registered.');
-        const authModule = new auth_module_1.AuthModule(this.logger);
-        authModule.getRoutesForRegistration().forEach((layer) => {
-            if (layer.route !== undefined) {
-                this.logger.debug(`Will push route: ${layer.route.path}`);
-                this.app._router.stack.push(layer);
-            }
-        });
-        this.logger.debug('routes 4 AuthModule were registered.');
-        const effectorModule = new effector_module_1.EffectorModule(this.logger, this.controller.getRgbCctLedDriver());
-        effectorModule.getRoutesForRegistration().forEach((layer) => {
-            if (layer.route !== undefined) {
-                this.logger.debug(`Will push route: ${layer.route.path}`);
-                this.app._router.stack.push(layer);
-            }
-        });
-    }
-    listen() {
-        this.logger.debug('Will register route modules.');
-        this.registerModulesRoutes();
-        this.app.get('/', (req, res) => {
-            this.logger.debug('Incomming: ', req.url);
-            this.logger.log('debug', 'Incomming.......');
-            let query = url.parse(req.url, true).query;
-            this.requestHandler.manageModes(query);
-            let ledStateObj = this.requestHandler.returnState(query);
-            this.requestHandler.prepareResponse(res, ledStateObj);
-        });
-        this.app.listen(this.port, () => {
-            this.logger.info(`server started at http://localhost:${this.port}`);
-            this.logger.info('Listening...');
+        return new Promise((resolve, reject) => {
+            this.logger.debug('\x1b[45m \x1b[0m Will register module routes.');
+            _.forEach(this.modules, (module, key) => {
+                // this.logger.error(module);
+                this.logger.debug(`\x1b[43m \x1b[0m Will register Routes 4 module ${key}.`);
+                module.getRoutesForRegistration().forEach((layer) => {
+                    if (layer.route !== undefined) {
+                        this.logger.debug(`\x1b[44m \x1b[0m  Will push route: ${layer.route.path}`);
+                        this.app._router.stack.push(layer);
+                    }
+                });
+                this.logger.debug(`\x1b[43m \x1b[0m Routes 4 module ${key} were registered.`);
+            });
+            resolve(true);
         });
     }
     launch() {
+        this.initWebServer();
         this.logger.debug('Will prepare for launch.');
-        this.controller.init().then(() => {
-            this.app = express();
-            this.createServer();
-            this.logger.debug('Server created.');
-            this.app.use((req, res, next) => {
-                res.header('Access-Control-Allow-Origin', '*');
-                res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-                res.setHeader('Access-Control-Allow-Credentials', 'false');
-                if ('OPTIONS' === req.method) {
-                    res.sendStatus(200);
-                }
-                else {
-                    // Pass to next layer of middleware.
-                    next();
+        this.resgisterModules().then(() => {
+            this.registerModulesRoutes().then(() => {
+                this.listen();
+                if (this.modules.LedModule !== undefined) {
+                    this.logger.info('Will start boot DEMO.');
+                    this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
+                    this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
                 }
             });
-            this.logger.debug('Will start listening');
-            this.listen();
-            this.logger.info('Will start boot DEMO.');
-            this.controller.getRgbCctLedDriver().setColor('green', 150);
-            this.controller.getRgbCctLedDriver().setColor('coldWhite', 5);
+        });
+    }
+    initWebServer() {
+        this.app = express();
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            res.setHeader('Access-Control-Allow-Credentials', 'false');
+            if ('OPTIONS' === req.method) {
+                res.sendStatus(200);
+            }
+            else {
+                // Pass to next layer of middleware.
+                next();
+            }
+        });
+        this.logger.debug('Server created.');
+    }
+    listen() {
+        this.app.listen(this.port, () => {
+            this.logger.info(`Server started at http://localhost:${this.port}`);
+            this.logger.info('Listening...');
         });
     }
 }

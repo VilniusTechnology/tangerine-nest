@@ -2,7 +2,7 @@ import { FaderAdvanced } from './../effector/fader-advanced';
 export declare class GWEffect {
     private faderAdvanced;
     constructor(fader: FaderAdvanced);
-    performEffect(): void;
+    performEffect(): Promise<{}>;
     GWfade(): Promise<{}>;
     blinkChain(): Promise<{}>;
     blinkSequence(): Promise<{}>;

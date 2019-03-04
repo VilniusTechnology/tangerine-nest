@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 class RoutesModuleBase {
-    constructor() {
+    constructor(logger) {
         this.ROUTE_PREFIX = '';
+        this.logger = logger;
         this.restapi = express();
     }
     getFullRoute(route) {

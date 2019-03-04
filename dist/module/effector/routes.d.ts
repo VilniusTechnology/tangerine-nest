@@ -1,12 +1,11 @@
-import { Pca9685RgbCctDriverManager } from './../../driver/pca9685-rgb-cct-driver-manager';
 import { RoutesModuleBase } from "../routes-module-base";
 import { Logger } from "log4js";
 export declare class Routes extends RoutesModuleBase {
-    static readonly ROUTE_PREFIX = "led/effects";
-    private logger;
+    readonly ROUTE_PREFIX = "led/effects";
+    logger: Logger;
     private fader;
-    private pwmManager;
+    private ledModule;
     private effectsManager;
-    constructor(logger: Logger, pwmManager: Pca9685RgbCctDriverManager);
+    constructor(logger: Logger, ledModule: any);
     routes(): void;
 }

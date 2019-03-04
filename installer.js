@@ -46,6 +46,8 @@ function moveOn() {
 }
 
 function install(data) {
+    // cp config/production/config.js.dist config/production/config.js
+    // Install DB's
     setupAutomatedProcesses();
 }
 

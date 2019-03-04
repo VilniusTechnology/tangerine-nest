@@ -11,7 +11,12 @@ class EffectsManager {
         this.gw.performEffect();
     }
     performGW() {
-        this.gw.performEffect();
+        return new Promise((resolve, reject) => {
+            this.gw.performEffect().then((resolution) => {
+                this.logger.warn('EFECT HAD FINISHED !!!');
+                resolve(resolution);
+            });
+        });
     }
 }
 exports.EffectsManager = EffectsManager;

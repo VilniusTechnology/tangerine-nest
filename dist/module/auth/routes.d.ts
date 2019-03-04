@@ -1,13 +1,11 @@
 import { Logger } from "log4js";
-export declare class Routes {
-    static readonly ROUTE_PREFIX = "auth";
+import { RoutesModuleBase } from '../routes-module-base';
+export declare class Routes extends RoutesModuleBase {
+    readonly ROUTE_PREFIX = "auth";
+    logger: Logger;
     private db;
-    private restapi;
-    private logger;
     private config;
     private authorizer;
     constructor(logger: Logger);
     routes(): void;
-    listRoutes(): any;
-    getFullRoute(route: string): string;
 }

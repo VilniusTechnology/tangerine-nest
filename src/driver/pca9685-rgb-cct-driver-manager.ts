@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import { Logger } from 'log4js';
-import { PwmDriverFacade, PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
-import { LedServerConfig } from '../server/model/config-model';
+import { PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
 import { PwmDriverPca9685 } from './pwm-driver-pca9685';
 import { Colors } from 'tangerine-nest-local-light-driver/dist/model/color/colors';
 
@@ -22,7 +21,11 @@ export class Pca9685RgbCctDriverManager {
 
     public setup() {
         return new Promise( (resolve, reject) => {
-            if (this.config.driver_type == 'local') {
+
+            const config = this.config.driver;
+            const driver_type = this.config.driver_type
+            
+            if (driver_type == 'local') {
                 this.logger.info('pwmManager will launch in local (emulated mode).'); 
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
@@ -30,7 +33,7 @@ export class Pca9685RgbCctDriverManager {
 
                 this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
 
-                this.pwm = new PwmDriverEmulator(this.config, 7777, this.logger);
+                this.pwm = new PwmDriverEmulator(config, 7777, this.logger);
                 this.pwm.onClientConnect()
                     .then( (connected) => {
                         this.logger.info(`Local (websockets) LED driver ready!`);
@@ -39,17 +42,19 @@ export class Pca9685RgbCctDriverManager {
                     });
             }
 
-            if (this.config.driver_type == 'i2c') {
+            if (driver_type == 'i2c') {
                 this.logger.info('pwmManager will launch in i2c.'); 
-                this.pwm = new PwmDriverPca9685(this.config.driver, this.logger);
+                this.pwm = new PwmDriverPca9685(config, this.logger);
                 this.pwm.init()
                 .then( (data: any) =>{
                     this.logger.info('PCA9685 PWM driver ready! ');
                     resolve(data);
+                    
                 })
                 .catch((data: any) =>{
                     this.logger.error(`PCA9685 PWM driver error! : ${data} `);
-                    resolve(data);
+                    this.logger.error(`Config : ${config} `);
+                    reject({deep: data, config: config});
                 });
             }
         });

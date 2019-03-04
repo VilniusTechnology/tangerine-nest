@@ -15,7 +15,6 @@ class PwmDriverPca9685 extends tangerine_nest_local_light_driver_1.PwmDriverFaca
             this.driver = new pca9685_1.default(this.config, (err) => {
                 if (err) {
                     this.logger.error(`Error initializing PCA9685: ${err}`, err);
-                    console.log(this.config, err);
                     // process.exit(-1);
                     reject({ err: err, config: this.config });
                 }

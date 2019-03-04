@@ -1,91 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const module_base_1 = require("./../module-base");
+const routes_1 = require("./routes");
 const light_regulator_1 = require("../../controller/regulator/light-regulator");
 const timed_light_regulator_1 = require("../../controller/regulator/timed-light-regulator");
 const pca9685_rgb_cct_driver_manager_1 = require("../../driver/pca9685-rgb-cct-driver-manager");
-const _ = require("lodash");
 const light_source_1 = require("../../sensors/light-source");
 const fader_advanced_1 = require("../effector/effector/fader-advanced");
-class LedModule {
-    constructor(config, logger) {
+const led_module_manager_1 = require("./led/led-module-manager");
+class LedModule extends module_base_1.ModuleBase {
+    constructor(config, logger, container) {
+        super(logger, container);
         this.pwmManager = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new light_source_1.LightSourceSensor();
+        this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
         this.timedRegulator = new timed_light_regulator_1.TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
+        this.ledModuleManager = new led_module_manager_1.LedModuleManager(config, logger);
     }
     ;
     init() {
-        this.logger.info('Will init LED module!');
+        this.logger.info('\x1b[41m \x1b[0m  Will init LED module!');
         return new Promise((resolve, reject) => {
             this.pwmManager.setup().then((response) => {
-                this.logger.debug('pwmManager is UP!');
+                this.logger.debug('\x1b[41m \x1b[0m PwmManager is UP!');
                 this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
                 this.fader = new fader_advanced_1.FaderAdvanced(this.pwmManager, this.logger);
-                this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
-                this.logger.info('LED Module fully initialized');
-                resolve(true);
+                this.logger.info('\x1b[41m \x1b[40m LedModule fully initialized \x1b[0m');
+                resolve({ 'module': 'LedModule', container: this });
+            }).catch((err) => {
+                this.logger.error(`PWM driver setup error!`, err);
             });
         });
     }
-    setColours(colors) {
-        _.forEach(colors, (val, key) => {
-            if (key !== 'state' && key !== 'mode' && key !== 'ledMode') {
-                this.pwmManager.setColor(key, val);
-            }
-        });
+    getFader() {
+        return this.fader;
     }
-    ;
-    switchAllLedsOff() {
-        this.colors = JSON.parse(JSON.stringify(this.pwmManager.getState()));
-        this.pwmManager.setColor('red', 0);
-        this.pwmManager.setColor('green', 0);
-        this.pwmManager.setColor('blue', 0);
-        this.pwmManager.setColor('warmWhite', 0);
-        this.pwmManager.setColor('coldWhite', 0);
-        this.pwmManager.setLedState(0);
+    getRoutesForRegistration() {
+        return new routes_1.Routes(this.logger, this.ledModuleManager).listRoutes();
     }
-    ;
-    switchAllLedsOn() {
-        this.pwmManager.setColor('red', this.colors.red.value);
-        this.pwmManager.setColor('green', this.colors.green.value);
-        this.pwmManager.setColor('blue', this.colors.blue.value);
-        this.pwmManager.setColor('warmWhite', this.colors.warmWhite.value);
-        this.pwmManager.setColor('coldWhite', this.colors.coldWhite.value);
-        this.pwmManager.setLedState(1);
-    }
-    ;
-    getState() {
-        return JSON.parse(JSON.stringify(this.pwmManager.getState()));
-    }
-    ;
-    clearTimersIntervals() {
-        this.timedRegulator.clearTimersIntervals();
-    }
-    ;
-    setTimedSettings() {
-        ``;
-        this.timedRegulator.checkIntervalsAndAjustLightSetting();
-    }
-    ;
-    async adaptLight() {
-        let result = await this.lightRegulator.adaptToConditions();
-    }
-    ;
-    async performBootDemo() {
-        var waitiner = await this.fader.performBootDemo();
-        return waitiner;
-    }
-    getLedMode() {
-        return this.pwmManager.getLedMode();
-    }
-    ;
-    setMode(mode) {
-        this.pwmManager.setLedMode(mode);
-    }
-    ;
     getRgbCctLedDriver() {
-        return this.pwmManager;
+        this.ledModuleManager.getRgbCctLedDriver();
     }
 }
 LedModule.AUTO_MODE_CODE = 0;

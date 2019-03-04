@@ -3,8 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const authorizer_1 = require("./authorizer");
 const bodyParser = require("body-parser");
 const express = require("express");
-class Routes {
+const routes_module_base_1 = require("../routes-module-base");
+class Routes extends routes_module_base_1.RoutesModuleBase {
     constructor(logger) {
+        super(logger);
+        this.ROUTE_PREFIX = 'auth';
         this.logger = logger;
         this.restapi = express();
         this.routes();
@@ -19,13 +22,6 @@ class Routes {
             });
         });
     }
-    listRoutes() {
-        return this.restapi._router.stack;
-    }
-    getFullRoute(route) {
-        return '/' + Routes.ROUTE_PREFIX + route;
-    }
 }
-Routes.ROUTE_PREFIX = 'auth';
 exports.Routes = Routes;
 //# sourceMappingURL=routes.js.map

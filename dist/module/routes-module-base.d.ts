@@ -1,7 +1,8 @@
 export declare class RoutesModuleBase {
     ROUTE_PREFIX: string;
     restapi: any;
-    constructor();
+    logger: any;
+    constructor(logger: any);
     getFullRoute(route: string): string;
     listRoutes(): any;
 }

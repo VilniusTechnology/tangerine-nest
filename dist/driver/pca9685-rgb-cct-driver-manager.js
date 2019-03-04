@@ -11,13 +11,15 @@ class Pca9685RgbCctDriverManager {
     }
     setup() {
         return new Promise((resolve, reject) => {
-            if (this.config.driver_type == 'local') {
+            const config = this.config.driver;
+            const driver_type = this.config.driver_type;
+            if (driver_type == 'local') {
                 this.logger.info('pwmManager will launch in local (emulated mode).');
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
                 this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
-                this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
+                this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(config, 7777, this.logger);
                 this.pwm.onClientConnect()
                     .then((connected) => {
                     this.logger.info(`Local (websockets) LED driver ready!`);
@@ -25,9 +27,9 @@ class Pca9685RgbCctDriverManager {
                     resolve(true);
                 });
             }
-            if (this.config.driver_type == 'i2c') {
+            if (driver_type == 'i2c') {
                 this.logger.info('pwmManager will launch in i2c.');
-                this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(this.config.driver, this.logger);
+                this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(config, this.logger);
                 this.pwm.init()
                     .then((data) => {
                     this.logger.info('PCA9685 PWM driver ready! ');
@@ -35,7 +37,8 @@ class Pca9685RgbCctDriverManager {
                 })
                     .catch((data) => {
                     this.logger.error(`PCA9685 PWM driver error! : ${data} `);
-                    resolve(data);
+                    this.logger.error(`Config : ${config} `);
+                    reject({ deep: data, config: config });
                 });
             }
         });

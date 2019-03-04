@@ -5,5 +5,5 @@ export declare class EffectsManager {
     private fader;
     constructor(fader: any, logger: Logger);
     performBootDemo(): void;
-    performGW(): void;
+    performGW(): Promise<{}>;
 }

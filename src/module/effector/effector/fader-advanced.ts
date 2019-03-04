@@ -1,6 +1,5 @@
 import { FaderAdvancedUp } from './fader-advanced-up';
 import { FaderAdvancedDown } from './fader-advanced-down';
-import { PwmDriverFacade } from 'tangerine-nest-local-light-driver';
 import { Pca9685RgbCctDriverManager } from '../../../driver/pca9685-rgb-cct-driver-manager';
 import { Logger } from 'log4js';
 

@@ -21,7 +21,6 @@ export class PwmDriverPca9685 extends PwmDriverFacade {
             this.driver = new Pca9685Driver(this.config, (err) => {
                 if (err) {
                     this.logger.error(`Error initializing PCA9685: ${err}`, err);
-                    console.log(this.config, err);
                     // process.exit(-1);
                     reject({err: err, config: this.config});
                 }

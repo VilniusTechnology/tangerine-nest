@@ -1,8 +1,9 @@
 import { Logger } from 'log4js';
-export declare class AuthModule {
-    private db;
+import { ModuleBase } from '../module-base';
+export declare class AuthModule extends ModuleBase {
     private config;
-    private logger;
-    constructor(logger: Logger);
+    logger: Logger;
+    constructor(logger: Logger, container: any);
+    init(): Promise<{}>;
     getRoutesForRegistration(): any;
 }

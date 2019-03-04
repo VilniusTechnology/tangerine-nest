@@ -1,24 +1,32 @@
 import { Logger } from 'log4js';
 import { Routes } from './routes';
-import { Pca9685RgbCctDriverManager } from '../../driver/pca9685-rgb-cct-driver-manager';
+import { FaderAdvanced } from './effector/fader-advanced';
+import { ModuleBase } from '../module-base';
 
 const config = require('../../../dist/server/config-loader');
 
-export class EffectorModule {
+export class EffectorModule extends ModuleBase {
 
-    private config;
-    private logger: Logger;
-    private pwmManager: Pca9685RgbCctDriverManager;
+    public config;
+    public logger: Logger;
 
-    constructor(logger: Logger, pwmManager: Pca9685RgbCctDriverManager) {
+    constructor(logger: Logger, container) {
+        super(logger, container);
+
         this.config = config.config;
         this.logger = logger;
-        this.pwmManager = pwmManager;
 
         this.logger.debug('EffectorModule was constructed.');
     }
 
+    init() {
+        return new Promise((resolve, reject) => {
+            this.logger.debug('\x1b[42m \x1b[40m EffectorModule was loaded. \x1b[0m');
+            resolve({'module': 'EffectorModule', container: this});
+        })
+    }
+    
     getRoutesForRegistration() {
-        return new Routes(this.logger, this.pwmManager).listRoutes();
+        return new Routes(this.logger, this.getModule('LedModule')).listRoutes();
     }
 };

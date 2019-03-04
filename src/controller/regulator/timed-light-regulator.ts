@@ -75,7 +75,11 @@ export class TimedLightRegulator {
         return new Promise((resolve, reject) => {
             this.logger.debug(`Will load DB for time intervals from: ${this.dbPath}`);
 
-            const db = new sqlite3.Database(this.dbPath);
+            const db = new sqlite3.Database(this.dbPath, (err) => {
+                if (err) {
+                    return this.logger.error('getTimeModesIntervals DB error: ', err.message);
+                }
+            });
             db.serialize(() => {
                 db.all("SELECT * FROM light_time_programs", (err, rows) => {
                     if (err) {

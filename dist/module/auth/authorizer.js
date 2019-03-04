@@ -5,7 +5,12 @@ const config = require('../../../dist/server/config-loader');
 class Authorizer {
     constructor(logger) {
         this.config = config.config;
-        this.db = new sqlite3.Database(config.config.settingsDb.path);
+        this.db = new sqlite3.Database(config.config.settingsDb.path, (err) => {
+            if (err) {
+                return this.logger.error(`Authorizer DB error on path: ${config.config.settingsDb.path}: `, err.message);
+            }
+            this.logger.debug('Authorizer loaded DB OK.');
+        });
         this.logger = logger;
     }
     authenticate(email, password) {
