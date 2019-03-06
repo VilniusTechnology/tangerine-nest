@@ -7,7 +7,7 @@ import * as bodyParser from "body-parser";
 
 export class Routes extends RoutesModuleBase {
 
-    public readonly ROUTE_PREFIX = '';
+    public readonly ROUTE_PREFIX = 'led';
     public logger: Logger;
     private requestProcessor: RequestProcessor;
 

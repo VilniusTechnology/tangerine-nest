@@ -18,14 +18,16 @@ class Pca9685RgbCctDriverManager {
                 this.colors.red.value = 1;
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
-                this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
-                this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(config, 7777, this.logger);
+                this.logger.warn('Further PWM driver Emulator configuration and bootstraping will commence after first client is connected !!!');
+                this.logger.warn('USE UI: Login go tu EMULATOR and emulator shouold start !!!');
+                this.pwm = new tangerine_nest_local_light_driver_1.PwmDriverEmulator(this.config, 7777, this.logger);
                 this.pwm.onClientConnect()
                     .then((connected) => {
                     this.logger.info(`Local (websockets) LED driver ready!`);
                     this.logger.info(`First client IP: ${connected}`);
-                    resolve(true);
                 });
+                // this.logger.error(0, this.pwm);
+                resolve(true);
             }
             if (driver_type == 'i2c') {
                 this.logger.info('pwmManager will launch in i2c.');
@@ -55,6 +57,7 @@ class Pca9685RgbCctDriverManager {
         let prepared_value = this.getRgbValueInPercents(value);
         let colourPin = this.config.contours.main[colorName];
         this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
+        // this.logger.error(1, this.pwm);
         this.pwm.setDutyCycle(colourPin, prepared_value);
         this.colors[colorName] = { 'value': value, 'vp': prepared_value };
     }
@@ -78,6 +81,10 @@ class Pca9685RgbCctDriverManager {
     ;
     getState() {
         return this.colors;
+    }
+    ;
+    getFullState() {
+        return { colors: this.colors, mode: this.getLedMode() };
     }
     ;
     getPwmDriver() {

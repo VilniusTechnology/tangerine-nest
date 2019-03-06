@@ -31,15 +31,17 @@ export class Pca9685RgbCctDriverManager {
                 this.colors.green.value = 2;
                 this.colors.blue.value = 3;
 
-                this.logger.info('Further configuration and bootstraping will commence after first client is connected !!!');
+                this.logger.warn('Further PWM driver Emulator configuration and bootstraping will commence after first client is connected !!!');
+                this.logger.warn('USE UI: Login go tu EMULATOR and emulator shouold start !!!');
 
-                this.pwm = new PwmDriverEmulator(config, 7777, this.logger);
+                this.pwm = new PwmDriverEmulator(this.config, 7777, this.logger);
                 this.pwm.onClientConnect()
                     .then( (connected) => {
                         this.logger.info(`Local (websockets) LED driver ready!`);
                         this.logger.info(`First client IP: ${connected}`);
-                        resolve(true);
                     });
+                // this.logger.error(0, this.pwm);
+                resolve(true);
             }
 
             if (driver_type == 'i2c') {
@@ -76,6 +78,8 @@ export class Pca9685RgbCctDriverManager {
 
         this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
 
+        // this.logger.error(1, this.pwm);
+
         this.pwm.setDutyCycle(colourPin, prepared_value);
 
         this.colors[colorName] = {'value': value, 'vp': prepared_value};
@@ -100,6 +104,10 @@ export class Pca9685RgbCctDriverManager {
 
     public getState(): Colors {
         return this.colors;
+    };
+
+    public getFullState() {
+        return {colors: this.colors, mode: this.getLedMode()};
     };
 
     public getPwmDriver() {

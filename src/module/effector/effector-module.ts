@@ -1,6 +1,5 @@
 import { Logger } from 'log4js';
 import { Routes } from './routes';
-import { FaderAdvanced } from './effector/fader-advanced';
 import { ModuleBase } from '../module-base';
 
 const config = require('../../../dist/server/config-loader');

@@ -2,7 +2,7 @@ import { LedModuleManager } from './led/led-module-manager';
 import { RoutesModuleBase } from "../routes-module-base";
 import { Logger } from "log4js";
 export declare class Routes extends RoutesModuleBase {
-    readonly ROUTE_PREFIX = "";
+    readonly ROUTE_PREFIX = "led";
     logger: Logger;
     private requestProcessor;
     constructor(logger: Logger, ledModuleManager: LedModuleManager);

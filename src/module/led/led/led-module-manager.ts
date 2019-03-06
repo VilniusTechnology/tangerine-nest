@@ -20,8 +20,8 @@ export class LedModuleManager {
     protected fader: FaderAdvanced;
     protected lightRegulator;
 
-    constructor(config: any, logger: Logger) {
-        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);      
+    constructor(config: any, logger: Logger, pwmManager: Pca9685RgbCctDriverManager) {
+        this.pwmManager = pwmManager;      
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();

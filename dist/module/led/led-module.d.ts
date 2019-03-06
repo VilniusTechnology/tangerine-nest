@@ -21,5 +21,5 @@ export declare class LedModule extends ModuleBase {
     init(): Promise<{}>;
     getFader(): FaderAdvanced;
     getRoutesForRegistration(): any;
-    getRgbCctLedDriver(): void;
+    getRgbCctLedDriver(): Pca9685RgbCctDriverManager;
 }

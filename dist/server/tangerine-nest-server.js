@@ -25,10 +25,6 @@ class TangerineNestServer {
         this.port = port || TangerineNestServer.PORT;
         this.logger.debug('\x1b[5m \x1b[46m \x1b[0m TangerineNestServer was constructed..');
     }
-    getModule(module) {
-        this.logger.debug(`getModule: ${module} - ${this.modules[module]}`);
-        return this.modules[module];
-    }
     getContainer() {
         return (() => this.modules);
     }
@@ -36,6 +32,7 @@ class TangerineNestServer {
         this.logger.debug('\x1b[42m \x1b[0m Will register modules.');
         return new Promise((resolve, reject) => {
             const rawModules = [
+                { id: 'SystemModule', params: [this.config, this.logger, this.getContainer()] },
                 { id: 'LedModule', params: [this.config, this.logger, this.getContainer()] },
                 { id: 'AuthModule', params: [this.logger, this.getContainer()] },
                 { id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger] },
@@ -86,12 +83,13 @@ class TangerineNestServer {
         this.logger.debug('Will prepare for launch.');
         this.resgisterModules().then(() => {
             this.registerModulesRoutes().then(() => {
-                this.listen();
-                if (this.modules.LedModule !== undefined) {
-                    this.logger.info('Will start boot DEMO.');
-                    this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
-                    this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
-                }
+                this.listen().then(() => {
+                    if (this.modules.LedModule !== undefined) {
+                        this.logger.info('Will start boot DEMO.');
+                        this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
+                        this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
+                    }
+                });
             });
         });
     }
@@ -113,9 +111,12 @@ class TangerineNestServer {
         this.logger.debug('Server created.');
     }
     listen() {
-        this.app.listen(this.port, () => {
-            this.logger.info(`Server started at http://localhost:${this.port}`);
-            this.logger.info('Listening...');
+        return new Promise((resolve, reject) => {
+            this.app.listen(this.port, () => {
+                this.logger.info(`Server started at http://localhost:${this.port}`);
+                this.logger.info('Listening...');
+                resolve(true);
+            });
         });
     }
 }

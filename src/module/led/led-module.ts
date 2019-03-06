@@ -36,7 +36,7 @@ export class LedModule extends ModuleBase {
         this.lightSource = new LightSourceSensor();
         this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
         this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger); 
-        this.ledModuleManager = new LedModuleManager(config, logger);      
+        this.ledModuleManager = new LedModuleManager(config, logger, this.pwmManager);      
     };
 
     init() {
@@ -67,7 +67,7 @@ export class LedModule extends ModuleBase {
     }
 
     getRgbCctLedDriver() {
-        this.ledModuleManager.getRgbCctLedDriver();
+        return this.ledModuleManager.getRgbCctLedDriver();
     }
     
 };

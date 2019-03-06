@@ -8,7 +8,6 @@ export declare class TangerineNestServer {
     config: any;
     modules: any;
     constructor(configJson: LedServerConfig, port?: number);
-    getModule(module: string): any;
     getContainer(): () => any;
     private resgisterModules;
     private registerModulesRoutes;

@@ -17,7 +17,7 @@ class LedModule extends module_base_1.ModuleBase {
         this.lightSource = new light_source_1.LightSourceSensor();
         this.lightRegulator = new light_regulator_1.LightRegulator(this.fader, this.lightSource);
         this.timedRegulator = new timed_light_regulator_1.TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
-        this.ledModuleManager = new led_module_manager_1.LedModuleManager(config, logger);
+        this.ledModuleManager = new led_module_manager_1.LedModuleManager(config, logger, this.pwmManager);
     }
     ;
     init() {
@@ -41,7 +41,7 @@ class LedModule extends module_base_1.ModuleBase {
         return new routes_1.Routes(this.logger, this.ledModuleManager).listRoutes();
     }
     getRgbCctLedDriver() {
-        this.ledModuleManager.getRgbCctLedDriver();
+        return this.ledModuleManager.getRgbCctLedDriver();
     }
 }
 LedModule.AUTO_MODE_CODE = 0;

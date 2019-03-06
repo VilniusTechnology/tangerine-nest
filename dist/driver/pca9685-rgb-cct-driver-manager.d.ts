@@ -15,6 +15,10 @@ export declare class Pca9685RgbCctDriverManager {
     setLedMode(mode: any): void;
     getLedMode(): any;
     getState(): Colors;
+    getFullState(): {
+        colors: Colors;
+        mode: any;
+    };
     getPwmDriver(): any;
     terminate(): void;
     getColors(): Colors;

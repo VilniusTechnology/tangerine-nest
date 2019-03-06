@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 class Routes extends routes_module_base_1.RoutesModuleBase {
     constructor(logger, ledModuleManager) {
         super(logger);
-        this.ROUTE_PREFIX = '';
+        this.ROUTE_PREFIX = 'led';
         this.logger = logger;
         this.requestProcessor = new request_processor_1.RequestProcessor(ledModuleManager, this.logger);
         this.routes();

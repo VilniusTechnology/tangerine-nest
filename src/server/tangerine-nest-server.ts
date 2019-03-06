@@ -37,11 +37,6 @@ export class TangerineNestServer {
         this.logger.debug('\x1b[5m \x1b[46m \x1b[0m TangerineNestServer was constructed..');
     }
 
-    public getModule(module: string) {
-        this.logger.debug(`getModule: ${module} - ${this.modules[module]}`);
-        return this.modules[module];
-    }
-
     public getContainer() {
        return (() => this.modules);
     }
@@ -51,6 +46,7 @@ export class TangerineNestServer {
 
         return new Promise((resolve, reject) => {
             const rawModules = [
+                {id: 'SystemModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
                 {id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger]},
@@ -104,27 +100,24 @@ export class TangerineNestServer {
     }
 
     public launch(): void {
-        
         this.initWebServer();
 
         this.logger.debug('Will prepare for launch.');
         
         this.resgisterModules().then(() => {
-            this.registerModulesRoutes().then( () => {
-                
-                this.listen();
-
-                if (this.modules.LedModule !== undefined) {
-                    this.logger.info('Will start boot DEMO.');
-                    this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
-                    this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
-                }
-
+            this.registerModulesRoutes().then( () => {   
+                this.listen().then(() => {
+                    if (this.modules.LedModule !== undefined) {
+                        this.logger.info('Will start boot DEMO.');
+                        this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
+                        this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
+                    }
+                });
             });
         });
     }
 
-    private initWebServer() {
+    private initWebServer(): void {
         this.app = express();
 
         this.app.use((req, res, next) => {
@@ -144,10 +137,13 @@ export class TangerineNestServer {
         this.logger.debug('Server created.');
     }
 
-    private listen(): void {
-        this.app.listen(this.port, () => {
-            this.logger.info( `Server started at http://localhost:${this.port}` );
-            this.logger.info('Listening...');
-        } );
+    private listen() {
+        return new Promise((resolve, reject) => {
+            this.app.listen(this.port, () => {
+                this.logger.info( `Server started at http://localhost:${this.port}` );
+                this.logger.info('Listening...');
+                resolve(true);
+            } );
+        })
     }
 }

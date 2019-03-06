@@ -32,8 +32,4 @@ export class Routes extends RoutesModuleBase{
             });
         });
     }
-
-    // listRoutes() {
-    //     return this.restapi._router.stack;
-    // }
 }

@@ -2,11 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 const timed_light_regulator_1 = require("../../../controller/regulator/timed-light-regulator");
-const pca9685_rgb_cct_driver_manager_1 = require("../../../driver/pca9685-rgb-cct-driver-manager");
 const light_source_1 = require("../../../sensors/light-source");
 class LedModuleManager {
-    constructor(config, logger) {
-        this.pwmManager = new pca9685_rgb_cct_driver_manager_1.Pca9685RgbCctDriverManager(config, logger);
+    constructor(config, logger, pwmManager) {
+        this.pwmManager = pwmManager;
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new light_source_1.LightSourceSensor();

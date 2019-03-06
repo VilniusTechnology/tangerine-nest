@@ -14,7 +14,7 @@ export declare class LedModuleManager {
     protected timedRegulator: TimedLightRegulator;
     protected fader: FaderAdvanced;
     protected lightRegulator: any;
-    constructor(config: any, logger: Logger);
+    constructor(config: any, logger: Logger, pwmManager: Pca9685RgbCctDriverManager);
     setColours(colors: any): void;
     switchAllLedsOff(): void;
     switchAllLedsOn(): void;

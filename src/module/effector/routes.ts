@@ -1,6 +1,5 @@
 import { EffectsManager } from './effector/effects-manager';
 import { RoutesModuleBase } from "../routes-module-base";
-
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { FaderAdvanced } from "./effector/fader-advanced";
