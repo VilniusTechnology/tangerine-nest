@@ -93,8 +93,8 @@ function setupDb() {
     const quiestion = new Confirm('Do You want to fill DB with DEMO data ?');
     quiestion.ask((answer) => {
         if (answer) {
-            moveOn();
-        } 
+            loadFixtures();
+        }
     });
 }
 

@@ -1,10 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 
-var log4js = require('log4js');
-var logger = log4js.getLogger();
-
 const config = require('../dist/server/config-loader');
 
+var log4js = require('log4js');
+var logger = log4js.getLogger();
 logger.level = config.config.logger.level;
 
 const Confirm = require('prompt-confirm');
@@ -16,7 +15,12 @@ prompt.ask((answer) => {
 });
 
 function performReload() {
-    const db = new sqlite3.Database(config.config.settingsDb.path);
+    const db = new sqlite3.Database(config.config.settingsDb.path, (err) => {
+        if (err) {
+            return logger.error(`RELOAD DB error on path: ${config.config.settingsDb.path}: `, err.message);
+        }
+        logger.debug('RELOAD loaded DB OK.');
+    })
 
     let queryDrop = `DROP TABLE IF EXISTS 'light_time_programs'`;
     db.run(queryDrop, {}, (e) => {

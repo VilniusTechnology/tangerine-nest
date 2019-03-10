@@ -30,7 +30,6 @@ class FaderAdvancedUp {
     }
     performFadeUp(from, to, channel, timeout, step, validStep) {
         // Will do actual light change.
-        // const percentVal = this.pwmDriver.getRgbValueInPercents(from);
         this.pwmDriver.setColor(channel, from);
         this.logger.debug(channel, from);
         from = from + validStep;

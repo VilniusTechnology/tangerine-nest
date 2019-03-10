@@ -67,6 +67,7 @@ export class TimedLightSettingsApi {
         }); 
         
         this.restapi.all('/sensors/get-all', bodyParser.json(), (req, res) => {
+            this.logger.debug('On route: /sensors/get-all');
             this.getAllSensorData(req, res);
         });
 
