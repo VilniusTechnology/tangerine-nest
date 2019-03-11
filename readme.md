@@ -122,3 +122,9 @@ Each color has its correspondign pin connected to PCA9685 mapped.
 Use [these](https://github.com/VilniusTechnology/orange-home-automator-ui) instructions to launch UI.
 
 ## Running in emulated mode
+
+
+# OPEN PIXEL
+
+``node utils/openpixel-client.js localhost``
+

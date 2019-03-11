@@ -29,7 +29,9 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     client.pipe(socket);
 
     var offset = 0;
-    const pixels = config.neopixel.lenght;
+    // const pixels = config.config.neopixel.led_count;
+    console.log('led_count: ', config.config.neopixel.led_count);
+    const pixels = 5;
     var data = new Uint32Array(pixels);
 
     const red = rgb2Int(255, 0, 0);
@@ -55,13 +57,13 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     let startCounter = 0;
 
     for (var i = 0; i < pixels; i++) {
-        data[i] = rgb2Int(0, 0, 0);
+        data[i] = rgb2Int(1, 0, 0);
     }
 
-    // console.log('Channel options: ');
-    // console.log(opts.channel);
-    // console.log('Will dispatch data: ');
-    // console.log(data);
+    console.log('Channel options: ');
+    console.log(opts.channel);
+    console.log('Will dispatch data: ');
+    console.log(data);
 
     client.setPixelColors(opts.channel, data);
 

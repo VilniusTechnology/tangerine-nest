@@ -10,6 +10,7 @@
 # sudo systemctl restart openpixel-server
 #
 # sudo journalctl -u openpixel-server
+# sudo journalctl --unit=openpixel-server | tail -n 300
 
 [Unit]
 Description=openpixel-server-description

@@ -57,7 +57,7 @@ const config = {
         path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
     },
     neopixel: {
-        lenght: 5,
+        led_count: 5,
     },
     activeEnv: process.env.NODE_ENV || 'development',
 };
