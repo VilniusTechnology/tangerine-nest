@@ -36,11 +36,16 @@ Light intensity data
 3. Install tangerine NEST
 
 ```bash
+
+ssh tangerine@tangerine.local
+
+cd /home/tangerine
+
+git clone git@github.com:VilniusTechnology/tangerine-nest.git && cd tangerine-nest
+
 npm install
 
-rm -rf dist/
-
-npm run build
+node install.js
 
 node server.js
 
@@ -122,9 +127,3 @@ Each color has its correspondign pin connected to PCA9685 mapped.
 Use [these](https://github.com/VilniusTechnology/orange-home-automator-ui) instructions to launch UI.
 
 ## Running in emulated mode
-
-
-# OPEN PIXEL
-
-``node utils/openpixel-client.js localhost``
-

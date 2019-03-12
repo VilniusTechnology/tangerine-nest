@@ -1,0 +1,13 @@
+{
+    "fixtures" :
+        [
+            {
+                "table": "table_mock",
+                "entries": [
+                    {
+                        "column" : "value"
+                    }
+                ]
+            }
+        ]
+}
