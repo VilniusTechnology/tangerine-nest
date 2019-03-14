@@ -1,4 +1,5 @@
 import { Logger } from "log4js";
+import { bcrypt } from "bcrypt";
 
 const sqlite3 = require('sqlite3').verbose();
 
@@ -23,12 +24,13 @@ export class Authorizer {
 
     authenticate(email: string, password: string) {
         return new Promise((resolve, reject) => {
+
             this.db.serialize(() => {
                 let query = `SELECT * 
                             FROM 'users' 
-                            WHERE email LIKE '${email}' AND password LIKE '${password}'
+                            WHERE email LIKE '${email}''
                             LIMIT 1`;
-                this.logger.debug(query);
+
                 this.db.all(
                     query, 
                     (err, rows) => {
@@ -36,7 +38,16 @@ export class Authorizer {
                             this.logger.error(err.message);
                             reject(err);
                         }
-                        resolve(rows);
+
+                        this.logger.error(rows[0]);
+                        
+                        bcrypt.compare(password, rows[0].password, (err, res) => {
+                            if(res) {
+                                resolve(rows);
+                            } else {
+                                reject(false);
+                            }
+                        });
                     }
                 );
             });

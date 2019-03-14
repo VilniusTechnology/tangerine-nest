@@ -4,8 +4,8 @@ export declare class DbReloader {
     config: any;
     db: any;
     constructor(logger: any, config: any);
-    performReload(): void;
-    createUser(username: string, email: string, pasword: string): void;
+    performReload(): Promise<{}>;
+    createUser(username: string, email: string, pasword: string): Promise<{}>;
     private setupLightPrograms;
     private setupHomeData;
     private setupUsers;
