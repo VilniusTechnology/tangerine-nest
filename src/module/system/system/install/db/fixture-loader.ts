@@ -7,16 +7,18 @@ const sqlite3 = require('sqlite3').verbose();
 
 export class FixtureLoader {
     public logger: Logger;
-    public config: any;
+    public dbPath: string;
     public db;
 
-    constructor(logger, config) {
-        this.config = config;
-        this.logger = logger;
+    constructor(logger: Logger, dbPath: string) {
+        this.dbPath = dbPath;
+        this.logger = logger;   
+    }
 
-        this.db = new sqlite3.Database(this.config.config.settingsDb.path, (err: Error) => {
+    public setup() {
+        this.db = new sqlite3.Database(this.dbPath, (err: Error) => {
             if (err) {
-                return this.logger.error(`FIXTURE LOADER DB error on path: ${this.config.config.settingsDb.path}: `, err.message);
+                return this.logger.error(`FIXTURE LOADER DB error on path: ${this.dbPath}: `, err.message);
             }
             this.logger.debug('FIXTURE LOADER loaded DB OK.');
         })

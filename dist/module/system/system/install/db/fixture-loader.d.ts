@@ -1,9 +1,10 @@
 import { Logger } from "log4js";
 export declare class FixtureLoader {
     logger: Logger;
-    config: any;
+    dbPath: string;
     db: any;
-    constructor(logger: any, config: any);
+    constructor(logger: Logger, dbPath: string);
+    setup(): void;
     loadFixture(path: string): void;
     private readFromFile;
     private buildPreparedColumnString;

@@ -5,9 +5,8 @@ export class ConfigCopy {
     public logger;
     public config;
 
-    constructor(logger, config) {
+    constructor(logger) {
         this.logger = logger;
-        this.config = config;
     }
 
 

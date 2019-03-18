@@ -1,9 +1,9 @@
 import { Logger } from "log4js";
 export declare class DbReloader {
     logger: Logger;
-    config: any;
+    dbPath: string;
     db: any;
-    constructor(logger: any, config: any);
+    constructor(logger: Logger, dbPath: string);
     performReload(): Promise<{}>;
     createUser(username: string, email: string, pasword: string): Promise<{}>;
     private setupLightPrograms;

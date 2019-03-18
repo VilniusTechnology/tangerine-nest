@@ -4,17 +4,17 @@ const log4js = require('log4js');
 const Confirm = require('prompt-confirm');
 const { prompt } = require('enquirer');
 
-const config = require('./dist/server/config-loader');
+
 const ConfigCopy = require('./dist/module/system/system/install/config-copy').ConfigCopy;
 const DbReloader = require('./dist/module/system/system/install/db/db-reloader').DbReloader;
 const FixtureLoader = require('./dist/module/system/system/install/db/fixture-loader').FixtureLoader;
 
 var logger = log4js.getLogger();
-logger.level = config.config.logger.level;
+logger.level = 'debug';
 
-loadFixtures();
+// loadFixtures('/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings');
 
-// startInstall();
+startInstall();
 
 function startInstall() {
     const questions = [
@@ -38,6 +38,13 @@ function startInstall() {
             message: 'What is your ADMIN password?',
             initial: null,
             validate: validate
+        },
+        {
+            type: 'input',
+            name: 'dbPath',
+            message: 'Enter path to Your database: ',
+            initial: process.cwd() + '/mandarinas-settings',
+            validate: validate
         }
     ];
     
@@ -49,14 +56,14 @@ function startInstall() {
 }
 
 function install(data) {
-    const cc = new ConfigCopy(logger, config);
+    const cc = new ConfigCopy(logger);
     cc.installConfigs();
 
     // Install DB's
     const quiestion = new Confirm('Are you sure that You want to install TANGERINE NEST applicatoin? \n This would result in current data loss if application was allready installed !!!');
     quiestion.ask((answer) => {
         if (answer) {
-            setupDb(data.username, data.email, data.password);
+            setupDb(data.username, data.email, data.password, data.dbPath);
         } 
     }); 
 
@@ -70,10 +77,10 @@ function setupAutomatedProcesses() {
     // Install OPENPIXEL.
 }
 
-function setupDb(username, email, pasword) {
+function setupDb(username, email, pasword, dbPath) {
     return new Promise((resolve, reject) => {
         // Reset DB.
-        const dbr = new DbReloader(logger, config);
+        const dbr = new DbReloader(logger, dbPath);
         dbr.performReload().then(() => {
             dbr.createUser(username, email, pasword);
 
@@ -81,16 +88,17 @@ function setupDb(username, email, pasword) {
             const quiestion = new Confirm('Do You want to fill DB with DEMO data ?');
             quiestion.ask((answer) => {
                 if (answer) {
-                    loadFixtures();
+                    loadFixtures(dbPath);
                 }
             });
         });
     });
 }
 
-function loadFixtures() {
+function loadFixtures(dbPath) {
     const pathToFixtures = `/fixtures/fixtures.json`;
-    const fl = new FixtureLoader(logger, config);
+    const fl = new FixtureLoader(logger, dbPath);
+    fl.setup();
     fl.loadFixture(pathToFixtures);
 }
 

@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const bcrypt = require("bcrypt-nodejs");
 const sqlite3 = require('sqlite3').verbose();
 class DbReloader {
-    constructor(logger, config) {
-        this.config = config;
+    constructor(logger, dbPath) {
+        this.dbPath = dbPath;
         this.logger = logger;
-        this.db = new sqlite3.Database(this.config.config.settingsDb.path, (err) => {
+        this.db = new sqlite3.Database(dbPath, (err) => {
             if (err) {
-                return this.logger.error(`RELOAD DB error on path: ${this.config.config.settingsDb.path}: `, err.message);
+                return this.logger.error(`RELOAD DB error on path: ${dbPath}: `, err.message);
             }
             this.logger.debug('RELOAD loaded DB OK.');
         });
@@ -23,11 +24,14 @@ class DbReloader {
                 setupHomeData
             ]).then((values) => {
                 resolve(true);
+            }).catch((error) => {
+                reject(false);
             });
         });
     }
     createUser(username, email, pasword) {
         return new Promise((resolve, reject) => {
+            let passwordHash = bcrypt.hashSync(pasword);
             const insertQuery = `
                 INSERT INTO 'users' (
                     timestamp,
@@ -42,7 +46,7 @@ class DbReloader {
                     datetime('now'),
                     '${username}',
                     '${email}',
-                    '${pasword}',
+                    '${passwordHash}',
                     'token-test',
                     datetime('now', '60 minutes')
                 )`;

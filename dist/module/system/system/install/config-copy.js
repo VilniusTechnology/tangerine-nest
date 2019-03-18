@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 class ConfigCopy {
-    constructor(logger, config) {
+    constructor(logger) {
         this.logger = logger;
-        this.config = config;
     }
     installConfigs() {
         const environments = [

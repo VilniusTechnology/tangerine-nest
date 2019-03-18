@@ -1,12 +1,9 @@
 import { Logger } from 'log4js';
 import { ModuleBase } from '../module-base';
-import { Authorizer } from './authorizer';
-export declare class AuthModule extends ModuleBase {
+export declare class OpenpixelModule extends ModuleBase {
     private config;
     logger: Logger;
-    private authorizer;
     constructor(logger: Logger, container: any);
     init(): Promise<{}>;
-    getAuthorizer(): Authorizer;
     getRoutesForRegistration(): any;
 }

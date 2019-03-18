@@ -15,7 +15,7 @@
                         "title" : "Interval 2",
                         "from" : "06:01",
                         "to" : "06:30",
-                        "settings" : "blue: 255"
+                        "settings" : "{\"red\":0,\"green\":0,\"blue\":0}"
                     }
                 ]
             }

@@ -1,20 +1,19 @@
 import { Logger } from "log4js";
-import { bcrypt } from "bcrypt";
-
+import * as bcrypt  from "bcrypt-nodejs";
 const sqlite3 = require('sqlite3').verbose();
 
 export class DbReloader {
     public logger: Logger;
-    public config: any;
+    public dbPath: string;
     public db;
 
-    constructor(logger, config) {
-        this.config = config;
+    constructor(logger: Logger, dbPath: string) {
+        this.dbPath = dbPath;
         this.logger = logger;
 
-        this.db = new sqlite3.Database(this.config.config.settingsDb.path, (err: Error) => {
+        this.db = new sqlite3.Database(dbPath, (err: Error) => {
             if (err) {
-                return this.logger.error(`RELOAD DB error on path: ${this.config.config.settingsDb.path}: `, err.message);
+                return this.logger.error(`RELOAD DB error on path: ${dbPath}: `, err.message);
             }
             this.logger.debug('RELOAD loaded DB OK.');
         })
@@ -32,6 +31,8 @@ export class DbReloader {
                 setupHomeData
             ]).then( (values) => {
                 resolve(true);
+            }).catch((error) => {
+                reject(false);
             });
         });
     }
@@ -39,34 +40,33 @@ export class DbReloader {
     public createUser(username: string, email: string, pasword: string) {
         return new Promise((resolve, reject) => {
 
-                bcrypt.hash(pasword, 'Lietuva', (error, passwordHash) => {
+            let passwordHash = bcrypt.hashSync(pasword);
 
-                    const insertQuery = `
-                        INSERT INTO 'users' (
-                            timestamp,
-                            name,
-                            email,
-                            password,
-                            token,
-                            token_expiration
-                        )
-                        VALUES
-                        (
-                            datetime('now'),
-                            '${username}',
-                            '${email}',
-                            '${passwordHash}',
-                            'token-test',
-                            datetime('now', '60 minutes')
-                        )`;
+            const insertQuery = `
+                INSERT INTO 'users' (
+                    timestamp,
+                    name,
+                    email,
+                    password,
+                    token,
+                    token_expiration
+                )
+                VALUES
+                (
+                    datetime('now'),
+                    '${username}',
+                    '${email}',
+                    '${passwordHash}',
+                    'token-test',
+                    datetime('now', '60 minutes')
+                )`;
 
-                    this.db.run(insertQuery, {}, (e: Error) => {
-                        if (e) {
-                            reject('Error while creating ADMIN user');
-                        } 
-        
-                        resolve(true);
-                    });
+                this.db.run(insertQuery, {}, (e: Error) => {
+                    if (e) {
+                        reject('Error while creating ADMIN user');
+                    } 
+    
+                    resolve(true);
                 });
         });
     }

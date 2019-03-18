@@ -4,5 +4,8 @@ export declare class JsonEffectFactory {
     constructor(config: any, logger: Logger);
     convert(json: string): string;
     transpile(object: any): any[];
+    private isEffectDataValid;
+    private validateColorName;
+    private isNumeric;
     buildEffect(effectData: any): any;
 }

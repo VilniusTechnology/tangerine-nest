@@ -4,12 +4,14 @@ const fs = require("fs");
 const _ = require("lodash");
 const sqlite3 = require('sqlite3').verbose();
 class FixtureLoader {
-    constructor(logger, config) {
-        this.config = config;
+    constructor(logger, dbPath) {
+        this.dbPath = dbPath;
         this.logger = logger;
-        this.db = new sqlite3.Database(this.config.config.settingsDb.path, (err) => {
+    }
+    setup() {
+        this.db = new sqlite3.Database(this.dbPath, (err) => {
             if (err) {
-                return this.logger.error(`FIXTURE LOADER DB error on path: ${this.config.config.settingsDb.path}: `, err.message);
+                return this.logger.error(`FIXTURE LOADER DB error on path: ${this.dbPath}: `, err.message);
             }
             this.logger.debug('FIXTURE LOADER loaded DB OK.');
         });
@@ -34,8 +36,6 @@ class FixtureLoader {
     buildPreparedColumnString(row) {
         let keyString = '(';
         _.forEach(row, (value, column) => {
-            // this.logger.error(column, value);
-            // keyString = keyString + column + ', ';
             keyString = keyString + "'" + column + "'" + ', ';
         });
         keyString = keyString.slice(0, -2);
@@ -53,11 +53,8 @@ class FixtureLoader {
     }
     insertEntry(table, tableName) {
         table.entries.forEach((row) => {
-            // this.logger.warn(tableName, row);
             const keyString = this.buildPreparedColumnString(row);
             const valueString = this.buildPreparedValueString(row);
-            // this.logger.error('keyString: ', keyString);
-            // this.logger.error('valueString: ', valueString);
             const insertQuery = `INSERT INTO '${tableName}' ${keyString} VALUES ${valueString}`;
             this.logger.debug(insertQuery);
             this.db.run(insertQuery, {}, (e) => {
@@ -66,11 +63,6 @@ class FixtureLoader {
                 }
             });
         });
-        // var stmt = this.db.prepare(`INSERT INTO ${tableName} () VALUES ()`);
-        //     for (var i = 0; i < 10; i++) {
-        //         stmt.run("Ipsum " + i);
-        // }
-        // stmt.finalize();
     }
 }
 exports.FixtureLoader = FixtureLoader;

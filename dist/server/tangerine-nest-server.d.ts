@@ -13,5 +13,14 @@ export declare class TangerineNestServer {
     private registerModulesRoutes;
     launch(): void;
     private initWebServer;
+    private registerMiddlewares;
+    /**
+     * Filters out CORS preflights from further operations.
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    private corsMiddleware;
     private listen;
 }

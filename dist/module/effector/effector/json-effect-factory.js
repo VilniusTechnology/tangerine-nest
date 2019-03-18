@@ -21,8 +21,45 @@ class JsonEffectFactory {
         });
         return effects;
     }
+    isEffectDataValid(effectData) {
+        if (!this.isNumeric(effectData.from)) {
+            return false;
+        }
+        if (!this.isNumeric(effectData.to)) {
+            return false;
+        }
+        if (!this.isNumeric(effectData.timeout)) {
+            return false;
+        }
+        if (!this.isNumeric(effectData.step)) {
+            return false;
+        }
+        if (!this.validateColorName(effectData.color)) {
+            return false;
+        }
+        return true;
+    }
+    validateColorName(color) {
+        const colors = [
+            'red',
+            'green',
+            'blue',
+            'coldWhite',
+            'warmWhite',
+        ];
+        if (colors.indexOf(color) != -1) {
+            return true;
+        }
+        return false;
+    }
+    isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
     buildEffect(effectData) {
         let effect = null;
+        if (!this.isEffectDataValid(effectData)) {
+            throw new Error('Effect data is invalid !!!');
+        }
         if (effectData.type == 'fadeUp') {
             effect = `
                     new FaderAdvancedUp(pwmManager, logger)

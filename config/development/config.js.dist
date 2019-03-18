@@ -14,6 +14,7 @@ const config = {
     logger: {
         level: 'debug',
     },
+    secure_api: true,
     ledDriver : {
         driver_type: 'local',
         driver : {

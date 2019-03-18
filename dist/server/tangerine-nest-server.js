@@ -5,6 +5,8 @@ const _ = require("lodash");
 const log4js_1 = require("log4js");
 const config_loader_1 = require("./config-loader");
 const module_1 = require("../module");
+const bodyParser = require("body-parser");
+const auth_mw = require('./../../dist/module/auth/auth-middleware');
 class TangerineNestServer {
     constructor(configJson, port = null) {
         this.modules = {};
@@ -65,7 +67,6 @@ class TangerineNestServer {
         return new Promise((resolve, reject) => {
             this.logger.debug('\x1b[45m \x1b[0m Will register module routes.');
             _.forEach(this.modules, (module, key) => {
-                // this.logger.error(module);
                 this.logger.debug(`\x1b[43m \x1b[0m Will register Routes 4 module ${key}.`);
                 module.getRoutesForRegistration().forEach((layer) => {
                     if (layer.route !== undefined) {
@@ -80,6 +81,7 @@ class TangerineNestServer {
     }
     launch() {
         this.initWebServer();
+        this.registerMiddlewares();
         this.logger.debug('Will prepare for launch.');
         this.resgisterModules().then(() => {
             this.registerModulesRoutes().then(() => {
@@ -95,20 +97,36 @@ class TangerineNestServer {
     }
     initWebServer() {
         this.app = express();
-        this.app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-            res.setHeader('Access-Control-Allow-Credentials', 'false');
-            if ('OPTIONS' === req.method) {
-                res.sendStatus(200);
-            }
-            else {
-                // Pass to next layer of middleware.
-                next();
-            }
-        });
         this.logger.debug('Server created.');
+    }
+    registerMiddlewares() {
+        this.app.use(this.corsMiddleware);
+        this.app.use(bodyParser.json());
+        if (this.config.secure_api) {
+            this.app.use(auth_mw(this.modules));
+            this.logger.warn('Registered AUTH Middleware !');
+        }
+        this.logger.debug('Middlewares were registered !');
+    }
+    /**
+     * Filters out CORS preflights from further operations.
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    corsMiddleware(req, res, next) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Auth-token,Auth-email,content-type');
+        res.setHeader('Access-Control-Allow-Credentials', 'false');
+        if ('OPTIONS' === req.method) {
+            res.sendStatus(200);
+        }
+        else {
+            // Pass to next layer of middleware.
+            next();
+        }
     }
     listen() {
         return new Promise((resolve, reject) => {

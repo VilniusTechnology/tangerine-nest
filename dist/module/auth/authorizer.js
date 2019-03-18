@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const bcrypt = require("bcrypt-nodejs");
+const jwt = require('jwt-simple');
 const sqlite3 = require('sqlite3').verbose();
 const config = require('../../../dist/server/config-loader');
 class Authorizer {
     constructor(logger) {
+        this.secret = 'xxx';
         this.config = config.config;
         this.db = new sqlite3.Database(config.config.settingsDb.path, (err) => {
             if (err) {
@@ -16,36 +19,95 @@ class Authorizer {
     authenticate(email, password) {
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
-                let query = `SELECT * 
+                let query = `SELECT id, email, name, password
                             FROM 'users' 
-                            WHERE email LIKE '${email}' AND password LIKE '${password}'
+                            WHERE email LIKE '${email}'
                             LIMIT 1`;
-                this.logger.debug(query);
                 this.db.all(query, (err, rows) => {
                     if (err) {
                         this.logger.error(err.message);
                         reject(err);
                     }
+                    bcrypt.compare(password, rows[0].password, (err, res) => {
+                        if (res) {
+                            this.setToken(email)
+                                .then((response) => {
+                                resolve({ id: rows[0].id, email: rows[0].email, name: rows[0].name, token: response });
+                            });
+                        }
+                        else {
+                            reject(false);
+                        }
+                    });
+                });
+            });
+        });
+    }
+    setToken(email) {
+        return new Promise((resolve, reject) => {
+            const token = this.generateToken();
+            let query = `UPDATE 'users' SET token = '${token}', token_expiration = datetime('now', '60 minutes') WHERE email LIKE '${email}'`;
+            this.db.run(query, {}, (e) => {
+                if (e) {
+                    let err = { query: query, message: e.message };
+                    this.logger.error(err);
+                    reject(err);
+                }
+                resolve(token);
+            });
+        });
+    }
+    authorize(email, hash) {
+        return new Promise((resolve, reject) => {
+            let queryS = `SELECT * FROM 'users'`;
+            this.db.all(queryS, (err, rows) => {
+                this.logger.error(0, rows);
+            });
+            let queryD = `SELECT * FROM 'users' WHERE token_expiration > datetime('now')`;
+            this.db.all(queryD, (err, rows) => {
+                this.logger.error(1, rows);
+            });
+            let query = `SELECT * FROM 'users' WHERE email LIKE '${email}' AND token LIKE '${hash}' AND token_expiration > datetime('now')`;
+            this.logger.warn(query);
+            this.db.all(query, (err, rows) => {
+                this.logger.error(2, rows);
+                // Some DB error.
+                if (err) {
+                    this.logger.error(err.message);
+                    reject(err);
+                }
+                // Not authorized.
+                if (rows.length == 0) {
+                    reject(false);
+                }
+                // this.logger.error(rows);
+                this.refreshToken(email, hash).then(() => {
                     resolve(rows);
                 });
             });
         });
     }
-    authorize(userId, hash) {
+    refreshToken(email, token) {
         return new Promise((resolve, reject) => {
-            let query = `SELECT * FROM 'users' WHERE id = '${userId}' AND token LIKE '${hash} AND token_expiration > datetime('now')'`;
-            this.logger.debug(query);
-            this.db.all(query, (err, rows) => {
-                if (err) {
-                    this.logger.error(err.message);
+            const token = this.generateToken();
+            let query = `UPDATE 'users' SET token_expiration = datetime('now', '+1 day') WHERE email LIKE '${email}' AND token LIKE '${token}'`;
+            this.logger.warn(query);
+            this.db.run(query, {}, (e) => {
+                if (e) {
+                    let err = { query: query, message: e.message };
+                    this.logger.error(err);
                     reject(err);
                 }
-                this.refreshToken(userId, hash);
-                resolve(rows);
+                resolve(true);
             });
         });
     }
-    refreshToken(userId, hash) {
+    generateToken() {
+        const token = jwt.encode({ secret: this.secret }, this.secret);
+        return token;
+    }
+    cleanupTokens() {
+        return false;
     }
 }
 exports.Authorizer = Authorizer;
