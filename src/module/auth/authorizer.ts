@@ -74,22 +74,9 @@ export class Authorizer {
     public authorize(email: any, hash: string) {
         return new Promise((resolve, reject) => {
 
-            let queryS = `SELECT * FROM 'users'`;
-            this.db.all(queryS, (err, rows) => {
-                this.logger.error(0, rows); 
-            });
-
-            let queryD = `SELECT * FROM 'users' WHERE token_expiration > datetime('now')`;
-            this.db.all(queryD, (err, rows) => {
-                this.logger.error(1, rows); 
-            });
-
             let query = `SELECT * FROM 'users' WHERE email LIKE '${email}' AND token LIKE '${hash}' AND token_expiration > datetime('now')`;
-            this.logger.warn(query); 
+
             this.db.all(query, (err, rows) => {
-
-                        this.logger.error(2, rows);
-
                         // Some DB error.
                         if (err) {
                             this.logger.error(err.message);
@@ -101,7 +88,6 @@ export class Authorizer {
                             reject(false);
                         }
 
-                        // this.logger.error(rows);
                         this.refreshToken(email, hash).then(() => {
                             resolve(rows);
                         });
@@ -113,8 +99,8 @@ export class Authorizer {
     private refreshToken(email: any, token: string) {
         return new Promise((resolve, reject) => {
             const token = this.generateToken();
-            let query = `UPDATE 'users' SET token_expiration = datetime('now', '+1 day') WHERE email LIKE '${email}' AND token LIKE '${token}'`;
-            this.logger.warn(query);
+            let query = `UPDATE 'users' SET token_expiration = datetime('now', '+60 minutes') WHERE email LIKE '${email}' AND token LIKE '${token}'`;
+
             this.db.run(query, {}, (e: Error) => {
                 if (e) {
                     let err = { query: query, message: e.message };

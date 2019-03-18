@@ -23,7 +23,7 @@ export class Routes extends RoutesModuleBase{
     }
 
     routes() {
-        this.restapi.all(this.getFullRoute('/'), bodyParser.json(), (req, res) => {
+        this.restapi.all('/', bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /');
 
             const cpu = new Cpu();
@@ -56,8 +56,13 @@ export class Routes extends RoutesModuleBase{
                 res.write(JSON.stringify(respJson));
                 res.end();
             });
+        });
 
-            
+        this.restapi.all('/healthcheck', bodyParser.json(), (req, res) => {
+            this.logger.debug('On route to: /healthcheck');
+
+            res.write('true');
+            res.end();
         });
     }
 }

@@ -21,7 +21,7 @@ export class Routes extends RoutesModuleBase{
     }
 
     routes() {
-        this.restapi.post(this.getFullRoute('/toggle'), bodyParser.json(), (req, res) => {
+        this.restapi.all(this.getFullRoute('/toggle'), bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /openpixel/launch');
         });
     }
