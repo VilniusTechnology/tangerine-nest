@@ -4,6 +4,5 @@ export declare class EffectorModule extends ModuleBase {
     config: any;
     logger: Logger;
     constructor(logger: Logger, container: any);
-    init(): Promise<{}>;
     getRoutesForRegistration(): any;
 }

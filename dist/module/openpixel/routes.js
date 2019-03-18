@@ -12,7 +12,7 @@ class Routes extends routes_module_base_1.RoutesModuleBase {
         this.routes();
     }
     routes() {
-        this.restapi.post(this.getFullRoute('/launch'), bodyParser.json(), (req, res) => {
+        this.restapi.post(this.getFullRoute('/toggle'), bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /openpixel/launch');
         });
     }

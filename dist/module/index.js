@@ -5,6 +5,7 @@ const led_module_1 = require("./led/led-module");
 const module_timed_light_settings_api_1 = require("./timed-lighting/module-timed-light-settings-api");
 const auth_module_1 = require("./auth/auth-module");
 const effector_module_1 = require("./effector/effector-module");
+const openpixel_module_1 = require("./openpixel/openpixel-module");
 var system_module_2 = require("./system/system-module");
 exports.SystemModule = system_module_2.SystemModule;
 var led_module_2 = require("./led/led-module");
@@ -15,11 +16,14 @@ var auth_module_2 = require("./auth/auth-module");
 exports.AuthModule = auth_module_2.AuthModule;
 var effector_module_2 = require("./effector/effector-module");
 exports.EffectorModule = effector_module_2.EffectorModule;
+var openpixel_module_2 = require("./openpixel/openpixel-module");
+exports.OpenpixelModule = openpixel_module_2.OpenpixelModule;
 exports.Modules = {
+    AuthModule: auth_module_1.AuthModule,
     LedModule: led_module_1.LedModule,
     TimedLightSettingsApi: module_timed_light_settings_api_1.TimedLightSettingsApi,
-    AuthModule: auth_module_1.AuthModule,
     EffectorModule: effector_module_1.EffectorModule,
     SystemModule: system_module_1.SystemModule,
+    OpenpixelModule: openpixel_module_1.OpenpixelModule,
 };
 //# sourceMappingURL=index.js.map

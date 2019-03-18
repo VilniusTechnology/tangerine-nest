@@ -39,6 +39,7 @@ class TangerineNestServer {
                 { id: 'AuthModule', params: [this.logger, this.getContainer()] },
                 { id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger] },
                 { id: 'EffectorModule', params: [this.logger, this.getContainer()] },
+                { id: 'OpenpixelModule', params: [this.logger, this.getContainer()] },
             ];
             // Instantiate modules objects.
             let objects = [];
@@ -103,7 +104,8 @@ class TangerineNestServer {
         this.app.use(this.corsMiddleware);
         this.app.use(bodyParser.json());
         if (this.config.secure_api) {
-            this.app.use(auth_mw(this.modules));
+            this.logger.error('Injecting to auth_mw', this.modules);
+            this.app.use(auth_mw(this.getContainer()));
             this.logger.warn('Registered AUTH Middleware !');
         }
         this.logger.debug('Middlewares were registered !');

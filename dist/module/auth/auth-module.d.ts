@@ -6,7 +6,6 @@ export declare class AuthModule extends ModuleBase {
     logger: Logger;
     private authorizer;
     constructor(logger: Logger, container: any);
-    init(): Promise<{}>;
     getAuthorizer(): Authorizer;
     getRoutesForRegistration(): any;
 }

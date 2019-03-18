@@ -5,6 +5,5 @@ export declare class SystemModule extends ModuleBase {
     logger: Logger;
     container: any;
     constructor(config: any, logger: Logger, container: any);
-    init(): Promise<{}>;
     getRoutesForRegistration(): any;
 }

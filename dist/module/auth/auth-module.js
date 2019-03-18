@@ -12,14 +12,6 @@ class AuthModule extends module_base_1.ModuleBase {
         this.logger.debug('AuthModule was constructed.');
         this.authorizer = new authorizer_1.Authorizer(this.logger);
     }
-    init() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                this.logger.debug('\x1b[42m \x1b[40m AuthModule was loaded. \x1b[0m');
-                resolve({ 'module': 'AuthModule', container: this });
-            }, 1);
-        });
-    }
     getAuthorizer() {
         return this.authorizer;
     }

@@ -20,15 +20,6 @@ export class AuthModule extends ModuleBase {
         this.authorizer = new Authorizer(this.logger)
     }
 
-    public init() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                this.logger.debug('\x1b[42m \x1b[40m AuthModule was loaded. \x1b[0m');
-                resolve({'module': 'AuthModule', container: this});
-            }, 1); 
-        })
-    }
-
     public getAuthorizer() {
         return this.authorizer;
     }
