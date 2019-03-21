@@ -47,7 +47,7 @@
     "rxjs": "^6.3.3",
     "socket.io": "^2.2.0",
     "sqlite3": "^4.0.6",
-    "tangerine-nest-local-light-driver": "^1.2.19",
+    "tangerine-nest-local-light-driver": "^1.0.0",
     "ts-loader": "^5.3.1",
     "url": "^0.11.0",
     "webpack-permissions-plugin": "^1.0.0"
