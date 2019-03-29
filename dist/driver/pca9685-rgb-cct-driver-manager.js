@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const colors_1 = require("./model/colors");
 const tangerine_nest_local_light_driver_1 = require("tangerine-nest-local-light-driver");
 const pwm_driver_pca9685_1 = require("./pwm-driver-pca9685");
-const colors_1 = require("tangerine-nest-local-light-driver/dist/model/color/colors");
 class Pca9685RgbCctDriverManager {
     constructor(config, logger) {
         this.colors = new colors_1.Colors();
@@ -30,7 +30,8 @@ class Pca9685RgbCctDriverManager {
                 resolve(true);
             }
             if (driver_type == 'i2c') {
-                this.logger.info('pwmManager will launch in i2c.');
+                this.logger.info('pwmManager will launch in i2c.', config);
+                console.log(config);
                 this.pwm = new pwm_driver_pca9685_1.PwmDriverPca9685(config, this.logger);
                 this.pwm.init()
                     .then((data) => {

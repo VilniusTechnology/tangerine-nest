@@ -1,5 +1,5 @@
+import { Colors } from './model/colors';
 import { Logger } from 'log4js';
-import { Colors } from 'tangerine-nest-local-light-driver/dist/model/color/colors';
 export declare class Pca9685RgbCctDriverManager {
     private logger;
     private config;
