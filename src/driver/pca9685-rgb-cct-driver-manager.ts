@@ -44,6 +44,8 @@ export class Pca9685RgbCctDriverManager {
                 resolve(true);
             }
 
+            console.log(config);
+
             if (driver_type == 'i2c') {
                 this.logger.info('pwmManager will launch in i2c.'); 
                 this.pwm = new PwmDriverPca9685(config, this.logger);
@@ -54,8 +56,8 @@ export class Pca9685RgbCctDriverManager {
                     
                 })
                 .catch((data: any) =>{
-                    this.logger.error(`PCA9685 PWM driver error! : ${data} `);
-                    this.logger.error(`Config : ${config} `);
+                    this.logger.error(`PCA9685 PWM driver error 001! : ${data} `);
+                    this.logger.error(config);
                     reject({deep: data, config: config});
                 });
             }

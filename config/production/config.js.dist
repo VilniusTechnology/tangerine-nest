@@ -1,10 +1,12 @@
 let path = require('path');
 let i2cBus = require('../../dist/i2c.mock.js');
 let os = require('os');
+let obs = null;
 
 // If working on raspberry-pi.
 if (os.arch() == 'arm') {
-    let i2cBus = require('i2c-bus')
+    i2cBus = require('i2c-bus');
+    obs = i2cBus.openSync(1);
 }
 
 require('dotenv').config({path: path.resolve(process.cwd(), 'config/production/.env')});
@@ -16,7 +18,7 @@ const config = {
     ledDriver : {
         driver_type: 'i2c',
         driver : {
-            i2c: i2cBus.openSync(1),
+            i2c: obs,
             address: 0x60,
             frequency: 50,
             debug: false,
@@ -35,7 +37,7 @@ const config = {
     },
     ledTimer: {
         database: {
-            path: process.env.LED_TIMER_DB_PATH || '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+            path: process.env.LED_TIMER_DB_PATH || '/home/tangerine/tangerine-nest/mandarinas-settings',
         },
         hardwareLoader: true,
     },
@@ -50,11 +52,11 @@ const config = {
     },
     sensorData: {
         database: {
-            path: '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+            path: '/home/tangerine/tangerine-nest/mandarinas-settings',
         }
     },
     settingsDb: {
-        path: '/home/madcatzx/projects/tangerine-nest/mandarinas-settings',
+        path: '/home/tangerine/tangerine-nest/mandarinas-settings',
     },
     neopixel: {
         lenght: 5,

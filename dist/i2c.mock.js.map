@@ -1,1 +1,0 @@
-{"version":3,"file":"i2c.mock.js","sourceRoot":"","sources":["../src/i2c.mock.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,MAAM,QAAQ,GAAG,CAAC,SAAS,EAAE,OAAO,EAAE,EAAE;IACpC,2BAA2B;AAC/B,CAAC,CAAC;AACF,MAAM,CAAC,OAAO,CAAC,QAAQ,GAAG,QAAQ,CAAC"}

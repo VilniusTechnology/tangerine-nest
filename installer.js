@@ -8,7 +8,7 @@ const config = require('./dist/server/config-loader');
 logger.level = config.config.logger.level;
 
 const { prompt } = require('enquirer');
-const { linuxUser } = require('linux-user');
+const linuxUser = require('linux-user');
 
 const Confirm = require('prompt-confirm');
 const quiestion = new Confirm('Are you sure that You want to install TANGERINE NEST applicatoin? \n This would result in current data loss if application was allready installed !!!');
@@ -54,6 +54,8 @@ function moveOn() {
 function install(data) {
 
     const password = 'pwd';
+
+    console.log(linuxUser);
 
     // Create "tangerinn" user.
     linuxUser.addUser('tangerinn', function (err, user) {

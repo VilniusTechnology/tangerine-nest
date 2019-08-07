@@ -1,9 +1,10 @@
-# Logs
-
 config/production/config.js
 
 .idea/
 
+dist/
+
+# Logs
 logs
 *.log
 npm-debug.log*

@@ -30,7 +30,8 @@ export class RequestProcessor {
 
     public manageModes(query) {
 
-        this.logger.log('debug', 'Will manage modes');
+        this.logger.log('debug', 'Will manage modes', query);
+        // this.logger.log('error', 'LedModule.AUTO_MODE_CODE: ', LedModule.AUTO_MODE_CODE);
 
         // AUTO mode.
         if (query.mode == LedModule.AUTO_MODE_CODE) {
@@ -106,7 +107,7 @@ export class RequestProcessor {
 
         // Turn light off.
         if (ledState === '0') {
-            this.logger .debug('!!! WILL SWITCH OFF !!!');
+            this.logger.debug('!!! WILL SWITCH OFF !!!');
             this.ledModuleManager.switchAllLedsOff();
         }
 
