@@ -1,8 +1,9 @@
+import { Colors } from './model/colors';
 import * as _ from 'lodash';
 import { Logger } from 'log4js';
 import { PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
 import { PwmDriverPca9685 } from './pwm-driver-pca9685';
-import { Colors } from 'tangerine-nest-local-light-driver/dist/model/color/colors';
+
 
 export class Pca9685RgbCctDriverManager {
     private logger: Logger;
@@ -47,7 +48,8 @@ export class Pca9685RgbCctDriverManager {
             console.log(config);
 
             if (driver_type == 'i2c') {
-                this.logger.info('pwmManager will launch in i2c.'); 
+                this.logger.info('pwmManager will launch in i2c.', config); 
+                console.log(config);
                 this.pwm = new PwmDriverPca9685(config, this.logger);
                 this.pwm.init()
                 .then( (data: any) =>{

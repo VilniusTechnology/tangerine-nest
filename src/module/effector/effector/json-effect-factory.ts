@@ -29,8 +29,56 @@ export class JsonEffectFactory {
         return effects;
     }
 
+    private isEffectDataValid(effectData: any) {  
+        if(!this.isNumeric(effectData.from)) {
+            return false;
+        }
+
+        if(!this.isNumeric(effectData.to)) {
+            return false;
+        }
+
+        if(!this.isNumeric(effectData.timeout)) {
+            return false;
+        }
+
+        if(!this.isNumeric(effectData.step)) {
+            return false;
+        }
+
+        if(!this.validateColorName(effectData.color)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private validateColorName(color: string) {
+        const colors = [
+            'red',
+            'green',
+            'blue',
+            'coldWhite',
+            'warmWhite',
+        ];
+
+        if (colors.indexOf(color) != -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private isNumeric(n: any) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
     public buildEffect(effectData: any) {
         let effect = null;
+
+        if(!this.isEffectDataValid(effectData)) {
+            throw new Error('Effect data is invalid !!!'); 
+        }
 
         if (effectData.type == 'fadeUp') {
             effect = `

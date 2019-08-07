@@ -30,8 +30,7 @@ var socket = net.createConnection(opts.port, opts.host, function() {
 
     var offset = 0;
     // const pixels = config.config.neopixel.led_count;
-    console.log('led_count: ', config.config.neopixel.led_count);
-    const pixels = 5;
+    const pixels = 100;
     var data = new Uint32Array(pixels);
 
     const red = rgb2Int(255, 0, 0);
@@ -57,58 +56,57 @@ var socket = net.createConnection(opts.port, opts.host, function() {
     let startCounter = 0;
 
     for (var i = 0; i < pixels; i++) {
-        data[i] = rgb2Int(1, 0, 0);
+        data[i] = rgb2Int(0, 0, 0);
     }
 
     console.log('Channel options: ');
     console.log(opts.channel);
     console.log('Will dispatch data: ');
     console.log(data);
+    console.log('led_count: ', pixels);
 
     client.setPixelColors(opts.channel, data);
 
+    /**
+     * Walker.
+     */
     // setInterval(function () {
     //     console.log(startCounter);
     //     a = startCounter;
     //     for (var i = 0; i < pixels; i++) {
     //         data[i] = colors[a];
-    //         a = closedCounter(a, 7);
+    //         a = closedCounter(a, 6);
     //     }
-    //     startCounter = closedCounter(startCounter);
-
+    //     console.log(data);
+    //     startCounter = closedCounter(startCounter, pixels);
+    //     console.log(' --- --- --- --- --- --- --- --- ');
     //     client.setPixelColors(opts.channel, data);
-    // }, 1000);
+    // }, 500);
 
+    /**
+     * Fading raindbow.
+     */
     setInterval(function () {
         for (var i = 0; i < pixels; i++) {
             data[a] = colorwheel((offset + i) % 256);
             offset = (offset + 1) % 256;
-            a = closedCounter(a);
-            console.log(a);
+            a = closedCounter(a, pixels);
+            // console.log(a);
         }
-        console.log('--- --- ---');
+        // console.log('--- --- ---');
 
         client.setPixelColors(opts.channel, data);
         
-    }, 100);
-    
-
-    // setInterval(function () {
-    //     for (var i = 0; i < pixels; i++) {
-    //         // data[i] = colorwheel((offset + i) % 256);
-    //         data[i] = rgb2Int(255, 0, 0);
-    //     }
-
-    //     client.setPixelColors(opts.channel, data);
-    //     offset = (offset + 1) % 256;
-    // }, 100);
+    }, 200);
 });
 
-function closedCounter(i, limit = 5) {
+function closedCounter(i, limit) {
     i++;
     if (i >= limit) {
         return 0;
     }
+    // console.log('closedCounter limit: ', limit);
+
     return i;
 }
 

@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/sqlite3": "^3.1.4",
+    "bcrypt-nodejs": "0.0.3",
     "bme280-sensor": "^0.1.6",
     "delay": "^4.1.0",
     "demo-emoji-search": "^2.0.0",
@@ -29,7 +30,9 @@
     "dotenv-json": "^1.0.0",
     "enquirer": "^2.3.0",
     "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
     "i2c-bus": "^4.0.7",
+    "jwt-simple": "^0.5.5",
     "linux-user": "^0.1.0",
     "lodash": "^4.17.11",
     "log4js": "^3.0.6",
@@ -44,7 +47,7 @@
     "rxjs": "^6.3.3",
     "socket.io": "^2.2.0",
     "sqlite3": "^4.0.6",
-    "tangerine-nest-local-light-driver": "^1.2.19",
+    "tangerine-nest-local-light-driver": "^1.0.2",
     "ts-loader": "^5.3.1",
     "url": "^0.11.0",
     "webpack-permissions-plugin": "^1.0.0"

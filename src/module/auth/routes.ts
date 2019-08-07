@@ -14,22 +14,30 @@ export class Routes extends RoutesModuleBase{
     private config;
     private authorizer: Authorizer;
 
-    constructor(logger: Logger) {
+    constructor(logger: Logger, authorizer: Authorizer) {
         super(logger);
         
         this.logger = logger;
         this.restapi = express();
         this.routes();
-        this.authorizer = new Authorizer(this.logger);
+        this.authorizer = authorizer;
     }
 
-    routes() {
+    public routes() {
         this.restapi.post(this.getFullRoute('/log-in'), bodyParser.json(), (req, res) => {
-            this.logger.debug('On route to: /log-in');
-            this.authorizer.authenticate(req.body.email, req.body.password).then((response) => {
+            this.logger.debug('On route to: /auth/log-in');
+            this.authorizer.authenticate(req.body.email, req.body.password)
+            .then((response) => {
+                res.write(JSON.stringify(response));
+                res.end();
+            }).catch((response) => {
                 res.write(JSON.stringify(response));
                 res.end();
             });
         });
+    }
+
+    public getAuthorizer() {
+        return this.authorizer;
     }
 }

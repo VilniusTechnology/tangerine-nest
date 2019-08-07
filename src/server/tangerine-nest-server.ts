@@ -4,6 +4,8 @@ import * as _ from "lodash"
 import { getLogger, Logger  } from 'log4js';
 import { config  } from './config-loader';
 import { Modules } from '../module';
+import * as bodyParser from "body-parser";
+const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
 export class TangerineNestServer {
     public static readonly PORT:number = 8081;
@@ -51,6 +53,7 @@ export class TangerineNestServer {
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
                 {id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger]},
                 {id: 'EffectorModule', params: [this.logger, this.getContainer()]},
+                {id: 'OpenpixelModule', params: [this.logger, this.getContainer()]},
             ];
 
             // Instantiate modules objects.
@@ -85,11 +88,12 @@ export class TangerineNestServer {
             this.logger.debug('\x1b[45m \x1b[0m Will register module routes.');
 
             _.forEach(this.modules, (module, key) => {
-                // this.logger.error(module);
                 this.logger.debug(`\x1b[43m \x1b[0m Will register Routes 4 module ${key}.`);
+
                 module.getRoutesForRegistration().forEach((layer) => {
                     if (layer.route !== undefined)  {
                         this.logger.debug( `\x1b[44m \x1b[0m  Will push route: ${layer.route.path}`);
+
                         this.app._router.stack.push(layer);
                     }
                 });
@@ -102,8 +106,10 @@ export class TangerineNestServer {
     public launch(): void {
         this.initWebServer();
 
+        this.registerMiddlewares();
+
         this.logger.debug('Will prepare for launch.');
-        
+
         this.resgisterModules().then(() => {
             this.registerModulesRoutes().then( () => {   
                 this.listen().then(() => {
@@ -119,22 +125,42 @@ export class TangerineNestServer {
 
     private initWebServer(): void {
         this.app = express();
-
-        this.app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-            res.setHeader('Access-Control-Allow-Credentials', 'false');
-
-            if ('OPTIONS' === req.method) {
-                res.sendStatus(200);
-            } else {
-                // Pass to next layer of middleware.
-                next();
-            } 
-        });
-
         this.logger.debug('Server created.');
+    }
+
+    private registerMiddlewares() {
+        this.app.use(this.corsMiddleware);
+        this.app.use(bodyParser.json());
+        if(this.config.secure_api) {
+
+            this.logger.error('Injecting to auth_mw', this.modules);
+
+            this.app.use(auth_mw(this.getContainer()));
+            this.logger.warn('Registered AUTH Middleware !');
+        }
+        
+        this.logger.debug('Middlewares were registered !');
+    }
+
+    /**
+     * Filters out CORS preflights from further operations.
+     *
+     * @param req 
+     * @param res 
+     * @param next 
+     */
+    private corsMiddleware(req, res, next) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With,Auth-token,Auth-email,content-type');
+        res.setHeader('Access-Control-Allow-Credentials', 'false');
+
+        if ('OPTIONS' === req.method) {
+            res.sendStatus(200);
+        } else {
+            // Pass to next layer of middleware.
+            next();
+        }
     }
 
     private listen() {
