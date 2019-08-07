@@ -55,8 +55,6 @@ function install(data) {
 
     const password = 'pwd';
 
-    console.log(linuxUser);
-
     // Create "tangerinn" user.
     linuxUser.addUser('tangerinn', function (err, user) {
         if(err) {
