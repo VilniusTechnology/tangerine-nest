@@ -30,13 +30,13 @@ export class LedModule extends ModuleBase {
 
         super(logger, container);
 
-        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);      
+        this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);    
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();
         this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
-        this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger); 
-        this.ledModuleManager = new LedModuleManager(config, logger, this.pwmManager);      
+        this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
+        this.ledModuleManager = new LedModuleManager(config, logger, this.pwmManager);
     };
 
     init() {

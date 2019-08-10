@@ -4,7 +4,7 @@ export class Colors {
     public green = {value: null, pv: null};
     public blue = {value: null, pv: null};
 
-    public coldWhitw = {value: null, pv: null};
+    public coldWhite = {value: null, pv: null};
     public warmWhite = {value: null, pv: null};
 
     public ledState = null;

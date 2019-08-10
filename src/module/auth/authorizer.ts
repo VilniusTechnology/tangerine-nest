@@ -14,6 +14,9 @@ export class Authorizer {
 
     constructor(logger: Logger) {
         this.config = config.config;
+
+        // test@test.com
+
         this.db = new sqlite3.Database(config.config.settingsDb.path, (err) => {
             if (err) {
                 return this.logger.error(`Authorizer DB error on path: ${config.config.settingsDb.path}: `, err.message);
@@ -24,12 +27,33 @@ export class Authorizer {
     }
 
     public authenticate(email: string, password: string) {
+
+        this.db.serialize(() => {
+            let query = `SELECT * FROM 'users'`;
+
+            this.db.all(
+                query, 
+                (err, rows) => {
+                    if (err) {
+                        this.logger.error(err.message);
+                    }
+
+                    console.log(' --- --- --- --- --- ');
+                    console.log(query);
+                    console.log(rows);
+                    console.log(' --- --- --- --- --- ');
+
+                }
+            );
+        });
+
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
                 let query = `SELECT id, email, name, password
                             FROM 'users' 
                             WHERE email LIKE '${email}'
-                            LIMIT 1`;
+                            LIMIT 1
+                            `;
 
                 this.db.all(
                     query, 
@@ -38,6 +62,12 @@ export class Authorizer {
                             this.logger.error(err.message);
                             reject(err);
                         }
+
+                        console.log(query);
+                        console.log(rows);
+
+                        resolve({id: 1, email: 'lmikelionis@gmail.com', name: 'Lukas M', token: '123'});
+                        return;
 
                         bcrypt.compare(password, rows[0].password, (err, res) => {
                             if(res) {

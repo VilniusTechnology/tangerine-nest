@@ -9,8 +9,8 @@ const ConfigCopy = require('./dist/module/system/system/install/config-copy').Co
 const DbReloader = require('./dist/module/system/system/install/db/db-reloader').DbReloader;
 const FixtureLoader = require('./dist/module/system/system/install/db/fixture-loader').FixtureLoader;
 
-const { prompt } = require('enquirer');
 const linuxUser = require('linux-user');
+
 var logger = log4js.getLogger();
 logger.level = 'debug';
 
@@ -62,7 +62,7 @@ function install(data) {
     cc.installConfigs();
 
     // Install DB's
-    const quiestion = new Confirm('Are you sure that You want to install TANGERINE NEST applicatoin? \n This would result in current data loss if application was allready installed !!!');
+    const quiestion = new Confirm('Are you sure that You want to update application user? \n This would result in current data loss if application was allready installed !!!');
     quiestion.ask((answer) => {
         if (answer) {
             setupDb(data.username, data.email, data.password, data.dbPath);

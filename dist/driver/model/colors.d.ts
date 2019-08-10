@@ -11,7 +11,7 @@ export declare class Colors {
         value: any;
         pv: any;
     };
-    coldWhitw: {
+    coldWhite: {
         value: any;
         pv: any;
     };

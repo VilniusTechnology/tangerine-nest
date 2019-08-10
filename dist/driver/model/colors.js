@@ -5,7 +5,7 @@ class Colors {
         this.red = { value: null, pv: null };
         this.green = { value: null, pv: null };
         this.blue = { value: null, pv: null };
-        this.coldWhitw = { value: null, pv: null };
+        this.coldWhite = { value: null, pv: null };
         this.warmWhite = { value: null, pv: null };
         this.ledState = null;
     }
