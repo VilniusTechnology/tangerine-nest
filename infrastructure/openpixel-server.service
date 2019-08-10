@@ -1,7 +1,7 @@
 # sudo nano /etc/systemd/system/openpixel-server.service
 #
 # TODO: symlink it
-# sudo cp /home/madcatzx/projects/tangerine-nest/infrastructure/openpixel-server.service /etc/systemd/system
+# sudo cp /home/tangerine/tangerine-nest/infrastructure/openpixel-server.service /etc/systemd/system
 #
 # sudo systemctl enable openpixel-server
 # sudo systemctl daemon-reload
@@ -17,8 +17,8 @@ Description=openpixel-server-description
 After=network.target
 
 [Service]
-WorkingDirectory=/home/madcatzx/projects/tangerine-nest
-ExecStart=/usr/local/bin/node /home/madcatzx/projects/tangerine-nest/workers/openpixel-server.js
+WorkingDirectory=/home/tangerine/tangerine-nest
+ExecStart=/usr/local/bin/node /home/tangerine/tangerine-nest/workers/openpixel-server.js
 
 Restart=always
 #User=root

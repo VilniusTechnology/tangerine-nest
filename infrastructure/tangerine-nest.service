@@ -15,11 +15,11 @@ Description=tangerine-nest-description
 After=network.target
 
 [Service]
-WorkingDirectory=/home/madcatzx/projects/tangerine-nest
-ExecStart=/usr/local/bin/node /home/madcatzx/projects/tangerine-nest NODE_ENV=production npm start
+WorkingDirectory=/home/tangerine/tangerine-nest
+ExecStart=/usr/local/bin/node /home/tangerine/tangerine-nest NODE_ENV=production npm start
 Restart=always
 
-User=madcatzx
+User=tangerine
 #Group=group
 
 Environment=PATH=/usr/bin:/usr/local/bin
