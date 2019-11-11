@@ -21,16 +21,15 @@ export class TimedLightRegulator {
     };
 
     clearTimersIntervals() {
-        this.logger.log('debug', 'Will clearTimersIntervals');
+        this.logger.debug('Will clearTimersIntervals');
         clearInterval(this.timer);
     }
 
     checkIntervalsAndAjustLightSetting() {
-
         this.performCheck();
         this.timer = setInterval(() => { 
             this.performCheck();
-        }, 60000);
+        }, 5000);
     };
 
     performCheck() {
@@ -46,9 +45,10 @@ export class TimedLightRegulator {
     }
 
     checkIntervals(intervals) {
-        _.forEach(intervals, (value) => {
-            let {title, from, to, settings} = value;
+        _.forEach(intervals, (interval) => {
+            let {title, from, to, settings} = interval;
             if (this.isTimeInCurrentRange(from, to)) {
+                this.logger.debug(`In interval: `, JSON.stringify(interval));
                 this.setColors(settings);
             }
         });
@@ -57,21 +57,24 @@ export class TimedLightRegulator {
     isTimeInCurrentRange(from, to) {
         const moment = MomentRange.extendMoment(Moment);
 
-        const current_date_time = moment();
         const current_date = moment().format('YYYY-MM-DD');
+        const current_date_time = moment();
+
+        // this.logger.error(`current_date_time: ${current_date_time}`);
 
         const start = moment(current_date + ' ' + from);
+        // this.logger.error(`start: ${start}`);
         const end = moment(current_date + ' ' + to);
+        // this.logger.error(`end: ${end}`);
 
         const range = moment.range(start, end);
 
         if (range.contains(current_date_time)) {
-            // console.log('contains: ', range);
             return true;
         }
     };
 
-    getTimeModesIntervals(){
+    getTimeModesIntervals() {
         return new Promise((resolve, reject) => {
             this.logger.debug(`Will load DB for time intervals from: ${this.dbPath}`);
 
@@ -81,7 +84,9 @@ export class TimedLightRegulator {
                 }
             });
             db.serialize(() => {
-                db.all("SELECT * FROM light_time_programs", (err, rows) => {
+                const query = "SELECT * FROM light_time_programs";
+
+                db.all(query, (err, rows) => {
                     if (err) {
                         this.logger.error(err.message);
                         reject(err.message);
@@ -96,6 +101,9 @@ export class TimedLightRegulator {
         // console.log('colors', colors);
         try {
             let jsonObject = JSON.parse(colors);
+
+            this.logger.debug(`Will setColors: ${colors}`);
+
             _.forEach(jsonObject, (value, key) => {
                 // console.log('KV: ', key, value);
                 this.pwmDriver.setColor(key, value);

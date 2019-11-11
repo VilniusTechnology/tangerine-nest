@@ -1,0 +1,269 @@
+{
+    "fixtures" :
+        [
+            {
+                "table": "light_time_programs",
+                "entries": [
+                    {
+                        "id" : 1,
+                        "title" : "Interval 1",
+                        "from" : "18:00",
+                        "to" : "19:59",
+                        "settings" : "{\"red\":255,\"green\":200,\"blue\":75}"
+                    },{
+                        "id" : 2,
+                        "title" : "Interval 2",
+                        "from" : "20:00",
+                        "to" : "20:10",
+                        "settings" : "{\"red\":255,\"green\":180,\"blue\":60}"
+                    },{
+                        "id" : 3,
+                        "title" : "Interval 3",
+                        "from" : "20:15",
+                        "to" : "20:29",
+                        "settings" : "{\"red\":255,\"green\":170,\"blue\":58}"
+                    },{
+                        "id" : 4,
+                        "title" : "Interval 4",
+                        "from" : "20:30",
+                        "to" : "20:44",
+                        "settings" : "{\"red\":250,\"green\":160,\"blue\":57}"
+                    },{
+                        "id" : 5,
+                        "title" : "Interval 5",
+                        "from" : "20:45",
+                        "to" : "20:59",
+                        "settings" : "{\"red\":240,\"green\":150,\"blue\":56}"
+                    },{
+                        "id" : 6,
+                        "title" : "Interval 6",
+                        "from" : "21:00",
+                        "to" : "21:09",
+                        "settings" : "{\"red\":235,\"green\":150,\"blue\":55}"
+                    },{
+                        "id" : 7,
+                        "title" : "Interval 7",
+                        "from" : "21:10",
+                        "to" : "21:29",
+                        "settings" : "{\"red\":230,\"green\":150,\"blue\":45}"
+                    },{
+                        "id" : 8,
+                        "title" : "Interval 8",
+                        "from" : "21:30",
+                        "to" : "21:49",
+                        "settings" : "{\"red\":220,\"green\":150,\"blue\":35}"
+                    },{
+                        "id" : 9,
+                        "title" : "Interval 9",
+                        "from" : "21:50",
+                        "to" : "21:59",
+                        "settings" : "{\"red\":217,\"green\":150,\"blue\":25}"
+                    },{
+                        "id" : 10,
+                        "title" : "Interval 10",
+                        "from" : "22:00",
+                        "to" : "22:04",
+                        "settings" : "{\"red\":216,\"green\":150,\"blue\":0}"
+                    },{
+                        "id" : 11,
+                        "title" : "Interval 11",
+                        "from" : "22:05",
+                        "to" : "22:09",
+                        "settings" : "{\"red\":215,\"green\":140,\"blue\":60}"
+                    },{
+                        "id" : 12,
+                        "title" : "Interval 12",
+                        "from" : "22:10",
+                        "to" : "22:14",
+                        "settings" : "{\"red\":211,\"green\":130,\"blue\":60}"
+                    },{
+                        "id" : 13,
+                        "title" : "Interval 13",
+                        "from" : "22:15",
+                        "to" : "22:19",
+                        "settings" : "{\"red\":210,\"green\":120,\"blue\":60}"
+                    },{
+                        "id" : 14,
+                        "title" : "Interval 14",
+                        "from" : "22:20",
+                        "to" : "22:29",
+                        "settings" : "{\"red\":205,\"green\":100,\"blue\":60}"
+                    },{
+                        "id" : 15,
+                        "title" : "Interval 15",
+                        "from" : "22:30",
+                        "to" : "22:44",
+                        "settings" : "{\"red\":200,\"green\":90,\"blue\":60}"
+                    },{
+                        "id" : 16,
+                        "title" : "Interval 16",
+                        "from" : "22:45",
+                        "to" : "22:59",
+                        "settings" : "{\"red\":190,\"green\":15,\"blue\":60}"
+                    },{
+                        "id" : 18,
+                        "title" : "Interval 18",
+                        "from" : "23:00",
+                        "to" : "23:19",
+                        "settings" : "{\"red\":155,\"green\":5,\"blue\":60}"
+                    },{
+                        "id" : 19,
+                        "title" : "Interval 19",
+                        "from" : "23:20",
+                        "to" : "23:29",
+                        "settings" : "{\"red\":100,\"green\":4,\"blue\":60}"
+                    },{
+                        "id" : 20,
+                        "title" : "Interval 20",
+                        "from" : "23:30",
+                        "to" : "23:34",
+                        "settings" : "{\"red\":55,\"green\":3,\"blue\":60}"
+                    },{
+                        "id" : 21,
+                        "title" : "Interval 21",
+                        "from" : "23:35",
+                        "to" : "23:39",
+                        "settings" : "{\"red\":50,\"green\":2,\"blue\":60}"
+                    },{
+                        "id" : 22,
+                        "title" : "Interval 22",
+                        "from" : "23:40",
+                        "to" : "23:59",
+                        "settings" : "{\"red\":15,\"green\":0,\"blue\":0}"
+                    },{
+                        "id" : 23,
+                        "title" : "Interval 23",
+                        "from" : "00:00",
+                        "to" : "01:00",
+                        "settings" : "{\"red\":5,\"green\":0,\"blue\":0}"
+                    },{
+                        "id" : 24,
+                        "title" : "Interval 24",
+                        "from" : "01:01",
+                        "to" : "05:30",
+                        "settings" : "{\"red\":1,\"green\":0,\"blue\":0}"
+                    },{
+                        "id" : 25,
+                        "title" : "Interval 25",
+                        "from" : "05:31",
+                        "to" : "06:00",
+                        "settings" : "{\"red\":5,\"green\":0,\"blue\":0}"
+                    },{
+                        "id" : 26,
+                        "title" : "Interval 26",
+                        "from" : "06:01",
+                        "to" : "06:05",
+                        "settings" : "{\"red\":15,\"green\":0,\"blue\":0}"
+                    },{
+                        "id" : 27,
+                        "title" : "Interval 27",
+                        "from" : "06:06",
+                        "to" : "06:08",
+                        "settings" : "{\"red\":20,\"green\":0,\"blue\":1}"
+                    },{
+                        "id" : 28,
+                        "title" : "Interval 28",
+                        "from" : "06:09",
+                        "to" : "06:12",
+                        "settings" : "{\"red\":30,\"green\":0,\"blue\":1}"
+                    },{
+                        "id" : 29,
+                        "title" : "Interval 29",
+                        "from" : "06:20",
+                        "to" : "06:25",
+                        "settings" : "{\"red\":35,\"green\":1,\"blue\":5}"
+                    },{
+                        "id" : 30,
+                        "title" : "Interval 30",
+                        "from" : "06:26",
+                        "to" : "06:35",
+                        "settings" : "{\"red\":40,\"green\":2,\"blue\":9}"
+                    },{
+                        "id" : 31,
+                        "title" : "Interval 31",
+                        "from" : "06:36",
+                        "to" : "06:45",
+                        "settings" : "{\"red\":45,\"green\":2,\"blue\":11}"
+                    },{
+                        "id" : 32,
+                        "title" : "Interval 32",
+                        "from" : "06:46",
+                        "to" : "06:50",
+                        "settings" : "{\"red\":47,\"green\":2,\"blue\":12}"
+                    },{
+                        "id" : 33,
+                        "title" : "Interval 33",
+                        "from" : "06:51",
+                        "to" : "07:00",
+                        "settings" : "{\"red\":48,\"green\":2,\"blue\":15}"
+                    },{
+                        "id" : 34,
+                        "title" : "Interval 34",
+                        "from" : "07:01",
+                        "to" : "07:05",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":95}"
+                    },{
+                        "id" : 35,
+                        "title" : "Interval 35",
+                        "from" : "07:06",
+                        "to" : "07:10",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":100}"
+                    },{
+                        "id" : 36,
+                        "title" : "Interval 36",
+                        "from" : "07:11",
+                        "to" : "07:20",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":105}"
+                    },{
+                        "id" : 37,
+                        "title" : "Interval 37",
+                        "from" : "07:21",
+                        "to" : "07:25",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":155}"
+                    },{
+                        "id" : 38,
+                        "title" : "Interval 38",
+                        "from" : "07:26",
+                        "to" : "07:30",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":170}"
+                    },{
+                        "id" : 39,
+                        "title" : "Interval 39",
+                        "from" : "07:31",
+                        "to" : "07:35",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":175}"
+                    },{
+                        "id" : 40,
+                        "title" : "Interval 40",
+                        "from" : "07:36",
+                        "to" : "07:40",
+                        "settings" : "{\"red\":50,\"green\":10,\"blue\":200}"
+                    },{
+                        "id" : 41,
+                        "title" : "Interval 41",
+                        "from" : "07:41",
+                        "to" : "07:50",
+                        "settings" : "{\"red\":130,\"green\":255,\"blue\":245}"
+                    },{
+                        "id" : 42,
+                        "title" : "Interval 42",
+                        "from" : "07:51",
+                        "to" : "08:00",
+                        "settings" : "{\"red\":255,\"green\":255,\"blue\":255}"
+                    },{
+                        "id" : 43,
+                        "title" : "Interval 43",
+                        "from" : "08:01",
+                        "to" : "08:30",
+                        "settings" : "{\"red\":255,\"green\":200,\"blue\":130}"
+                    },{
+                        "id" : 44,
+                        "title" : "Interval 44",
+                        "from" : "08:31",
+                        "to" : "17:59",
+                        "settings" : "{\"red\":0,\"green\":0,\"blue\":0}"
+                    }
+                ]
+            }
+        ]
+}

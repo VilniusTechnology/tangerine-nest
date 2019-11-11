@@ -28,18 +28,25 @@ export class LedModuleManager {
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();
         this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger); 
-        this.lightRegulator = new LightRegulator(this.fader, this.lightSource);  
+        this.lightRegulator = new LightRegulator(this.fader, this.lightSource, this.logger);  
     };
 
     setColours(colors) {
         _.forEach(colors, (val, key) => {
             if (key !== 'state' && key !== 'mode' && key !== 'ledMode') {
-                this.pwmManager.setColor(key, val);
+                this.logger.debug(`'Will setColor: ${key} ${val}'`);
+                this.pwmManager.setColor(key, parseInt(val));
             }
-        });
+        });   
+    };
+
+    mute() {
+        this.switchAllLedsOff();
+        this.colors.ledState = 0;
     };
 
     switchAllLedsOff() {
+        this.logger.debug('switchAllLedsOff');
         this.colors = JSON.parse(
             JSON.stringify(this.pwmManager.getState())
         );
@@ -50,33 +57,45 @@ export class LedModuleManager {
         this.pwmManager.setColor('warmWhite', 0);
         this.pwmManager.setColor('coldWhite', 0);
 
-        this.pwmManager.setLedState(0) ;
+        this.pwmManager.setLedState(0);
     };
 
+    unMute() {
+        this.switchAllLedsOn();
+        this.colors.ledState = 1;
+    };
+    
     switchAllLedsOn() {
+        this.logger.debug('switchAllLedsOn');
         this.pwmManager.setColor('red', this.colors.red.value);
         this.pwmManager.setColor('green', this.colors.green.value);
         this.pwmManager.setColor('blue', this.colors.blue.value);
         this.pwmManager.setColor('warmWhite', this.colors.warmWhite.value);
         this.pwmManager.setColor('coldWhite', this.colors.coldWhite.value);
 
-        this.pwmManager.setLedState(1) ;
+        this.pwmManager.setLedState(1);
     };
 
     getState() {
-        return JSON.parse(JSON.stringify(this.pwmManager.getState()));
+        // this.logger.debug('getState::LedModuleManager: ', JSON.parse(JSON.stringify(this.colors)));
+        return JSON.parse(JSON.stringify(this.colors));
     };
 
     clearTimersIntervals() {
         this.timedRegulator.clearTimersIntervals();
     };
 
-    setTimedSettings() {``
+    setTimedSettings() {
         this.timedRegulator.checkIntervalsAndAjustLightSetting();
     };
 
-    async adaptLight() {
-        let result = await this.lightRegulator.adaptToConditions();
+    adaptLight() {
+        return new Promise((resolve, reject) => {
+            this.lightRegulator.adaptToConditions().then((result) => {
+                resolve(result);
+            });
+        });
+        
     };
 
     getLedMode() {

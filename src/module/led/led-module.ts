@@ -34,10 +34,14 @@ export class LedModule extends ModuleBase {
         this.logger = logger;
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();
-        this.lightRegulator = new LightRegulator(this.fader, this.lightSource);
+        this.lightRegulator = new LightRegulator(this.fader, this.lightSource, this.logger);
         this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger);
         this.ledModuleManager = new LedModuleManager(config, logger, this.pwmManager);
     };
+
+    getTimedRegulator() {
+        return this.timedRegulator;
+    }
 
     init() {
         this.logger.info('\x1b[41m \x1b[0m  Will init LED module!');

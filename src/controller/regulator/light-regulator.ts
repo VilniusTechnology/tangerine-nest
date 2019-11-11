@@ -1,84 +1,106 @@
 import * as _ from 'lodash';
+import { Logger } from "log4js";
 import { LightSourceSensor } from '../../sensors/light-source';
+import { FaderAdvanced } from '../../module/effector/effector/fader-advanced';
 
 export class LightRegulator {
     private lightSource: LightSourceSensor;
-    private fader;
+    private fader: FaderAdvanced;
+    private logger: Logger;
 
-    public desiredLevelBottom = 4000;
-    public desiredLevelTop = 8000;
+    public desiredLevelBottom = 500;
+    public desiredLevelTop = 550;
 
-    constructor(fader, lightSource) {
+    constructor(fader, lightSource, logger) {
         this.fader = fader;
+        this.logger = logger;
         this.lightSource = new LightSourceSensor();
     }
 
-    async adaptToConditions() {
-        let lightLevel = await this.getLightevel();
+    adaptToConditions() {
+        this.logger.warn(`adaptToConditions::this.desiredLevelBottom: ${this.desiredLevelBottom}`);
+        this.logger.warn(`adaptToConditions::this.desiredLevelTop: ${this.desiredLevelTop}`);
 
-        // Get actual white state
-        if (this.isToLow(lightLevel)) {
-            await this.increaseCycle();
-        }
+        return new Promise((resolve, reject) => {
+            this.getLightevel().then( (lightLevel) => {
 
-        if (this.isTooMuch(lightLevel)) {
-            await this.decreaseCycle();
-        }
+                this.logger.debug(`getLightevel 0::lightLevel: ${lightLevel}`);
+        
+                // Get actual white state
+                if (this.isToLow(lightLevel)) {
+                    this.increaseCycle(lightLevel).then((lightLevel) => {
+                        resolve(lightLevel);
+                    });
+                }
+        
+                if (this.isTooMuch(lightLevel)) {
+                    this.decreaseCycle(lightLevel).then((lightLevel) => {
+                        resolve(lightLevel);
+                    });
+                }
+            });
+        });
     }
 
-    async increaseCycle() {
-        let lightLevel = await this.getLightevel();
-        let i = 0;
+    increaseCycle(lightLevel) {
+        return new Promise((resolve, reject) => {
 
-        while (this.isToLow(lightLevel)) {
-            if (i > 10) {
-                return false;
-            }
+                this.logger.warn(`increaseCycle::lightLevel: ${lightLevel}`);
+    
+                let data = this.fader.getPwmDriverManager().getState();
+    
+                this.logger.warn(data);
+    
+                let a = this.fader.fadeUp(data.coldWhite.value, data.coldWhite.value + 3, 'coldWhite', 100, 1);
+                let b =  this.fader.fadeUp(data.warmWhite.value, data.warmWhite.value + 3, 'warmWhite', 100, 1);
+                let c =  this.fader.fadeUp(data.red.value, data.red.value + 10, 'red', 100, 1);
+                let d =  this.fader.fadeUp(data.green.value, data.green.value + 1, 'green', 100, 1);
+    
+                Promise.all([a, b, c, d]).then((values) => {
+                    this.getLightevel().then((lightLevel) => {
+                        resolve(lightLevel);
+                    });
+                });
+        });
+    }
+    
+    decreaseCycle(lightLevel) {
+        return new Promise((resolve, reject) => {
 
-            let data = this.fader.pwmDriver.getState();
+            this.logger.warn(`decreaseCycle::lightLevel: ${lightLevel}`);
 
-            await this.fader.fadeUp(['coldWhite'], data.coldWhite.value, data.coldWhite.value + 3, 1);
-            await this.fader.fadeUp(['warmWhite'], data.warmWhite.value, data.warmWhite.value + 3, 1);
-            await this.fader.fadeUp(['red'], data.red.value, data.red.value + 10, 1);
-            await this.fader.fadeUp(['green'], data.green.value, data.green.value + 1, 1);
+                let data = this.fader.getPwmDriverManager().getState();
 
-            i++;
-        }
+                let a =  this.fader.fadeDown(data.coldWhite.value, data.coldWhite.value - 5, 'coldWhite', 100, 1);
+                let b =  this.fader.fadeDown(data.warmWhite.value, data.warmWhite.value - 5, 'warmWhite', 100, 1);
+                let c =  this.fader.fadeDown(data.red.value, data.red.value - 10, 'red', 100, 1);
+                let d =  this.fader.fadeDown(data.green.value, data.green.value - 1, 'green', 100, 1);
+
+                Promise.all([a, b, c, d]).then((values) => {
+                    this.getLightevel().then((lightLevel) => {
+                        resolve(lightLevel);
+                    });
+                });
+        });
     }
 
-    async decreaseCycle() {
-        let lightLevel = await this.getLightevel();
-        let i = 0;
-
-        while (this.isTooMuch(lightLevel)) {
-            if (i > 10) {
-                return false;
-            }
-
-            let data = this.fader.pwmDriver.getState();
-
-            await this.fader.fadeDown(['coldWhite'], data.coldWhite.value, data.coldWhite.value - 5, 10);
-            await this.fader.fadeDown(['warmWhite'], data.warmWhite.value, data.warmWhite.value - 5, 10);
-            await this.fader.fadeDown(['red'], data.red.value, data.red.value - 10, 5);
-            await this.fader.fadeDown(['green'], data.green.value, data.green.value - 1, 1);
-
-            i++;
-        }
-    }
-
-    async getLightevel() {
-        // let reading = await this.lightSource.getStuff();
-        let reading = {'light_lvl' : 500};
-        let lightLevel = reading.light_lvl;
-
-        return lightLevel;
+    getLightevel() {
+        return new Promise((resolve, reject) => {
+            this.lightSource.read().then((reading: any) => {
+                resolve(reading.light_lvl);
+            });
+        });
     }
 
     isTooMuch(lightLevel) {
-        return (lightLevel > this.desiredLevelTop);
+        let isIt = (lightLevel > this.desiredLevelTop);
+        this.logger.debug(`isTooMuch: ${isIt}`);
+        return isIt;
     }
 
     isToLow(lightLevel) {
-        return (lightLevel < this.desiredLevelBottom);
+        let isIt = (lightLevel < this.desiredLevelBottom);
+        this.logger.debug(`isToLow: ${isIt}`);
+        return isIt;
     }
 };

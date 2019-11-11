@@ -2,21 +2,24 @@
 import * as bodyParser from "body-parser";
 import * as express from 'express';
 import * as os from 'os';
+import { ModuleBase } from './../module-base';
 import { Logger } from "log4js";
 
 const sqlite3 = require('sqlite3').verbose();
 
-export class TimedLightSettingsApi {
+export class TimedLightSettingsApi extends ModuleBase {
     private db;
     private restapi;
     private port: number;
     private hostname: string;
-    private logger: Logger;
+    public logger: Logger;
     private config;
 
     static readonly tableName: string = 'light_time_programs'; 
     
-    constructor(config: any, logger = null) {
+    constructor(config: any, logger = null, container) {
+        super(logger, container);
+
         this.logger = logger;
         this.config = config;
 
@@ -27,8 +30,8 @@ export class TimedLightSettingsApi {
 
     init() {
         this.logger.info('Will init TimedLightSettingsApi module!');
-
         this.logger.debug(`TimedLightSettingsApi will load DB on path: ${this.config.database.path}`);
+
         this.db = new sqlite3.Database(this.config.database.path, (err) => {
             if (err) {
                 return this.logger.error(`TimedLightSettingsApi DB error on path: ${this.config.database.path}: `, err.message);
@@ -54,7 +57,7 @@ export class TimedLightSettingsApi {
         });
 
         this.restapi.all('/reload-db', (req, res) => {
-            this.logger.debug('On route: /reload-db');
+            this.logger.debug('On route: /reload-db, but wonr reload as its disabled. ');
             // this.reset_db(req, res);  
         });
 
@@ -67,7 +70,7 @@ export class TimedLightSettingsApi {
         }); 
         
         this.restapi.all('/sensors/get-all', bodyParser.json(), (req, res) => {
-            this.logger.debug('On route: /sensors/get-all');
+            this.logger.debug('<> On route: /sensors/get-all');
             this.getAllSensorData(req, res);
         });
 
@@ -92,19 +95,30 @@ export class TimedLightSettingsApi {
 
     private getPrograms(req, res) {
         return new Promise((resolve, reject) => {
+            // const ledModule = this.getModule('LedModule');
+            // const regulator = ledModule.getTimedRegulator();
+            // regulator.getTimeModesIntervals().then( (intervals: any) => {
+            //     console.log(`intervals ::: ::: ::: ===============>`);
+            //     console.log(intervals);
+            //     console.log(`< =============== intervals ::: ::: :::`);
+            // });
+
             const getQuery = `SELECT * FROM ${TimedLightSettingsApi.tableName}`;
-            this.db.all(getQuery, (err, rows) => {
-                if (rows == undefined) {
-                    rows = [];
-                }
-    
-                if (err) {
-                    this.logger.error(err.message);
-                    reject(err.message);
-                } 
-    
-                this.logger.debug('Will getPrograms: ', rows);
-                resolve(rows);
+            this.logger.debug(`getPrograms::getQuery: ${getQuery}, dbPath: ${this.config.database.path}`);
+            this.db.serialize(() => {
+                this.db.all(getQuery, (err, rows) => {
+                    if (rows == undefined) {
+                        rows = [];
+                    }
+        
+                    if (err) {
+                        this.logger.error(err.message);
+                        reject(err.message);
+                    } 
+        
+                    this.logger.debug('Will getPrograms: ', rows);
+                    resolve(rows);
+                });
             });
         });
     }
@@ -187,6 +201,7 @@ export class TimedLightSettingsApi {
 
     public getAllSensorData(req, res) {
         const getQuery = `SELECT * FROM 'home_data' `;
+        this.logger.debug(`getAllSensorData::getQuery: ${getQuery}, dbPath: ${this.config.database.path}`);
         this.db.all(getQuery, (err, rows) => {
             if (rows == undefined) {
                 rows = [];

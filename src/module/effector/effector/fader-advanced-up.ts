@@ -14,6 +14,7 @@ export class FaderAdvancedUp {
     }
 
     public fadeUp(from: number, to: number, channel: string, timeout: number, step: number = 1) {
+        // this.logger.debug('fadeUp');
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -31,6 +32,7 @@ export class FaderAdvancedUp {
         } 
 
         if (from == to) {
+            // this.logger.debug('fadeUp::resolve');
             this.resolve({from: from, to: to});
             return true;
         }
@@ -42,10 +44,12 @@ export class FaderAdvancedUp {
     }
 
     private performFadeUp(from: number, to: number, channel: string, timeout: number, step: number, validStep: number) {
-        
+        // this.logger.debug('performFadeUp');
+
         // Will do actual light change.
         this.pwmDriver.setColor(channel, from);
-        this.logger.debug(channel, from);
+        
+        // this.logger.debug(channel, from);
         
         from = from + validStep;
 

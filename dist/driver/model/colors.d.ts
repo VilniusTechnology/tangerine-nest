@@ -1,23 +1,24 @@
 export declare class Colors {
     red: {
-        value: any;
-        pv: any;
+        value: number;
+        pv: number;
     };
     green: {
-        value: any;
-        pv: any;
+        value: number;
+        pv: number;
     };
     blue: {
-        value: any;
-        pv: any;
+        value: number;
+        pv: number;
     };
     coldWhite: {
-        value: any;
-        pv: any;
+        value: number;
+        pv: number;
     };
     warmWhite: {
-        value: any;
-        pv: any;
+        value: number;
+        pv: number;
     };
-    ledState: any;
+    ledState: number;
+    ledMode: number;
 }

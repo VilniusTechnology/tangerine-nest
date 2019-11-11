@@ -19,7 +19,6 @@ export class TangerineNestServer {
     public modules: any = {};
 
     constructor(configJson: LedServerConfig, port: number = null) {
-        // configure('./filename.log');
         this.logger = getLogger();
         this.logger.level = 'debug';
 
@@ -51,7 +50,7 @@ export class TangerineNestServer {
                 {id: 'SystemModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
-                {id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger]},
+                {id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger, this.getContainer()]},
                 {id: 'EffectorModule', params: [this.logger, this.getContainer()]},
                 {id: 'OpenpixelModule', params: [this.logger, this.getContainer()]},
             ];
@@ -158,7 +157,6 @@ export class TangerineNestServer {
         if ('OPTIONS' === req.method) {
             res.sendStatus(200);
         } else {
-            // Pass to next layer of middleware.
             next();
         }
     }

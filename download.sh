@@ -7,6 +7,7 @@
 
 # rsync -avz --progress --exclude '.idea' .  tangerine@tangerine.local:/home/tangerine
 
-rsync -avz --progress --exclude 'node_modules' --exclude '.idea' --exclude 'mandarinas-settings' .  tangerine@tangerine.local:/home/tangerine/tangerine-nest
+rsync -avz --progress --exclude 'node_modules' --exclude '.idea' tangerine@tangerine.local:/home/tangerine/mandarinas-settings ./mandarinas-settings
+
 # notifyloop . rsync -avz --progress --exclude 'node_modules' --exclude '.idea' .  tangerine@tangerine.local:/home/tangerine
 

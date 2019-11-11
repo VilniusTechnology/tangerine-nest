@@ -4,7 +4,6 @@ import { Logger } from 'log4js';
 import { PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
 import { PwmDriverPca9685 } from './pwm-driver-pca9685';
 
-
 export class Pca9685RgbCctDriverManager {
     private logger: Logger;
     private config: any;
@@ -66,21 +65,19 @@ export class Pca9685RgbCctDriverManager {
 
     public setColor(colorName: string, value: number) {
         if(value > 255) {
-            this.logger.info('Wants to set too much');
+            this.logger.warn('Wants to set too much');
             return;
         }
 
         if(value < 0) {
-            this.logger.info('Wants to set few');
+            this.logger.warn('Wants to set few');
             return;
         }
 
         let prepared_value = this.getRgbValueInPercents(value);
         let colourPin = this.config.contours.main[colorName];
 
-        this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
-
-        // this.logger.error(1, this.pwm);
+        // this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
 
         this.pwm.setDutyCycle(colourPin, prepared_value);
 
@@ -94,6 +91,7 @@ export class Pca9685RgbCctDriverManager {
 
     public setLedState(newState: number) {
         this.colors.ledState = newState;
+        // this.logger.debug(`setLedState::this.colors.ledState: ${this.colors.ledState}.`);
     };
 
     public setLedMode(mode: any) {

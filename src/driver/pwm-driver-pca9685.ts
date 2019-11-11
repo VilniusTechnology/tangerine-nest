@@ -32,6 +32,7 @@ export class PwmDriverPca9685 extends PwmDriverFacade {
     }
 
     public setDutyCycle(colourPin, prepared_value) {
+        // console.log(`colourPin: ${colourPin}, prepared_value: ${prepared_value}`);
         this.driver.setDutyCycle(colourPin, prepared_value);
     }
 }

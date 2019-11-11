@@ -2,13 +2,13 @@
 #
 #
 #
-# systemctl daemon-reload
-# systemctl start tangerine-nest
-# systemctl stop tangerine-nest
-# systemctl restart tangerine-nest
-# systemctl enable tangerine-nest
+# sudo systemctl daemon-reload
+# sudo systemctl start tangerine-nest
+# sudo systemctl stop tangerine-nest
+# sudo systemctl restart tangerine-nest
+# sudo systemctl enable tangerine-nest
 #
-# journalctl -u tangerine-nest
+# sudo journalctl -u tangerine-nest
 
 [Unit]
 Description=tangerine-nest-description

@@ -34,7 +34,7 @@ export class GWEffect {
     }
     
     GWfade() {
-        const delay = 3;
+        const delay = 5;
         const step = 3;
         const stepDown = 15;
         return new Promise( (resolve, reject) => {
@@ -62,10 +62,10 @@ export class GWEffect {
     blinkSequence() {
         const delay = 1;
         return new Promise((resolve, reject) => {
-            this.blink('green', 150, delay).then(() => {
-                this.blink('coldWhite', 150, delay).then( () => {
-                    this.blink('green', 150, delay).then(() => {
-                        this.blink('coldWhite', 150, delay).then( () => {
+            this.blink('green', 255, delay).then(() => {
+                this.blink('coldWhite', 255, delay).then( () => {
+                    this.blink('green', 255, delay).then(() => {
+                        this.blink('coldWhite', 255, delay).then( () => {
                             resolve(true);
                         });
                     });
@@ -75,7 +75,7 @@ export class GWEffect {
     }
     
     blink(color, max, delay) {
-        const from = 50;
+        const from = 150;
         return new Promise((resolve, reject) => {
             const faderAdvanced = new FaderAdvanced(this.faderAdvanced.getPwmDriverManager(), this.faderAdvanced.getLogger());
             const prUp = faderAdvanced.fadeUp(from, max, color, delay, 5)

@@ -2,21 +2,9 @@
     "fixtures" :
         [
             {
-                "table": "light_time_programs",
+                "table": "...",
                 "entries": [
-                    {
-                        "id" : 1,
-                        "title" : "Interval 1",
-                        "from" : "00:00",
-                        "to" : "06:00",
-                        "settings" : "{}"
-                    },{
-                        "id" : 2,
-                        "title" : "Interval 2",
-                        "from" : "06:01",
-                        "to" : "06:30",
-                        "settings" : "{\"red\":0,\"green\":0,\"blue\":0}"
-                    }
+
                 ]
             }
         ]

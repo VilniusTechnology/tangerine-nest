@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const led_module_1 = require("../../module/led/led-module");
 class Colors {
     constructor() {
-        this.red = { value: null, pv: null };
-        this.green = { value: null, pv: null };
-        this.blue = { value: null, pv: null };
-        this.coldWhite = { value: null, pv: null };
-        this.warmWhite = { value: null, pv: null };
-        this.ledState = null;
+        this.red = { value: 0, pv: 0 };
+        this.green = { value: 0, pv: 0 };
+        this.blue = { value: 0, pv: 0 };
+        this.coldWhite = { value: 0, pv: 0 };
+        this.warmWhite = { value: 0, pv: 0 };
+        this.ledState = 0;
+        this.ledMode = led_module_1.LedModule.MANUAL_MODE_CODE;
     }
 }
 exports.Colors = Colors;

@@ -48,7 +48,7 @@ export class FaderAdvancedDown {
         // Will do actual light change.
         // const percentVal = this.pwmDriver.getRgbValueInPercents(from); // (Math.round(from*100)/100);
         this.pwmDriver.setColor(channel, from);
-        this.logger.debug(channel, from);
+        // this.logger.debug(channel, from);
 
         if (from <= 0 || from < to) {
             this.resolve({from: from, to: to});
