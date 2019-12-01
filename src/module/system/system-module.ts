@@ -8,10 +8,10 @@ export class SystemModule extends ModuleBase {
     public logger: Logger;
     public container;
 
-    constructor(config, logger: Logger, container) {
+    constructor(config, logger: Logger, container) { 
         super(logger, container);
 
-        this.config = config.config;
+        this.config = config;
         this.logger = logger;
         this.container = container;
 
@@ -19,6 +19,6 @@ export class SystemModule extends ModuleBase {
     }
 
     getRoutesForRegistration() {
-        return new Routes(this.logger, this.container).listRoutes();
+        return new Routes(this.logger, this.container, this.config).listRoutes();
     }
 };

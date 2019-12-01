@@ -5,13 +5,13 @@ export class Bme280Sensor {
     private bme280: BME280;
 
     constructor(config: any, logger) {
-        
         if(config == null) {
             config = {
                 i2cBusNo   : 1,
                 i2cAddress : BME280.BME280_DEFAULT_I2C_ADDRESS(),
             };
         }
+
         this.bme280 = new BME280(config);
     }
 

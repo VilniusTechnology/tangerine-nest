@@ -6,18 +6,23 @@ import { Cpu } from './system/server-hardware/cpu';
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { RoutesModuleBase } from '../routes-module-base';
+import { Bme280Sensor } from "../../sensors/bme280";
 
-export class Routes extends RoutesModuleBase{
+export class Routes extends RoutesModuleBase {
 
     public readonly ROUTE_PREFIX = '';
 
     public logger: Logger;
     public ledModule: LedModule;
+    public sensor: Bme280Sensor;
 
-    constructor(logger: Logger, container) {
+    constructor(logger: Logger, container, config) {
         super(logger);
 
         this.logger = logger;
+
+        this.sensor = new Bme280Sensor(config.bme280, this.logger);
+
         this.ledModule = container()['LedModule'];
         this.routes();
     }
@@ -63,6 +68,22 @@ export class Routes extends RoutesModuleBase{
 
             res.write('true');
             res.end();
+        });
+
+        this.restapi.all('/sensors-atmo', bodyParser.json(), (req, res) => {
+
+            this.logger.debug('On route to: /sensors-atmo');
+
+            this.sensor.init().then(() => {
+                this.sensor.read().then((response) => {
+                    res.write(JSON.stringify(response));
+                    res.end();
+                }).catch((error) => {
+                    this.logger.error(error);
+                });
+            }).catch((error) => {
+                this.logger.error(error);
+            });
         });
     }
 }
