@@ -55,6 +55,8 @@ git clone git@github.com:VilniusTechnology/tangerine-nest.git && cd tangerine-ne
 
 npm install
 
+npm run build
+
 node installer.js
 
 node server.js
