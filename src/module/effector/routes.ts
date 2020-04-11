@@ -32,10 +32,20 @@ export class Routes extends RoutesModuleBase {
 
         this.restapi.all(this.getFullRoute('/play/:id'), bodyParser.json(), (req, res) => {
             this.logger.info(`/play/${req.params.id}`);
+            let efId = parseInt(req.params.id);
             
-            this.effectsManager.performGW().then( (resolution) => {
-                this.logger.debug('\x1b[41m \x1b[0m performGW FINISHED', resolution);
-            });
+            if(efId == 1) {
+                this.effectsManager.performGW().then( (resolution) => {
+                    this.logger.debug('\x1b[41m \x1b[0m performGW FINISHED', resolution);
+                });
+            }
+
+            if(efId == 2) {
+                this.effectsManager.performRgbFade().then( (resolution) => {
+                    this.logger.debug('\x1b[41m \x1b[0m performRgbFade FINISHED', resolution);
+                });
+            }
+            
 
             res.write(JSON.stringify(true));
             res.end();

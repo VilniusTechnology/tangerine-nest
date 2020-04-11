@@ -79,7 +79,7 @@ export class Pca9685RgbCctDriverManager {
 
         // this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
 
-        this.pwm.setDutyCycle(colourPin, prepared_value);
+        this.pwm.setDutyCycle(colourPin, prepared_value, colorName);
 
         this.colors[colorName] = {'value': value, 'vp': prepared_value};
     };

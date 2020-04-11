@@ -1,22 +1,24 @@
 # sudo nano /etc/systemd/system/tangerine-nest.service
 #
+# sudo cp /home/tangerine/tangerine-nest/infrastructure/tangerine-nest.service /etc/systemd/system
 #
-#
+# sudo systemctl enable tangerine-nest
 # sudo systemctl daemon-reload
 # sudo systemctl start tangerine-nest
 # sudo systemctl stop tangerine-nest
 # sudo systemctl restart tangerine-nest
-# sudo systemctl enable tangerine-nest
+# 
 #
 # sudo journalctl -u tangerine-nest
 
 [Unit]
-Description=tangerine-nest-description
+Description=TangerineNest controller
 After=network.target
 
 [Service]
+Environment=NODE_ENV=production
 WorkingDirectory=/home/tangerine/tangerine-nest
-ExecStart=/usr/local/bin/node /home/tangerine/tangerine-nest NODE_ENV=production npm start
+ExecStart=/usr/local/bin/node server.js
 Restart=always
 
 User=tangerine

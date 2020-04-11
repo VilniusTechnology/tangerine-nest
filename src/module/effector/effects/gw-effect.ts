@@ -1,5 +1,4 @@
 import { FaderAdvanced } from './../effector/fader-advanced';
-import { resolve } from 'path';
 
 export class GWEffect {
 

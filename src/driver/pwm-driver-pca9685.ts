@@ -31,8 +31,8 @@ export class PwmDriverPca9685 extends PwmDriverFacade {
         });
     }
 
-    public setDutyCycle(colourPin, prepared_value) {
-        // console.log(`colourPin: ${colourPin}, prepared_value: ${prepared_value}`);
+    public setDutyCycle(colourPin, prepared_value, colorName = '') {
+        // this.logger.debug(`Will set color: ${colorName}, colourPin: ${colourPin}, prepared_value: ${prepared_value}`);
         this.driver.setDutyCycle(colourPin, prepared_value);
     }
 }
