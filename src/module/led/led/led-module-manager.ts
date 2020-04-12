@@ -24,7 +24,7 @@ export class LedModuleManager {
     constructor(config: any, logger: Logger, pwmManager: Pca9685RgbCctDriverManager) {
         this.pwmManager = pwmManager;      
         this.logger = logger;
-        this.fader=new FaderAdvanced(this.pwmManager, this.logger);
+        this.fader = new FaderAdvanced(this.pwmManager, this.logger);
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();
         this.timedRegulator = new TimedLightRegulator(config.ledTimer, this.pwmManager, this.logger); 
@@ -76,8 +76,23 @@ export class LedModuleManager {
         this.pwmManager.setLedState(1);
     };
 
+    resolveLedLuminosity() {
+        var colors = ["red", "green", "blue", "coldWhite", "warmWhite"];
+        var i = 0;
+        for (;colors[i];) {
+            const value = this.colors[colors[i]].value;
+            if (value > 0) {
+                return 1;
+            }
+            i++;
+        }
+
+        return 0;
+    }
+
     getState() {
-        // this.logger.debug('getState::LedModuleManager: ', JSON.parse(JSON.stringify(this.colors)));
+        this.colors.ledIliminationState = this.resolveLedLuminosity();
+
         return JSON.parse(JSON.stringify(this.colors));
     };
 
@@ -106,7 +121,7 @@ export class LedModuleManager {
         this.pwmManager.setLedMode(mode);
     };
 
-    getRgbCctLedDriver() {
+    getRgbCctLedDriver(): Pca9685RgbCctDriverManager {
         return this.pwmManager;
     }
     

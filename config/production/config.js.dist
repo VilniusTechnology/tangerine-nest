@@ -20,18 +20,17 @@ const config = {
         driver_type: 'i2c',
         driver : {
             i2c: obs,
-            address: 0x60,
-            frequency: 50,
+            address: 0x40,
+            frequency: 4800,
             debug: false,
         },
         contours : {
             main : {
-                green: 0,
+                warmWhite: 0,
                 coldWhite: 1,
-
-                red: 4,
-                blue: 5,
-                warmWhite: 6,
+                green: 2,
+                red: 3,
+                blue: 4,
             }
         },
         hardwareLoader: true,

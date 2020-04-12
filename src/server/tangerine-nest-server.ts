@@ -5,6 +5,7 @@ import { getLogger, Logger  } from 'log4js';
 import { config  } from './config-loader';
 import { Modules } from '../module';
 import * as bodyParser from "body-parser";
+import { LedModuleManager } from '../module/led/led/led-module-manager';
 const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
 export class TangerineNestServer {
@@ -116,6 +117,8 @@ export class TangerineNestServer {
                         this.logger.info('Will start boot DEMO.');
                         this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
                         this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
+                        const ledModule :LedModuleManager = this.modules.LedModule;
+                        ledModule.getRgbCctLedDriver().setLedState(1);
                     }
                 });
             });

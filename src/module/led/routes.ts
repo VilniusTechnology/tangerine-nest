@@ -25,8 +25,20 @@ export class Routes extends RoutesModuleBase {
 
             let query = url.parse(req.url, true).query;
             this.requestProcessor.manageModes(query);
-            let ledStateObj = this.requestProcessor.returnState(query);
-            this.requestProcessor.prepareResponse(res, ledStateObj);
+
+            this.respondState(res);
         });
+
+        this.restapi.all(this.getFullRoute('/healthcheck'), bodyParser.json(), (req, res) => {
+            // const data = {status: 'ok'};
+            this.respondState(res);
+        });
+    }
+
+
+    respondState(res) {
+        let ledStateObj = this.requestProcessor.returnState({});
+        this.logger.debug('LED /healthcheck : ', ledStateObj);
+        this.requestProcessor.prepareResponse(res, ledStateObj);
     }
 }
