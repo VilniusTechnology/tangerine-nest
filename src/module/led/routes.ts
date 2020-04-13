@@ -30,7 +30,6 @@ export class Routes extends RoutesModuleBase {
         });
 
         this.restapi.all(this.getFullRoute('/healthcheck'), bodyParser.json(), (req, res) => {
-            // const data = {status: 'ok'};
             this.respondState(res);
         });
     }

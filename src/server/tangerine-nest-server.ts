@@ -117,6 +117,7 @@ export class TangerineNestServer {
                         this.logger.info('Will start boot DEMO.');
                         this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
                         this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
+                        
                         const ledModule :LedModuleManager = this.modules.LedModule;
                         ledModule.getRgbCctLedDriver().setLedState(1);
                     }
