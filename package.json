@@ -39,6 +39,7 @@
     "mockery": "^2.1.0",
     "moment-range": "^4.0.1",
     "nomnom": "^1.8.1",
+    "onoff": "^5.0.1",
     "openpixelcontrol-stream": "^0.1.2",
     "os-utils": "0.0.14",
     "pca9685": "^4.0.3",

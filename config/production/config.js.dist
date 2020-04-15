@@ -26,10 +26,10 @@ const config = {
         },
         contours : {
             main : {
-                warmWhite: 0,
-                coldWhite: 1,
-                green: 2,
-                red: 3,
+                coldWhite: 0,
+                warmWhite: 1,
+                red: 2,
+                green: 3,
                 blue: 4,
             }
         },
