@@ -51,7 +51,7 @@ ssh tangerine@tangerine.local
 
 cd /home/tangerine
 
-git clone git@github.com:VilniusTechnology/tangerine-nest.git && cd tangerine-nest
+git clone https://github.com/VilniusTechnology/tangerine-nest.git && cd tangerine-nest
 
 npm install
 
