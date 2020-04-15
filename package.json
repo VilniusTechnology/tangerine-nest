@@ -35,7 +35,7 @@
     "i2c-bus": "^5.1.0",
     "jwt-simple": "^0.5.5",
     "linux-user": "^0.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "log4js": "^3.0.6",
     "mockery": "^2.1.0",
     "moment-range": "^4.0.1",
