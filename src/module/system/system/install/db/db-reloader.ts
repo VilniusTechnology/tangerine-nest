@@ -24,11 +24,13 @@ export class DbReloader {
             const setupUsers = this.setupUsers();
             const setupLightPrograms = this.setupLightPrograms();
             const setupHomeData = this.setupHomeData();
+            const utilsData = this.setupUtils();
 
             Promise.all([
                 setupUsers, 
                 setupLightPrograms, 
-                setupHomeData
+                setupHomeData,
+                utilsData
             ]).then( (values) => {
                 resolve(true);
             }).catch((error) => {
@@ -71,6 +73,45 @@ export class DbReloader {
         });
     }
 
+    private setupUtils() {
+        return new Promise((resolve, reject) =>  {
+            let queryDrop = `DROP TABLE IF EXISTS 'utils'`;
+            this.db.run(queryDrop, {}, (e: Error) => {
+                    if (e) {
+                        let err = {query: queryDrop, message: e.message};
+                        this.logger.error(err);
+                        reject(err);
+                    }
+        
+                    const queryCreate = `CREATE TABLE 
+                                         IF NOT EXISTS 'utils' 
+                                         (id int, 'key' text, 'value' text)`;
+                    this.db.run(queryCreate, {}, (e: Error) => {
+                        if (e) {
+                            let err = {query: queryCreate, message: e.message};
+                            this.logger.error(err);
+                            reject(err);
+                        }
+
+                        const queryUpdate
+                            = "CREATE UNIQUE INDEX idx_utils_key ON utils (key)";
+
+                        this.db.run(queryUpdate, {}, (e: Error) => {
+                            if (e) {
+                                let err = {query: queryCreate, message: e.message};
+                                this.logger.error(err);
+                                reject(err);
+                            }
+
+                            resolve(true);
+                        });
+                        // resolve(true);
+                    });
+                }
+            );
+        });
+    }
+
     private setupLightPrograms() {
         return new Promise((resolve, reject) =>  {
             let queryDrop = `DROP TABLE IF EXISTS 'light_time_programs'`;
@@ -80,8 +121,10 @@ export class DbReloader {
                         this.logger.error(err);
                         reject(err);
                     }
-        
-                    const queryCreate = `CREATE TABLE IF NOT EXISTS 'light_time_programs' (id int, title text, 'from' text, 'to' text, settings text)`;
+
+                    const queryCreate = `CREATE TABLE 
+                                         IF NOT EXISTS 'light_time_programs' 
+                                         (id int, title text, 'from' text, 'to' text, settings text)`;
                     this.db.run(queryCreate, {}, (e: Error) => {
                         if (e) {
                             let err = {query: queryCreate, message: e.message};

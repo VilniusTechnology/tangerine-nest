@@ -6,6 +6,7 @@ export declare class DbReloader {
     constructor(logger: Logger, dbPath: string);
     performReload(): Promise<{}>;
     createUser(username: string, email: string, pasword: string): Promise<{}>;
+    private setupUtils;
     private setupLightPrograms;
     private setupHomeData;
     private setupUsers;

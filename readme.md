@@ -51,7 +51,7 @@ ssh tangerine@tangerine.local
 
 cd /home/tangerine
 
-git clone https://github.com/VilniusTechnology/tangerine-nest.git && cd tangerine-nest
+git clone git@github.com:VilniusTechnology/tangerine-nest.git && cd tangerine-nest
 
 npm install
 
@@ -121,8 +121,8 @@ debug: set true if you need more verbose info.
 
 contours:
 
-currently only main countour is supported.
-Each color has its correspondign pin connected to PCA9685 mapped.
+currently only main contour is supported.
+Each color has its corresponding pin connected to PCA9685 mapped.
 
 ## Launch
 

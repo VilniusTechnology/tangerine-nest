@@ -17,7 +17,7 @@ export class LightSourceSensor {
 
     read() {
         return new Promise((resolve, reject) => {
-            const i2c1 = i2cBus.openSync(1);
+            const i2c1 = i2cBus.openSync(3);
             i2c1.writeByte(0x4A, 0x01, 0x0, () => {
                 i2c1.writeByte(0x4A, 0x02, 0x00, () => {
                     i2c1.readWord(0x4A, 0x3, (err, rawLight) => {

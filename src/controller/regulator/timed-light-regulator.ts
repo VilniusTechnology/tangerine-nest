@@ -18,7 +18,7 @@ export class TimedLightRegulator {
         this.timer = {};
         this.logger = logger;
         this.dbPath = config.database.path;
-    };
+    }
 
     clearTimersIntervals() {
         this.logger.debug('Will clearTimersIntervals');
@@ -30,7 +30,7 @@ export class TimedLightRegulator {
         this.timer = setInterval(() => { 
             this.performCheck();
         }, 5000);
-    };
+    }
 
     performCheck() {
         let intervalsPromise = this.getTimeModesIntervals(); 
@@ -72,7 +72,7 @@ export class TimedLightRegulator {
         if (range.contains(current_date_time)) {
             return true;
         }
-    };
+    }
 
     getTimeModesIntervals() {
         return new Promise((resolve, reject) => {
@@ -95,7 +95,7 @@ export class TimedLightRegulator {
                 });
             });
         });
-    };
+    }
 
     setColors(colors) {
         // console.log('colors', colors);
@@ -113,5 +113,5 @@ export class TimedLightRegulator {
         } catch (e) {
 
         }
-    };
+    }
 };

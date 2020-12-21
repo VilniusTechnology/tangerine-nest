@@ -21,6 +21,7 @@ export class LedModule extends ModuleBase {
 
     protected pwmManager: Pca9685RgbCctDriverManager;
     protected colors;
+    protected config;
     protected lightSource;
 
     protected timedRegulator: TimedLightRegulator;
@@ -32,6 +33,7 @@ export class LedModule extends ModuleBase {
 
         this.pwmManager = new Pca9685RgbCctDriverManager(config, logger);    
         this.logger = logger;
+        this.config = config;
         this.colors = this.pwmManager.getState();
         this.lightSource = new LightSourceSensor();
         this.lightRegulator = new LightRegulator(this.fader, this.lightSource, this.logger);
@@ -67,11 +69,10 @@ export class LedModule extends ModuleBase {
     }
 
     getRoutesForRegistration() {
-        return new Routes(this.logger, this.ledModuleManager).listRoutes();
+        return new Routes(this.logger, this.ledModuleManager, this.config).listRoutes();
     }
 
     getRgbCctLedDriver() {
         return this.ledModuleManager.getRgbCctLedDriver();
     }
-    
-};
+}

@@ -17,15 +17,13 @@ After=network.target
 
 [Service]
 Environment=NODE_ENV=production
+Environment=PATH=/usr/bin:/usr/local/bin
 WorkingDirectory=/home/tangerine/tangerine-nest
 ExecStart=/usr/local/bin/node server.js
 Restart=always
 
-User=tangerine
+#User=root
 #Group=group
-
-Environment=PATH=/usr/bin:/usr/local/bin
-Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target

@@ -1,17 +1,25 @@
 import { LedModule } from '../module/led/led-module';
 import { Logger } from 'log4js';
 import { LedModuleManager } from '../module/led/led/led-module-manager';
+import * as _ from "lodash";
+
+const sqlite3 = require('sqlite3').verbose();
 
 export class RequestProcessor {
 
     private wereLightsRevived: boolean = false;
-    private ledModuleManager: LedModuleManager;
+    private readonly ledModuleManager: LedModuleManager;
     private logger: Logger;
+    private config;
+    private readonly dbPath;
     private timerOfLightAdaptor;
     
-    constructor(ledModuleManager: LedModuleManager, logger) {
+    constructor(ledModuleManager: LedModuleManager, logger, config) {
         this.ledModuleManager = ledModuleManager;
         this.logger = logger;
+        this.config = config;
+
+        this.dbPath = this.config.settingsDb.path;
 
         this.logger.info('RequestProcessor initialized');
     };
@@ -29,18 +37,22 @@ export class RequestProcessor {
     };
 
     public manageModes(query) {
-        this.logger.debug('Will manage modes::this.ledModuleManager.getState().ledState: ', this.ledModuleManager.getState().ledState);
+        this.logger.debug(
+            'Will manage modes::this.ledModuleManager.getState().ledState: ',
+            this.ledModuleManager.getState().ledState
+        );
         this.logger.debug('query.state: ', query.state);
 
+        // If state changes LEDs must be set ON/OFF
         if (parseInt(query.state) != this.ledModuleManager.getState().ledState) {
-
             this.logger.info('State change detected, will set: ', query.state);
+
+            // Turn ON/OFF
             query.state = parseInt(query.state);
             if (parseInt(query.state) == 1) {
                 this.logger.debug('Will unmute.');
                 this.ledModuleManager.unMute();
             }
-
             if (parseInt(query.state) == 0 || query.state == null) {
                 this.logger.debug('Will mute.');
                 this.ledModuleManager.mute();
@@ -104,6 +116,11 @@ export class RequestProcessor {
     
             this.handleTimedMode(query);
         }
+
+        const saveState = this.returnState({});
+        this.logger.debug(`LED State to be saved: ${saveState}`);
+
+        this.saveState(saveState);
     };
 
     public clearTimersIntervals() {
@@ -143,6 +160,94 @@ export class RequestProcessor {
 
         res.write(JSON.stringify(data));
         res.end();
-    };
+    }
 
-};
+    saveState(saveState) {
+        this.insertStateToDb(saveState);
+    }
+
+    loadSavedState() {
+        setTimeout(() => {
+            this.loadStateFromDb().then((state:any) => {
+                this.logger.info(`Loaded state: ${state}`);
+
+                this.ledModuleManager.setMode(state.ledMode);
+                // Set lights colours.
+                if (state.ledState == 1) {
+                    this.logger.debug('WILL SET Colours ');
+                    let colors = {};
+                    const keys = Object.keys(state);
+                    _.forEach(keys, (val, key, ind) => {
+                        if (
+                            val !== 'state'
+                            && val !== 'mode'
+                            && val !== 'ledMode'
+                            && val !== 'ledState'
+                            && val !== 'ledIliminationState'
+                        ) {
+                            colors[val] = state[val].value;
+                        }
+
+                        if (key === (ind.length -1)) {
+                            this.ledModuleManager.setColours(colors);
+                        }
+                    });
+                }
+            });
+        }, 5500);
+    }
+
+    protected loadStateFromDb() {
+        return new Promise((resolve, reject) => {
+            this.logger.debug(`Will list loadStateFromDb.`);
+
+            const db = new sqlite3.Database(this.dbPath, (err) => {
+                if (err) {
+                    return this.logger.error(' DB error: ', err.message);
+                }
+            });
+            db.serialize(() => {
+                db.all(
+                    "SELECT value from utils WHERE key='LED_STATE'",
+                     (err, stateString) => {
+                         if (err) {
+                             reject(err.message);
+                         }
+
+                         const stateObj = JSON.parse(stateString[0].value);
+                         resolve(stateObj);
+                    });
+            });
+        });
+    }
+
+    protected insertStateToDb(stateO) {
+        const db = new sqlite3.Database(this.dbPath, (err) => {
+            if (err) {
+                return this.logger.error(' DB error: ', err.message);
+            }
+        });
+
+        var stateStr = JSON.stringify(stateO);
+        const insertQuery = `
+                INSERT OR REPLACE INTO 'utils' (
+                    'key',
+                    'value'
+                )
+                VALUES
+                (
+                    ?,
+                    ?
+                )`;
+
+        db.run(
+            insertQuery,
+            ['LED_STATE', stateStr],
+            (err, rs) => {
+                if (err) {
+                    return console.error(err.message);
+                }
+                this.logger.debug(`Rows inserted`, rs);
+            });
+    }
+}

@@ -32,9 +32,18 @@ export class LedModuleManager {
     };
 
     setColours(colors) {
+        console.log('colors: ', colors);
         _.forEach(colors, (val, key) => {
-            if (key !== 'state' && key !== 'mode' && key !== 'ledMode') {
-                this.logger.debug(`'Will setColor: ${key} ${val}'`);
+            console.log(0, val, key);
+            if (
+                key !== 'state'
+                && key !== 'mode'
+                && key !== 'ledMode'
+                && key !== 'ledState'
+                && key !== 'ledIliminationState'
+            ) {
+                this.logger.debug(`'Will setColor: ${key} - ${val}'`);
+                this.colors[key].value = val;
                 this.pwmManager.setColor(key, parseInt(val));
             }
         });   

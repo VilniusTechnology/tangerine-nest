@@ -9,12 +9,18 @@ export class Routes extends RoutesModuleBase {
 
     public readonly ROUTE_PREFIX = 'led';
     public logger: Logger;
+    public config;
     private requestProcessor: RequestProcessor;
 
-    constructor(logger: Logger, ledModuleManager: LedModuleManager) {
+    constructor(logger: Logger, ledModuleManager: LedModuleManager, config) {
         super(logger);
         this.logger = logger;
-        this.requestProcessor = new RequestProcessor(ledModuleManager, this.logger);
+        this.requestProcessor = new RequestProcessor(
+            ledModuleManager,
+            this.logger,
+            config
+        );
+        this.requestProcessor.loadSavedState();
         
         this.routes();
     }
@@ -26,18 +32,27 @@ export class Routes extends RoutesModuleBase {
             let query = url.parse(req.url, true).query;
             this.requestProcessor.manageModes(query);
 
-            this.respondState(res);
+            setTimeout(() => {
+                this.respondState(res);
+            }, 100);
         });
 
-        this.restapi.all(this.getFullRoute('/healthcheck'), bodyParser.json(), (req, res) => {
-            this.respondState(res);
-        });
+        this.restapi.all(
+            this.getFullRoute('/healthcheck'),
+            bodyParser.json(),
+            (req, res) => {
+                // this.respondState(res);
+                setTimeout(() => {
+                    this.respondState(res);
+                }, 100);
+            }
+        );
     }
 
 
     respondState(res) {
         let ledStateObj = this.requestProcessor.returnState({});
-        this.logger.debug('LED /healthcheck : ', ledStateObj);
+        this.logger.debug('LED ledStateObj : ', ledStateObj);
         this.requestProcessor.prepareResponse(res, ledStateObj);
     }
 }

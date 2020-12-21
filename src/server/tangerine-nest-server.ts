@@ -48,10 +48,21 @@ export class TangerineNestServer {
 
         return new Promise((resolve, reject) => {
             const rawModules = [
-                {id: 'SystemModule', params: [this.config, this.logger, this.getContainer() ] },
+                {id: 'SystemModule',
+                    params: [
+                        this.config,
+                        this.logger,
+                        this.getContainer()
+                    ]
+                },
                 {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
-                {id: 'TimedLightSettingsApi', params: [this.config.ledTimer, this.logger, this.getContainer()]},
+                {id: 'TimedLightSettingsApi', params: [
+                        this.config.ledTimer,
+                        this.logger,
+                        this.getContainer()
+                    ]
+                },
                 {id: 'EffectorModule', params: [this.logger, this.getContainer()]},
                 {id: 'OpenpixelModule', params: [this.logger, this.getContainer()]},
             ];
@@ -115,8 +126,10 @@ export class TangerineNestServer {
                 this.listen().then(() => {
                     if (this.modules.LedModule !== undefined) {
                         this.logger.info('Will start boot DEMO.');
-                        this.modules.LedModule.getRgbCctLedDriver().setColor('green', 150);
-                        this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
+
+                        this.modules.LedModule.getRgbCctLedDriver()
+                            .setColor('red', 2);
+                        // this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
                         
                         const ledModule :LedModuleManager = this.modules.LedModule;
                         ledModule.getRgbCctLedDriver().setLedState(1);
@@ -126,18 +139,12 @@ export class TangerineNestServer {
         });
     }
 
-    private initWebServer(): void {
-        this.app = express();
-        this.logger.debug('Server created.');
-    }
-
     private registerMiddlewares() {
         this.app.use(this.corsMiddleware);
         this.app.use(bodyParser.json());
+
         if(this.config.secure_api) {
-
             this.logger.error('Injecting to auth_mw', this.modules);
-
             this.app.use(auth_mw(this.getContainer()));
             this.logger.warn('Registered AUTH Middleware !');
         }
@@ -165,13 +172,31 @@ export class TangerineNestServer {
         }
     }
 
+    private initWebServer(): void {
+        this.app = express();
+        this.logger.debug('Server created.');
+    }
+
     private listen() {
         return new Promise((resolve, reject) => {
-            this.app.listen(this.port, () => {
-                this.logger.info( `Server started at http://localhost:${this.port}` );
-                this.logger.info('Listening...');
-                resolve(true);
-            } );
-        })
+            var fs = require('fs');
+            var https = require('https')
+
+            var privateKey  = fs.readFileSync('certs/server.key', 'utf8');
+            var certificate = fs.readFileSync('certs/server.crt', 'utf8');
+            var credentials = {key: privateKey, cert: certificate};
+
+            https.createServer(credentials, this.app)
+                .listen(443, () => {
+                    this.logger.info( `Server started at https://localhost` );
+
+                    // this.app.listen(this.port, () => {
+                    //     this.logger.info( `Server started at http://localhost:${this.port}` );
+                    //     this.logger.info('Listening...');
+                    //
+                        resolve(true);
+                    // });
+                });
+        });
     }
 }
