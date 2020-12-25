@@ -17,7 +17,13 @@ export class FaderAdvanced {
         this.faderDown = new FaderAdvancedDown(this.pwmDriver, logger);
     }
 
-    public fadeUp(from: number, to: number, channel: string ,timeout: number, step: number = 1) {
+    public fadeUp(
+        from: number,
+        to: number,
+        channel: string ,
+        timeout: number,
+        step: number = 1
+    ) {
         return new Promise((resolve, reject) => {
             this.faderUp.fadeUp(from, to, channel, timeout, step)
             .then( (data) => {
@@ -29,7 +35,13 @@ export class FaderAdvanced {
         });
     }
 
-    public fadeDown(from: number, to: number, channel: string, timeout: number, step: number = 1) {
+    public fadeDown(
+        from: number,
+        to: number,
+        channel: string,
+        timeout: number,
+        step: number = 1
+    ) {
         return new Promise((resolve, reject) => {
             this.faderDown.fadeDown(from, to, channel, timeout, step)
             .then( (data) => {

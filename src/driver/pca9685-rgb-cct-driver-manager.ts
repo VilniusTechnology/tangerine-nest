@@ -82,33 +82,59 @@ export class Pca9685RgbCctDriverManager {
         this.pwm.setDutyCycle(colourPin, prepared_value, colorName);
 
         this.colors[colorName] = {'value': value, 'vp': prepared_value};
-    };
+    }
 
     public getRgbValueInPercents(raw: number) {
         let value_in_precents = raw / 255;
         return Math.round(Number.parseFloat(value_in_precents.toString()) * 100) / 100;
-    };
+    }
 
     public setLedState(newState: number) {
         this.colors.ledState = newState;
         // this.logger.debug(`setLedState::this.colors.ledState: ${this.colors.ledState}.`);
-    };
+    }
 
     public setLedMode(mode: any) {
         this.mode = mode
-    };
+    }
 
     public getLedMode(): any {
         return this.mode;
-    };
+    }
 
     public getState(): Colors {
         return this.colors;
-    };
+    }
 
     public getFullState() {
         return {colors: this.colors, mode: this.getLedMode()};
-    };
+    }
+
+    public switchAllLedsOff() {
+        this.logger.debug('switchAllLedsOff');
+        this.colors = JSON.parse(
+            JSON.stringify(this.getState())
+        );
+
+        this.setColor('red', 0);
+        this.setColor('green', 0);
+        this.setColor('blue', 0);
+        this.setColor('warmWhite', 0);
+        this.setColor('coldWhite', 0);
+
+        this.setLedState(0);
+    }
+
+    public switchAllLedsOn() {
+        this.logger.debug('switchAllLedsOn');
+        this.setColor('red', this.colors.red.value);
+        this.setColor('green', this.colors.green.value);
+        this.setColor('blue', this.colors.blue.value);
+        this.setColor('warmWhite', this.colors.warmWhite.value);
+        this.setColor('coldWhite', this.colors.coldWhite.value);
+
+        this.setLedState(1);
+    }
 
     public getPwmDriver() {
         return this.pwm;

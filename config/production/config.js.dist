@@ -47,8 +47,14 @@ const config = {
         hardwareLoader: true,
     },
     lightLvl: {
-        address: 0x4A,
+        address: 0x23,
+        type: "BH1750",
         hardwareLoader: true,
+        auto: {
+            interval: 500,
+            bottom: 45,
+            top: 55,
+        }
     },
     sensorData: {
         database: {

@@ -1,9 +1,9 @@
 import { LedModuleManager } from './led/led-module-manager';
-import { RequestProcessor } from './../../server/request-processor';
 import { RoutesModuleBase } from "../routes-module-base";
 import * as url from 'url';
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
+import {RequestProcessor} from "./request-processor";
 
 export class Routes extends RoutesModuleBase {
 
