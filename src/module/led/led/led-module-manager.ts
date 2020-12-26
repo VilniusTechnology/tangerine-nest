@@ -68,6 +68,20 @@ export class LedModuleManager {
         this.colors.ledState = 1;
     }
 
+    getState() {
+        let ledModeObj = {
+            ledMode: Number(this.pwmManager.getLedMode())
+        };
+        this.colors.ledIliminationState = this.resolveLedLuminosity();
+        const colorsState = JSON.parse(JSON.stringify(this.colors))
+        const result = Object.assign(
+            colorsState,
+            ledModeObj,
+        );
+
+        return result;
+    }
+
     resolveLedLuminosity() {
         var colors = ["red", "green", "blue", "coldWhite", "warmWhite"];
         var i = 0;
@@ -82,19 +96,13 @@ export class LedModuleManager {
         return 0;
     }
 
-    getState() {
-        this.colors.ledIliminationState = this.resolveLedLuminosity();
-
-        return JSON.parse(JSON.stringify(this.colors));
-    };
-
     clearTimersIntervals() {
         this.timedRegulator.clearTimersIntervals();
-    };
+    }
 
     setTimedSettings() {
         this.timedRegulator.checkIntervalsAndAjustLightSetting();
-    };
+    }
 
     adaptLight() {
         return new Promise((resolve, reject) => {
@@ -103,18 +111,17 @@ export class LedModuleManager {
             });
         });
         
-    };
+    }
 
     getLedMode() {
         return this.pwmManager.getLedMode();
-    };
+    }
 
     setMode(mode) {
         this.pwmManager.setLedMode(mode);
-    };
+    }
 
     getRgbCctLedDriver(): Pca9685RgbCctDriverManager {
         return this.pwmManager;
     }
-    
-};
+}

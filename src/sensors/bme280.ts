@@ -35,6 +35,8 @@ export class Bme280Sensor {
             .then((data) => {
                 data.temperature_Fa = BME280.convertCelciusToFahrenheit(data.temperature_C);
                 data.pressure_inHg = BME280.convertHectopascalToInchesOfMercury(data.pressure_hPa);
+                data.temperature = data.temperature_C;
+                data.pressure = data.pressure_hPa;
 
                 resolve(data);
             })

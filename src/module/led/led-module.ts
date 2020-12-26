@@ -75,7 +75,11 @@ export class LedModule extends ModuleBase {
                 this.logger.debug('\x1b[41m \x1b[0m PwmManager is UP!'); 
 
                 this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
-    
+                this.logger.debug(
+                    '\x1b[41m \x1b[0m pwmManager LedMode set to: '
+                    + LedModule.MANUAL_MODE_CODE
+                );
+
                 this.fader = new FaderAdvanced(this.pwmManager, this.logger);
     
                 this.logger.info(

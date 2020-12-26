@@ -7,6 +7,7 @@ import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { RoutesModuleBase } from '../routes-module-base';
 import { Bme280Sensor } from "../../sensors/bme280";
+import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
 
 export class Routes extends RoutesModuleBase {
 
@@ -78,6 +79,30 @@ export class Routes extends RoutesModuleBase {
                 this.sensor.read().then((response) => {
                     res.write(JSON.stringify(response));
                     res.end();
+                }).catch((error) => {
+                    this.logger.error(error);
+                });
+            }).catch((error) => {
+                this.logger.error(error);
+            });
+        });
+
+        this.restapi.all('/sensors-all', bodyParser.json(), (req, res) => {
+
+            this.logger.debug('On route to: /sensors-all');
+
+            this.sensor.init().then(() => {
+                this.sensor.read().then((response) => {
+
+                    const ls = new LightSourceSensorBH1750(this.logger);
+                    ls.init().then(() => {
+                        ls.read().then((light) => {
+                            //@ts-ignore
+                            response.light = light.light_lvl;
+                            res.write(JSON.stringify(response));
+                            res.end();
+                        });
+                    });
                 }).catch((error) => {
                     this.logger.error(error);
                 });

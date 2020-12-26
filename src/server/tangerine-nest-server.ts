@@ -137,6 +137,18 @@ export class TangerineNestServer {
                 });
             });
         });
+        this.app.get('/api/list-routes', bodyParser.json(), (req, res) => {
+            this.logger.debug('On route to: /api/list-routes');
+            const routes = [];
+            this.app._router.stack.forEach((layer) => {
+                if (layer.route != undefined) {
+                    routes.push(layer.route.path);
+                }
+            });
+
+            res.write(JSON.stringify(routes));
+            res.end();
+        });
     }
 
     private registerMiddlewares() {
@@ -144,7 +156,7 @@ export class TangerineNestServer {
         this.app.use(bodyParser.json());
 
         if(this.config.secure_api) {
-            this.logger.error('Injecting to auth_mw', this.modules);
+            this.logger.debug('Injecting to auth_mw', this.modules);
             this.app.use(auth_mw(this.getContainer()));
             this.logger.warn('Registered AUTH Middleware !');
         }

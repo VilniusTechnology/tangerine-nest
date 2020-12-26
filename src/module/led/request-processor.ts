@@ -28,14 +28,6 @@ export class RequestProcessor {
         return this.ledModuleManager;
     }
 
-    public resolveLedMode(query) {
-        let ledModeObj = {
-            ledMode: Number(this.ledModuleManager.getLedMode())
-        };
-
-        return ledModeObj;
-    };
-
     public manageModes(query) {
         this.logger.debug(
             'Will manage modes::this.ledModuleManager.getState().ledState: ',
@@ -132,15 +124,11 @@ export class RequestProcessor {
     }
 
     public returnState(query) {
-        let ledModeObj = this.resolveLedMode(query);
-        let nst = Object.assign(
-            this.ledModuleManager.getState(),
-            ledModeObj,
-        );
+        this.logger.debug('WILL returnState: ', this.ledModuleManager.getState());
 
-        this.logger.debug('WILL returnState: ', nst);
-
-        return nst;
+        return {
+            'main': this.ledModuleManager.getState()
+        };
     };
 
     public prepareResponse(res, data) {

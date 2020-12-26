@@ -17,6 +17,9 @@ export class Pca9685RgbCctDriverManager {
         this.colors = new Colors();
         this.logger = logger;
         this.config = config.ledDriver;
+        this.logger.debug(
+            '\x1b[41m \x1b[0m \x1b[0m \x1b[0m Pca9685RgbCctDriverManager::CONSTRUCT'
+        );
     }
 
     public setup() {
@@ -96,6 +99,7 @@ export class Pca9685RgbCctDriverManager {
 
     public setLedMode(mode: any) {
         this.mode = mode
+        this.logger.info('setLedMode: ' + this.mode);
     }
 
     public getLedMode(): any {
