@@ -8,11 +8,13 @@ import * as bodyParser from "body-parser";
 import { RoutesModuleBase } from '../routes-module-base';
 import { Bme280Sensor } from "../../sensors/bme280";
 import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
+import {PirState} from "../../sensors/pir-state";
 
 export class Routes extends RoutesModuleBase {
 
     public readonly ROUTE_PREFIX = '';
 
+    public config;
     public logger: Logger;
     public ledModule: LedModule;
     public sensor: Bme280Sensor;
@@ -21,9 +23,8 @@ export class Routes extends RoutesModuleBase {
         super(logger);
 
         this.logger = logger;
-
+        this.config = config;
         this.sensor = new Bme280Sensor(config.bme280, this.logger);
-
         this.ledModule = container()['LedModule'];
         this.routes();
     }
@@ -88,7 +89,6 @@ export class Routes extends RoutesModuleBase {
         });
 
         this.restapi.all('/sensors-all', bodyParser.json(), (req, res) => {
-
             this.logger.debug('On route to: /sensors-all');
 
             this.sensor.init().then(() => {
@@ -99,10 +99,34 @@ export class Routes extends RoutesModuleBase {
                         ls.read().then((light) => {
                             //@ts-ignore
                             response.light = light.light_lvl;
-                            res.write(JSON.stringify(response));
-                            res.end();
+
+                            const pirState = new PirState(this.config, this.logger);
+                            pirState.read().then((pir) => {
+                                //@ts-ignore
+                                response.pir = pir.value;
+
+                                res.write(JSON.stringify(response));
+                                res.end();
+                            });
                         });
                     });
+                }).catch((error) => {
+                    this.logger.error(error);
+                });
+            }).catch((error) => {
+                this.logger.error(error);
+            });
+        });
+
+        this.restapi.all('/sensors-some', bodyParser.json(), (req, res) => {
+            this.logger.debug('On route to: /sensors-some');
+
+            this.sensor.init().then(() => {
+                this.sensor.read().then((response) => {
+                    //@ts-ignore
+                    response.light = light.light_lvl;
+                    res.write(JSON.stringify(response));
+                    res.end();
                 }).catch((error) => {
                     this.logger.error(error);
                 });

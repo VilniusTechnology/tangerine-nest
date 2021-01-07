@@ -20,4 +20,4 @@ ADS1115.open(...connection).then(async (ads1115) => {
     }, 
     500
   );
-})
+});

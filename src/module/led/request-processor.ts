@@ -157,6 +157,10 @@ export class RequestProcessor {
             this.loadStateFromDb().then((state:any) => {
                 this.logger.info(`Loaded state: ${state}`);
 
+                if (state.ledMode == null || state.ledMode == undefined) {
+                    state.ledMode = 1;
+                }
+
                 this.ledModuleManager.setMode(state.ledMode);
                 // Set lights colours.
                 if (state.ledState == 1) {
@@ -179,7 +183,7 @@ export class RequestProcessor {
                         }
                     });
                 }
-            });
+            }).catch(() => {});
         }, 5500);
     }
 
@@ -200,6 +204,15 @@ export class RequestProcessor {
                              reject(err.message);
                          }
 
+                         console.log(
+                             stateString
+                         );
+
+                         if (stateString == undefined || stateString[0] == undefined) {
+                             reject(false);
+                             return;
+                         }
+
                          const stateObj = JSON.parse(stateString[0].value);
                          resolve(stateObj);
                     });
@@ -214,7 +227,7 @@ export class RequestProcessor {
             }
         });
 
-        var stateStr = JSON.stringify(stateO);
+        const stateStr = JSON.stringify(stateO);
         const insertQuery = `
                 INSERT OR REPLACE INTO 'utils' (
                     'key',

@@ -15,8 +15,6 @@ export class Authorizer {
     constructor(logger: Logger) {
         this.config = config.config;
 
-        // test@test.com
-
         this.db = new sqlite3.Database(config.config.settingsDb.path, (err) => {
             if (err) {
                 return this.logger.error(`Authorizer DB error on path: ${config.config.settingsDb.path}: `, err.message);

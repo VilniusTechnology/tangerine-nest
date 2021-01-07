@@ -57,6 +57,9 @@ const config = {
     settingsDb: {
         path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
     },
+    storage: {
+        path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
+    },
     neopixel: {
         lenght: 5,
     },

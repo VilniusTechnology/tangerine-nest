@@ -6,6 +6,8 @@ import { config  } from './config-loader';
 import { Modules } from '../module';
 import * as bodyParser from "body-parser";
 import { LedModuleManager } from '../module/led/led/led-module-manager';
+import {PirRunner} from "../runners/pir";
+const sqlite3 = require('sqlite3').verbose();
 const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
 export class TangerineNestServer {
@@ -115,6 +117,7 @@ export class TangerineNestServer {
     }
 
     public launch(): void {
+        this.launchBackgroundRunners();
         this.initWebServer();
 
         this.registerMiddlewares();
@@ -149,6 +152,38 @@ export class TangerineNestServer {
             res.write(JSON.stringify(routes));
             res.end();
         });
+    }
+
+    private launchBackgroundRunners() {
+        const runners = [
+            {
+                address: '',
+                key: 'pir',
+                interval: 500,
+            }
+        ];
+
+        const db = new sqlite3.Database(this.config.storage.path, (err) => {
+            if (err) {
+                return this.logger.error(
+                    `BackgroundRunners DB error on path: ${config.config.settingsDb.path}: `,
+                    err.message
+                );
+            }
+            this.logger.debug('Authorizer loaded DB OK.');
+        });
+
+        const intervals = [];
+        runners.forEach((runner) => {
+            if (runner.key == 'pir') {
+                const intv = setInterval(() => {
+                    const run = new PirRunner(db, this.logger);
+                    run.readAndPersist();
+                }, runner.interval);
+                intervals.push(intv);
+            }
+        });
+
     }
 
     private registerMiddlewares() {
@@ -194,8 +229,14 @@ export class TangerineNestServer {
             var fs = require('fs');
             var https = require('https')
 
-            var privateKey  = fs.readFileSync('certs/server.key', 'utf8');
-            var certificate = fs.readFileSync('certs/server.crt', 'utf8');
+            var privateKey  = fs.readFileSync(
+                'certs/shady.local.server.key',
+                'utf8'
+            );
+            var certificate = fs.readFileSync(
+                'certs/shady.local.server.crt',
+                'utf8'
+            );
             var credentials = {key: privateKey, cert: certificate};
 
             https.createServer(credentials, this.app)
