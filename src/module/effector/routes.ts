@@ -3,6 +3,7 @@ import { RoutesModuleBase } from "../routes-module-base";
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { FaderAdvanced } from "./effector/fader-advanced";
+import {EffectsRepo} from "./effects-repo";
 
 export class Routes extends RoutesModuleBase {
 
@@ -11,6 +12,7 @@ export class Routes extends RoutesModuleBase {
 
     private fader: FaderAdvanced;
     private ledModule;
+    private repo: EffectsRepo;
     private effectsManager: EffectsManager;
 
     constructor(logger: Logger, ledModule) {
@@ -22,33 +24,38 @@ export class Routes extends RoutesModuleBase {
         this.fader = this.ledModule.getFader();
         this.effectsManager = new EffectsManager(this.fader, this.logger);
 
+        this.repo = new EffectsRepo(this.logger);
+
         this.routes();
     }
 
     routes() {
         this.restapi.all(this.getFullRoute('/list'), bodyParser.json(), (req, res) => {
             this.logger.info('Should list all effects');
+
+            res.write(
+                JSON.stringify(
+                    this.repo.retrieveEffectsList()
+                )
+            );
+            res.end();
         });
 
         this.restapi.all(this.getFullRoute('/play/:id'), bodyParser.json(), (req, res) => {
             this.logger.info(`/play/${req.params.id}`);
-            let efId = parseInt(req.params.id);
-            
-            if(efId == 1) {
-                this.effectsManager.performGW().then( (resolution) => {
-                    this.logger.debug('\x1b[41m \x1b[0m performGW FINISHED', resolution);
-                });
-            }
+            let efId = req.params.id;
 
-            if(efId == 2) {
-                this.effectsManager.performRgbFade().then( (resolution) => {
-                    this.logger.debug('\x1b[41m \x1b[0m performRgbFade FINISHED', resolution);
-                });
-            }
-            
+            this.execute('perform' + efId);
 
             res.write(JSON.stringify(true));
             res.end();
+        });
+    }
+
+    execute(effectKey) {
+        const prom = this.effectsManager[effectKey]();
+        prom.then( (resolution) => {
+            this.logger.debug(`\x1b[41m \x1b[0m perform${effectKey} FINISHED`, resolution);
         });
     }
 }

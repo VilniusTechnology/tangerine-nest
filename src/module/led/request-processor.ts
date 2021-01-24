@@ -2,6 +2,7 @@ import { Logger } from 'log4js';
 import * as _ from "lodash";
 import {LedModuleManager} from "./led/led-module-manager";
 import {LedModule} from "./led-module";
+import {disconnect} from "cluster";
 
 const sqlite3 = require('sqlite3').verbose();
 
@@ -155,18 +156,22 @@ export class RequestProcessor {
     loadSavedState() {
         setTimeout(() => {
             this.loadStateFromDb().then((state:any) => {
-                this.logger.info(`Loaded state: ${state}`);
+                this.logger.info(`Loaded state: `, state);
+                const rState = state.main;
 
-                if (state.ledMode == null || state.ledMode == undefined) {
+                if (rState.ledMode == null || rState.ledMode == undefined) {
                     state.ledMode = 1;
                 }
 
-                this.ledModuleManager.setMode(state.ledMode);
+                this.ledModuleManager.setMode(rState.ledMode);
+
                 // Set lights colours.
-                if (state.ledState == 1) {
+                if (rState.ledState == 1) {
                     this.logger.debug('WILL SET Colours ');
+
                     let colors = {};
-                    const keys = Object.keys(state);
+                    const keys = Object.keys(rState);
+
                     _.forEach(keys, (val, key, ind) => {
                         if (
                             val !== 'state'
@@ -175,7 +180,7 @@ export class RequestProcessor {
                             && val !== 'ledState'
                             && val !== 'ledIliminationState'
                         ) {
-                            colors[val] = state[val].value;
+                            colors[val] = rState[val].value;
                         }
 
                         if (key === (ind.length -1)) {
@@ -183,7 +188,9 @@ export class RequestProcessor {
                         }
                     });
                 }
-            }).catch(() => {});
+            }).catch((e) => {
+                this.logger.error(e);
+            });
         }, 5500);
     }
 
@@ -204,10 +211,6 @@ export class RequestProcessor {
                              reject(err.message);
                          }
 
-                         console.log(
-                             stateString
-                         );
-
                          if (stateString == undefined || stateString[0] == undefined) {
                              reject(false);
                              return;
@@ -217,6 +220,7 @@ export class RequestProcessor {
                          resolve(stateObj);
                     });
             });
+            db.close();
         });
     }
 
@@ -248,5 +252,6 @@ export class RequestProcessor {
                 }
                 this.logger.debug(`Rows inserted`, rs);
             });
+        db.close();
     }
 }

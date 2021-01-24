@@ -174,15 +174,15 @@ export class TangerineNestServer {
         });
 
         const intervals = [];
-        runners.forEach((runner) => {
-            if (runner.key == 'pir') {
-                const intv = setInterval(() => {
-                    const run = new PirRunner(db, this.logger);
-                    run.readAndPersist();
-                }, runner.interval);
-                intervals.push(intv);
-            }
-        });
+        // runners.forEach((runner) => {
+        //     if (runner.key == 'pir') {
+        //         const intv = setInterval(() => {
+        //             const run = new PirRunner(db, this.logger);
+        //             run.readAndPersist();
+        //         }, runner.interval);
+        //         intervals.push(intv);
+        //     }
+        // });
 
     }
 
