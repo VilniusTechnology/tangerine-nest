@@ -183,7 +183,7 @@ export class TangerineNestServer {
         //         intervals.push(intv);
         //     }
         // });
-
+        db.close();
     }
 
     private registerMiddlewares() {
