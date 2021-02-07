@@ -15,6 +15,7 @@ const config = {
         level: 'debug',
     },
     secure_api: true,
+    host: 'sunny.local',
     ledDriver : {
         driver_type: 'local',
         driver : {

@@ -99,7 +99,7 @@ export class Pca9685RgbCctDriverManager {
 
     public setLedMode(mode: any) {
         this.mode = mode
-        this.logger.info('setLedMode: ' + this.mode);
+        this.logger.debug('setLedMode: ' + this.mode);
     }
 
     public getLedMode(): any {

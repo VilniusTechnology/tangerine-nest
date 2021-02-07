@@ -1,12 +1,11 @@
 import { LedServerConfig } from './model/config-model';
 import * as express from 'express';
 import * as _ from "lodash"
-import { getLogger, Logger  } from 'log4js';
 import { config  } from './config-loader';
 import { Modules } from '../module';
 import * as bodyParser from "body-parser";
 import { LedModuleManager } from '../module/led/led/led-module-manager';
-import {PirRunner} from "../runners/pir";
+import {Logger} from "../logger/logger";
 const sqlite3 = require('sqlite3').verbose();
 const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
@@ -22,18 +21,18 @@ export class TangerineNestServer {
     public modules: any = {};
 
     constructor(configJson: LedServerConfig, port: number = null) {
-        this.logger = getLogger();
-        this.logger.level = 'debug';
+        this.config = config;
+        this.logger = new Logger(this.config.logger.level);
 
         if (configJson == undefined) {
             this.config = config;
             this.logger.info('Loading config from file in config directory depending on env.');
-            this.logger.level = this.config.logger.level;
+            // this.logger.level = this.config.logger.level;
             this.logger.info(`\x1b[5m \x1b[47m \x1b[0m Current env is: ${this.config.activeEnv}`);
         } else {
             this.config = configJson;
             this.logger.info('Loading config from constructor params.');
-            this.logger.level = this.config.logger.level;
+            // this.logger.level = this.config.logger.level;
         }
 
         this.port = port || TangerineNestServer.PORT;
@@ -166,8 +165,7 @@ export class TangerineNestServer {
         const db = new sqlite3.Database(this.config.storage.path, (err) => {
             if (err) {
                 return this.logger.error(
-                    `BackgroundRunners DB error on path: ${config.config.settingsDb.path}: `,
-                    err.message
+                    `BackgroundRunners DB error on path: ${config.config.settingsDb.path}: ${err.message}`
                 );
             }
             this.logger.debug('Authorizer loaded DB OK.');
@@ -191,7 +189,7 @@ export class TangerineNestServer {
         this.app.use(bodyParser.json());
 
         if(this.config.secure_api) {
-            this.logger.debug('Injecting to auth_mw', this.modules);
+            this.logger.debug(`Injecting to auth_mw ${this.modules}`);
             this.app.use(auth_mw(this.getContainer()));
             this.logger.warn('Registered AUTH Middleware !');
         }
@@ -229,27 +227,37 @@ export class TangerineNestServer {
             var fs = require('fs');
             var https = require('https')
 
-            var privateKey  = fs.readFileSync(
-                'certs/shady.local.server.key',
-                'utf8'
-            );
-            var certificate = fs.readFileSync(
-                'certs/shady.local.server.crt',
-                'utf8'
-            );
-            var credentials = {key: privateKey, cert: certificate};
+            const host = this.config.host;
+            this.logger.info(`Host: ${host}`);
 
-            https.createServer(credentials, this.app)
-                .listen(443, () => {
-                    this.logger.info( `Server started at https://localhost` );
+            try {
+                const firstFile = `certs/${host}.server.key`;
+                const privateKey  = fs.readFileSync(
+                    firstFile,
+                    'utf8'
+                ) ;
 
-                    // this.app.listen(this.port, () => {
-                    //     this.logger.info( `Server started at http://localhost:${this.port}` );
-                    //     this.logger.info('Listening...');
-                    //
+                const secondFile = `certs/${host}.server.crt`;
+                const certificate = fs.readFileSync(
+                    secondFile,
+                    'utf8'
+                );
+                const credentials = {key: privateKey, cert: certificate};
+
+                https.createServer(credentials, this.app)
+                    .listen(443, () => {
+                        this.logger.info( `Server started at https://localhost` );
+
+                        // this.app.listen(this.port, () => {
+                        //     this.logger.info( `Server started at http://localhost:${this.port}` );
+                        //     this.logger.info('Listening...');
+                        //
                         resolve(true);
-                    // });
-                });
+                        // });
+                    });
+            } catch (e) {
+                this.logger.error(e);
+            }
         });
     }
 }

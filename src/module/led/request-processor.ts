@@ -1,8 +1,7 @@
-import { Logger } from 'log4js';
 import * as _ from "lodash";
 import {LedModuleManager} from "./led/led-module-manager";
 import {LedModule} from "./led-module";
-import {disconnect} from "cluster";
+import {Logger} from "../../logger/logger";
 
 const sqlite3 = require('sqlite3').verbose();
 
@@ -31,14 +30,14 @@ export class RequestProcessor {
 
     public manageModes(query) {
         this.logger.debug(
-            'Will manage modes::this.ledModuleManager.getState().ledState: ',
+            'Will manage modes::this.ledModuleManager.getState().ledState: ' +
             this.ledModuleManager.getState().ledState
         );
-        this.logger.debug('query.state: ', query.state);
+        this.logger.debug('query.state: ' + query.state);
 
         // If state changes LEDs must be set ON/OFF
         if (parseInt(query.state) != this.ledModuleManager.getState().ledState) {
-            this.logger.info('State change detected, will set: ', query.state);
+            this.logger.info('State change detected, will set: ' + query.state);
 
             // Turn ON/OFF
             query.state = parseInt(query.state);
@@ -125,7 +124,7 @@ export class RequestProcessor {
     }
 
     public returnState(query) {
-        this.logger.debug('WILL returnState: ', this.ledModuleManager.getState());
+        this.logger.debug('WILL returnState: ' + this.ledModuleManager.getState());
 
         return {
             'main': this.ledModuleManager.getState()
@@ -156,7 +155,7 @@ export class RequestProcessor {
     loadSavedState() {
         setTimeout(() => {
             this.loadStateFromDb().then((state:any) => {
-                this.logger.info(`Loaded state: `, state);
+                this.logger.info(`Loaded state: ` + JSON.stringify(state));
                 const rState = state.main;
 
                 if (rState.ledMode == null || rState.ledMode == undefined) {
@@ -200,7 +199,7 @@ export class RequestProcessor {
 
             const db = new sqlite3.Database(this.dbPath, (err) => {
                 if (err) {
-                    return this.logger.error(' DB error: ', err.message);
+                    return this.logger.error(' DB error: ' + err.message);
                 }
             });
             db.serialize(() => {
@@ -227,7 +226,7 @@ export class RequestProcessor {
     protected insertStateToDb(stateO) {
         const db = new sqlite3.Database(this.dbPath, (err) => {
             if (err) {
-                return this.logger.error(' DB error: ', err.message);
+                return this.logger.error(' DB error: ' + err.message);
             }
         });
 
@@ -250,8 +249,10 @@ export class RequestProcessor {
                 if (err) {
                     return console.error(err.message);
                 }
-                this.logger.debug(`Rows inserted`, rs);
+                this.logger.debug(`Rows inserted: ` + rs);
             });
         db.close();
+
+        this.logger.error('Saved');
     }
 }
