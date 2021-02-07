@@ -14,7 +14,7 @@ export class ModuleBase {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 const moduleClassName = this.constructor.name
-                this.logger.debug(`\x1b[42m \x1b[40m ${moduleClassName} was loaded. \x1b[0m`);
+                this.logger.debug(`  ${moduleClassName} was loaded. `);
                 resolve({'module': moduleClassName, container: this});
             }, 1); 
         })

@@ -75,7 +75,7 @@ export class TimedLightSettingsApi extends ModuleBase {
         });
 
         return new Promise((resolve, reject) => {
-            this.logger.debug('\x1b[42m \x1b[40m TimedLightSettingsApi was loaded. \x1b[0m');
+            this.logger.debug('  TimedLightSettingsApi was loaded. ');
             resolve({'module': 'TimedLightSettingsApi', container: this});
         })
     }

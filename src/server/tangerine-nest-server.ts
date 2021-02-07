@@ -28,7 +28,7 @@ export class TangerineNestServer {
             this.config = config;
             this.logger.info('Loading config from file in config directory depending on env.');
             // this.logger.level = this.config.logger.level;
-            this.logger.info(`\x1b[5m \x1b[47m \x1b[0m Current env is: ${this.config.activeEnv}`);
+            this.logger.info(`Current env is: ${this.config.activeEnv}`);
         } else {
             this.config = configJson;
             this.logger.info('Loading config from constructor params.');
@@ -37,7 +37,7 @@ export class TangerineNestServer {
 
         this.port = port || TangerineNestServer.PORT;
 
-        this.logger.debug('\x1b[5m \x1b[46m \x1b[0m TangerineNestServer was constructed..');
+        this.logger.debug('TangerineNestServer was constructed..');
     }
 
     public getContainer() {
@@ -45,7 +45,7 @@ export class TangerineNestServer {
     }
 
     private resgisterModules() {
-        this.logger.debug('\x1b[42m \x1b[0m Will register modules.');
+        this.logger.debug('  Will register modules.');
 
         return new Promise((resolve, reject) => {
             const rawModules = [
@@ -88,7 +88,7 @@ export class TangerineNestServer {
                     // Push them to container.
                     this.modules[module.module] = module.container;
                 });
-                this.logger.info('\x1b[41m \x1b[0m All modules were loaded.');
+                this.logger.info('All modules were loaded.');
 
                 resolve(this.modules);
             });
@@ -97,19 +97,19 @@ export class TangerineNestServer {
 
     private registerModulesRoutes() {
         return new Promise((resolve, reject) => {
-            this.logger.debug('\x1b[45m \x1b[0m Will register module routes.');
+            this.logger.debug('Will register module routes.');
 
             _.forEach(this.modules, (module, key) => {
-                this.logger.debug(`\x1b[43m \x1b[0m Will register Routes 4 module ${key}.`);
+                this.logger.debug(`Will register Routes 4 module ${key}.`);
 
                 module.getRoutesForRegistration().forEach((layer) => {
                     if (layer.route !== undefined)  {
-                        this.logger.debug( `\x1b[44m \x1b[0m  Will push route: ${layer.route.path}`);
+                        this.logger.debug( `Will push route: ${layer.route.path}`);
 
                         this.app._router.stack.push(layer);
                     }
                 });
-                this.logger.debug(`\x1b[43m \x1b[0m Routes 4 module ${key} were registered.`);
+                this.logger.debug(`Routes 4 module ${key} were registered.`);
             });
             resolve(true);
         })

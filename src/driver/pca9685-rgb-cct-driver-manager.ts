@@ -18,7 +18,7 @@ export class Pca9685RgbCctDriverManager {
         this.logger = logger;
         this.config = config.ledDriver;
         this.logger.debug(
-            '\x1b[41m \x1b[0m \x1b[0m \x1b[0m Pca9685RgbCctDriverManager::CONSTRUCT'
+            'Pca9685RgbCctDriverManager::CONSTRUCT'
         );
     }
 

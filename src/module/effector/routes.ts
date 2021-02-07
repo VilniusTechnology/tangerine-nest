@@ -55,7 +55,7 @@ export class Routes extends RoutesModuleBase {
     execute(effectKey) {
         const prom = this.effectsManager[effectKey]();
         prom.then( (resolution) => {
-            this.logger.debug(`\x1b[41m \x1b[0m perform${effectKey} FINISHED`, resolution);
+            this.logger.debug(`Perform${effectKey} FINISHED`, resolution);
         });
     }
 }

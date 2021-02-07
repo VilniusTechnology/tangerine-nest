@@ -1,4 +1,4 @@
-import { ModuleBase } from './../module-base';
+import { ModuleBase } from '../module-base';
 import { Routes } from './routes';
 import { LightRegulator } from '../../controller/regulator/light-regulator';
 import { TimedLightRegulator } from '../../controller/regulator/timed-light-regulator';
@@ -69,21 +69,21 @@ export class LedModule extends ModuleBase {
     }
 
     init() {
-        this.logger.info('\x1b[41m \x1b[0m  Will init LED module!');
+        this.logger.info('Will init LED module!');
         return new Promise((resolve, reject) => {
             this.pwmManager.setup().then((response) => {   
-                this.logger.debug('\x1b[41m \x1b[0m PwmManager is UP!'); 
+                this.logger.debug('PwmManager is UP!');
 
                 this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
                 this.logger.debug(
-                    '\x1b[41m \x1b[0m pwmManager LedMode set to: '
+                    'pwmManager LedMode set to: '
                     + LedModule.MANUAL_MODE_CODE
                 );
 
                 this.fader = new FaderAdvanced(this.pwmManager, this.logger);
     
                 this.logger.info(
-                    '\x1b[41m \x1b[40m LedModule fully initialized \x1b[0m'
+                    'LedModule fully initialized '
                 );
 
                 resolve({'module': 'LedModule', container: this});
