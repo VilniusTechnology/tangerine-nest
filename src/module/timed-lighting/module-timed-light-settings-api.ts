@@ -44,15 +44,21 @@ export class TimedLightSettingsApi extends ModuleBase {
             this.logger.debug('On route to: /get-light-time-programs');
             this.getPrograms(req, res).then( (rows) => {
                 res.json(rows);
-            });
+            }).catch( (err) => {
+                this.logger.error('AAAAAAAA HERE 1');
+            })
         });
 
         this.restapi.all('/add-light-time-program', bodyParser.json(), (req, res) => {
             this.logger.debug('On route: /add-light-time-program');
-            this.createProgram(req, res).then( () => {
-                this.getPrograms(req, res).then( (rows) => {
+            this.createProgram(req, res).then(() => {
+                this.getPrograms(req, res).then((rows) => {
                     res.json(rows);
-                });
+                }).catch( (err) => {
+                    this.logger.error('AAAAAAAA HERE 2');
+                })
+            }).catch( (err) => {
+                this.logger.error('AAAAAAAA HERE 3');
             });
         });
 

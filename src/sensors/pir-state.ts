@@ -1,22 +1,20 @@
 const sqlite3 = require('sqlite3').verbose();
 
 export class PirState {
-    db;
-    logger;
+    private db;
+    private logger;
 
     constructor(config: any, logger) {
         this.logger = logger;
-        const db = new sqlite3.Database(config.storage.path, (err) => {
+        this.db = new sqlite3.Database(config.storage.path, (err) => {
             if (err) {
                 return this.logger.error(
                     `PirState DB error on path: ${config.config.settingsDb.path}: `,
                     err.message
                 );
             }
-            this.logger.debug('Authorizer loaded DB OK.');
+            this.logger.debug('Authorizer loaded DB OK. PIR state.');
         });
-
-        this.db = db;
     }
 
     public read() {
@@ -30,6 +28,8 @@ export class PirState {
                         if (err) {
                             this.logger.error(err.message);
                         }
+
+                        this.db.close();
 
                         resolve(rows[0]);
                     }

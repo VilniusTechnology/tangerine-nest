@@ -26,7 +26,7 @@ export class LightRegulator {
         // this.logger.warn(`adaptToConditions::this.desiredLevelTop: ${this.desiredLevelTop}`);
 
         return new Promise((resolve, reject) => {
-            this.getLightevel().then( (lightLevel) => {
+            this.getLightevel().then((lightLevel) => {
                 if (this.config.lightLvl.auto.cutOff <= lightLevel) {
                     this.fader.getPwmDriverManager().switchAllLedsOff();
                     return;
@@ -36,14 +36,20 @@ export class LightRegulator {
                 if (this.isToLow(lightLevel)) {
                     this.increaseCycle(lightLevel).then((lightLevel) => {
                         resolve(lightLevel);
+                    }).catch( (err) => {
+                        this.logger.error('LL ERR 1');
                     });
                 }
         
                 if (this.isTooMuch(lightLevel)) {
                     this.decreaseCycle(lightLevel).then((lightLevel) => {
                         resolve(lightLevel);
+                    }).catch( (err) => {
+                        this.logger.error('LL ERR 2');
                     });
                 }
+            }).catch( (err) => {
+                this.logger.error('LL ERR 3');
             });
         });
     }
@@ -85,7 +91,11 @@ export class LightRegulator {
                 Promise.all([a, b, c, d]).then((values) => {
                     this.getLightevel().then((lightLevel) => {
                         resolve(lightLevel);
+                    }).catch( (err) => {
+                        this.logger.error('LL ERR 4');
                     });
+                }).catch( (err) => {
+                    this.logger.error('LL ERR 5');
                 });
         });
     }
@@ -128,7 +138,11 @@ export class LightRegulator {
                 Promise.all([a, b, c, d]).then((values) => {
                     this.getLightevel().then((lightLevel) => {
                         resolve(lightLevel);
+                    }).catch( (err) => {
+                        this.logger.error('LL ERR 6');
                     });
+                }).catch( (err) => {
+                    this.logger.error('LL ERR 7');
                 });
         });
     }
@@ -137,6 +151,8 @@ export class LightRegulator {
         return new Promise((resolve, reject) => {
             this.lightSource.read().then((reading: any) => {
                 resolve(reading.light_lvl);
+            }).catch( (err) => {
+                this.logger.error('LL ERR 8');
             });
         });
     }

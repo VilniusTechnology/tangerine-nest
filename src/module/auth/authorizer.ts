@@ -19,7 +19,7 @@ export class Authorizer {
             if (err) {
                 return this.logger.error(`Authorizer DB error on path: ${config.config.settingsDb.path}: `, err.message);
             }
-            this.logger.debug('Authorizer loaded DB OK.');
+            this.logger.debug('Authorizer loaded DB OK. Authorizer');
         });
         this.logger = logger;
     }

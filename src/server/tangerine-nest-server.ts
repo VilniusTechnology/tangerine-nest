@@ -168,7 +168,7 @@ export class TangerineNestServer {
                     `BackgroundRunners DB error on path: ${config.config.settingsDb.path}: ${err.message}`
                 );
             }
-            this.logger.debug('Authorizer loaded DB OK.');
+            this.logger.debug('Authorizer loaded DB OK. NEST SERVER.');
         });
 
         const intervals = [];
