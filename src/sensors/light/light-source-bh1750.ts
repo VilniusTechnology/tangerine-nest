@@ -6,9 +6,12 @@ export class LightSourceSensorBH1750 implements LightSourceSensor {
 
     public logger: Logger;
 
-    constructor(logger) {
-        this.logger = logger;
-        this.logger.debug('LightSourceSensorBH1750 initiated');
+    constructor(logger = null) {
+        if (logger != null) {
+            this.logger = logger;
+        }
+
+        this.log('LightSourceSensorBH1750 initiated');
     }
 
     init() {
@@ -26,11 +29,17 @@ export class LightSourceSensorBH1750 implements LightSourceSensor {
                 if (err) {
                     reject(err);
                 } else {
-                    this.logger.debug('LightSourceSensorBH1750: ' + value);
+                    this.log('LightSourceSensorBH1750: ' + value);
                     light = null;
                     resolve({light_lvl: value});
                 }
             });
         });
+    }
+
+    log(msg) {
+        if (this.logger != null) {
+            this.logger.debug(msg);
+        }
     }
 }

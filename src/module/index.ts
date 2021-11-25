@@ -4,7 +4,8 @@ import { TimedLightSettingsApi } from "./timed-lighting/module-timed-light-setti
 import { AuthModule } from "./auth/auth-module";
 import { EffectorModule } from "./effector/effector-module";
 import { OpenpixelModule } from './openpixel/openpixel-module';
-
+import { OmronModule } from './omron/omron-module';
+import { SensorModule } from "./sensor/sensor-module";
 export { SystemModule } from './system/system-module';
 export { LedModule } from "./led/led-module";
 export { TimedLightSettingsApi } from "./timed-lighting/module-timed-light-settings-api";
@@ -19,4 +20,6 @@ export const Modules: any = {
     EffectorModule,
     SystemModule,
     OpenpixelModule,
-}
+    OmronModule,
+    SensorModule,
+};

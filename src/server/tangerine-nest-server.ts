@@ -9,6 +9,13 @@ import {Logger} from "../logger/logger";
 const sqlite3 = require('sqlite3').verbose();
 const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
+// const apm = require('elastic-apm-node').start({
+//     serviceName: 'tangeringi',
+//     serverUrl: 'http://serveris.local:8200',
+//     logLevel: 'trace',
+//     logger: require('bunyan')({ name: 'tst', level: 'error' })
+// });
+
 export class TangerineNestServer {
     public static readonly PORT:number = 8081;
 
@@ -45,7 +52,7 @@ export class TangerineNestServer {
     }
 
     private resgisterModules() {
-        this.logger.debug('  Will register modules.');
+        this.logger.debug('Will register modules.');
 
         return new Promise((resolve, reject) => {
             const rawModules = [
@@ -58,6 +65,8 @@ export class TangerineNestServer {
                 },
                 {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
+                {id: 'OmronModule', params: [this.logger, this.getContainer()]},
+                {id: 'SensorModule', params: [this.config, this.logger, this.getContainer()]},
                 {id: 'TimedLightSettingsApi', params: [
                         this.config.ledTimer,
                         this.logger,
@@ -131,10 +140,16 @@ export class TangerineNestServer {
 
                         this.modules.LedModule.getRgbCctLedDriver()
                             .setColor('red', 2);
-                        // this.modules.LedModule.getRgbCctLedDriver().setColor('coldWhite', 5);
                         
                         const ledModule :LedModuleManager = this.modules.LedModule;
                         ledModule.getRgbCctLedDriver().setLedState(1);
+
+                        if (this.config.omronSensor.enabled) {
+                            // If led module is initialized start OmronModule.
+                            setTimeout(() => {
+                                this.modules.OmronModule.launch();
+                            }, 10000);
+                        }
                     }
                 });
             });
@@ -165,7 +180,7 @@ export class TangerineNestServer {
         const db = new sqlite3.Database(this.config.storage.path, (err) => {
             if (err) {
                 return this.logger.error(
-                    `BackgroundRunners DB error on path: ${config.config.settingsDb.path}: ${err.message}`
+                    `BackgroundRunners DB error on path: ${config.settingsDb.path}: ${err.message}`
                 );
             }
             this.logger.debug('Authorizer loaded DB OK. NEST SERVER.');

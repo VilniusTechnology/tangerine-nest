@@ -17,14 +17,11 @@ export class LightRegulator {
         this.lightSource = lightSource;
         this.config = config;
 
-        this.desiredLevelTop = config.lightLvl.auto.top
+        this.desiredLevelTop = config.lightLvl.auto.top;
         this.desiredLevelBottom = config.lightLvl.auto.bottom;
     }
 
     adaptToConditions() {
-        // this.logger.warn(`adaptToConditions::this.desiredLevelBottom: ${this.desiredLevelBottom}`);
-        // this.logger.warn(`adaptToConditions::this.desiredLevelTop: ${this.desiredLevelTop}`);
-
         return new Promise((resolve, reject) => {
             this.getLightevel().then((lightLevel) => {
                 if (this.config.lightLvl.auto.cutOff <= lightLevel) {

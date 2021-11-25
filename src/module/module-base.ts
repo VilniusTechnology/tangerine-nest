@@ -13,7 +13,7 @@ export class ModuleBase {
     init() {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                const moduleClassName = this.constructor.name
+                const moduleClassName = this.constructor.name;
                 this.logger.debug(`  ${moduleClassName} was loaded. `);
                 resolve({'module': moduleClassName, container: this});
             }, 1); 
@@ -23,4 +23,4 @@ export class ModuleBase {
     getModule(moduleName: string) {
         return this.container[moduleName];
     }
-};
+}

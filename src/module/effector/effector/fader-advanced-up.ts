@@ -29,7 +29,7 @@ export class FaderAdvancedUp {
             setTimeout(()=> {
                 this.performFadeUp(from, to, channel, timeout, step, validStep);
             }, timeout);
-        } 
+        }
 
         if (from == to) {
             // this.logger.debug('fadeUp::resolve');

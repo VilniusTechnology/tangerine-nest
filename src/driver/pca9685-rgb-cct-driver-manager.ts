@@ -10,6 +10,7 @@ export class Pca9685RgbCctDriverManager {
     private pwm;
 
     public colors: Colors;
+    public colorsMuted: Colors;
     public driver: any;
     public mode: string;
 
@@ -97,6 +98,24 @@ export class Pca9685RgbCctDriverManager {
         // this.logger.debug(`setLedState::this.colors.ledState: ${this.colors.ledState}.`);
     }
 
+    public isAnythingOn() {
+        return this.isSet(this.colors.red.value)
+            && this.isSet(this.colors.green.value)
+            && this.isSet(this.colors.blue.value)
+            && this.isSet(this.colors.warmWhite.value)
+            && this.isSet(this.colors.coldWhite.value);
+    }
+
+    protected isSet(val) {
+        if(typeof val === 'undefined') {
+            return false;
+        } else if(val === null) {
+            return false;
+        }
+
+        return true;
+    }
+
     public setLedMode(mode: any) {
         this.mode = mode
         this.logger.debug('setLedMode: ' + this.mode);
@@ -116,7 +135,7 @@ export class Pca9685RgbCctDriverManager {
 
     public switchAllLedsOff() {
         this.logger.debug('switchAllLedsOff');
-        this.colors = JSON.parse(
+        this.colorsMuted = JSON.parse(
             JSON.stringify(this.getState())
         );
 
@@ -131,11 +150,12 @@ export class Pca9685RgbCctDriverManager {
 
     public switchAllLedsOn() {
         this.logger.debug('switchAllLedsOn');
-        this.setColor('red', this.colors.red.value);
-        this.setColor('green', this.colors.green.value);
-        this.setColor('blue', this.colors.blue.value);
-        this.setColor('warmWhite', this.colors.warmWhite.value);
-        this.setColor('coldWhite', this.colors.coldWhite.value);
+
+        this.setColor('red', this.colorsMuted.red.value);
+        this.setColor('green', this.colorsMuted.green.value);
+        this.setColor('blue', this.colorsMuted.blue.value);
+        this.setColor('warmWhite', this.colorsMuted.warmWhite.value);
+        this.setColor('coldWhite', this.colorsMuted.coldWhite.value);
 
         this.setLedState(1);
     }
@@ -151,4 +171,4 @@ export class Pca9685RgbCctDriverManager {
     public getColors() {
         return this.colors;
     }
-};
+}

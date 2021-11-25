@@ -15,7 +15,6 @@ const config = {
         level: 'debug',
     },
     secure_api: true,
-    host: 'sunny.local',
     ledDriver : {
         driver_type: 'local',
         driver : {
@@ -56,9 +55,6 @@ const config = {
         }
     },
     settingsDb: {
-        path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
-    },
-    storage: {
         path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
     },
     neopixel: {

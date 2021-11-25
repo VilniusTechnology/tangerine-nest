@@ -1,11 +1,13 @@
-import * as _ from "lodash";
 import {LedModuleManager} from "./led/led-module-manager";
 import {LedModule} from "./led-module";
 import {Logger} from "../../logger/logger";
+import { connect } from 'mqtt';
 
 const sqlite3 = require('sqlite3').verbose();
 
 export class RequestProcessor {
+
+    public client;
 
     private wereLightsRevived: boolean = false;
     private readonly ledModuleManager: LedModuleManager;
@@ -29,6 +31,29 @@ export class RequestProcessor {
     }
 
     public manageModes(query) {
+
+        this.client = connect('mqtt://poligonas.local');
+
+        this.client.on('connect', () => {
+            this.client.subscribe('zigbee2mqtt/shady/led', (err) => {
+                    if (!err) {
+                        console.log('Connected zigbee2mqtt/shady/led');
+                    } else {
+                        console.log(err);
+                    }
+
+                    this.client.on('message', (topic, message) => {
+                        let qr = JSON.parse(message.toString());
+                        this.perform(qr);
+                        // console.log(message.toString());
+                    });
+                });
+            });
+
+        this.perform(query);
+    }
+
+    protected perform(query) {
         this.logger.debug(
             'Will manage modes::this.ledModuleManager.getState().ledState: ' +
             this.ledModuleManager.getState().ledState
@@ -58,19 +83,19 @@ export class RequestProcessor {
         // AUTO mode.
         if (query.mode == LedModule.AUTO_MODE_CODE) {
             this.logger.info('-------------  Auto mode -------------');
-            
+
             this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
             this.ledModuleManager.setMode(query.mode);
-            
+
             this.ledModuleManager.mute();
             let colors = {
                 "coldWhite" : 1,
-                "warmWhite" : 2, 
+                "warmWhite" : 2,
             };
             this.ledModuleManager.setColours(colors);
-            this.timerOfLightAdaptor = setInterval( () => {  
+            this.timerOfLightAdaptor = setInterval( () => {
                 this.logger.info('Adapting Light');
                 this.ledModuleManager.adaptLight().then((result) => {
                     this.logger.info(`Adapted to Light level: ${result}`);
@@ -81,7 +106,7 @@ export class RequestProcessor {
         // Manual mode.
         if (query.mode == LedModule.MANUAL_MODE_CODE) {
             this.logger.info('---------- Manual mode  -------------');
-            
+
             this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
@@ -99,12 +124,12 @@ export class RequestProcessor {
         // Timed mode.
         if (query.mode == LedModule.TIMED_MODE_CODE) {
             this.logger.info('---------- Timed mode  -------------');
-            
+
             this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
             this.ledModuleManager.setMode(query.mode);
-    
+
             this.handleTimedMode(query);
         }
 
@@ -112,13 +137,13 @@ export class RequestProcessor {
         this.logger.debug(`LED State to be saved: ${saveState}`);
 
         this.saveState(saveState);
-    };
+    }
 
     public clearTimersIntervals() {
         
     }
 
-    public handleTimedMode(query) {     
+    public handleTimedMode(query) {
         let ledState = query.state;
         this.ledModuleManager.setTimedSettings();
     }
@@ -148,111 +173,11 @@ export class RequestProcessor {
         res.end();
     }
 
-    saveState(saveState) {
-        this.insertStateToDb(saveState);
+    saveState(stateToSave) {
+        this.ledModuleManager.insertStateToDb(stateToSave);
     }
 
     loadSavedState() {
-        setTimeout(() => {
-            this.loadStateFromDb().then((state:any) => {
-                this.logger.info(`Loaded state: ` + JSON.stringify(state));
-                const rState = state.main;
-
-                if (rState.ledMode == null || rState.ledMode == undefined) {
-                    state.ledMode = 1;
-                }
-
-                this.ledModuleManager.setMode(rState.ledMode);
-
-                // Set lights colours.
-                if (rState.ledState == 1) {
-                    this.logger.debug('WILL SET Colours ');
-
-                    let colors = {};
-                    const keys = Object.keys(rState);
-
-                    _.forEach(keys, (val, key, ind) => {
-                        if (
-                            val !== 'state'
-                            && val !== 'mode'
-                            && val !== 'ledMode'
-                            && val !== 'ledState'
-                            && val !== 'ledIliminationState'
-                        ) {
-                            colors[val] = rState[val].value;
-                        }
-
-                        if (key === (ind.length -1)) {
-                            this.ledModuleManager.setColours(colors);
-                        }
-                    });
-                }
-            }).catch((e) => {
-                this.logger.error(e);
-            });
-        }, 5500);
-    }
-
-    protected loadStateFromDb() {
-        return new Promise((resolve, reject) => {
-            this.logger.debug(`Will list loadStateFromDb.`);
-
-            const db = new sqlite3.Database(this.dbPath, (err) => {
-                if (err) {
-                    return this.logger.error(' DB error: ' + err.message);
-                }
-            });
-            db.serialize(() => {
-                db.all(
-                    "SELECT value from utils WHERE key='LED_STATE'",
-                     (err, stateString) => {
-                         if (err) {
-                             reject(err.message);
-                         }
-
-                         if (stateString == undefined || stateString[0] == undefined) {
-                             reject(false);
-                             return;
-                         }
-
-                         const stateObj = JSON.parse(stateString[0].value);
-                         resolve(stateObj);
-                    });
-            });
-            db.close();
-        });
-    }
-
-    protected insertStateToDb(stateO) {
-        const db = new sqlite3.Database(this.dbPath, (err) => {
-            if (err) {
-                return this.logger.error(' DB error: ' + err.message);
-            }
-        });
-
-        const stateStr = JSON.stringify(stateO);
-        const insertQuery = `
-                INSERT OR REPLACE INTO 'utils' (
-                    'key',
-                    'value'
-                )
-                VALUES
-                (
-                    ?,
-                    ?
-                )`;
-
-        db.run(
-            insertQuery,
-            ['LED_STATE', stateStr],
-            (err, rs) => {
-                if (err) {
-                    return console.error(err.message);
-                }
-                this.logger.debug(`Rows inserted: ` + rs);
-            });
-        db.close();
-
-        this.logger.error('Saved');
+        this.ledModuleManager.loadSavedState();
     }
 }

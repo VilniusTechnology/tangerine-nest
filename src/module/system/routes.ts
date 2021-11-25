@@ -61,7 +61,7 @@ export class Routes extends RoutesModuleBase {
                     led: this.ledModule.getRgbCctLedDriver().getFullState(),
                     sensors: {},
                     modules: {},
-                }
+                };
                 res.write(JSON.stringify(respJson));
                 res.end();
             });
@@ -82,60 +82,18 @@ export class Routes extends RoutesModuleBase {
             });
         });
 
-        this.restapi.all('/sensors-atmo', bodyParser.json(), (req, res) => {
-            this.logger.debug('On route to: /sensors-atmo');
-
-            // this.sensor.init().then(() => {
-            //     this.sensor.read().then((response) => {
-            //         res.write(JSON.stringify(response));
-            //         res.end();
-            //     }).catch((error) => {
-            //         this.logger.error(error);
-            //     });
-            // }).catch((error) => {
-            //     this.logger.error(error);
-            // });
-        });
-
         this.restapi.all('/sensors-all', bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /sensors-all');
 
-
             this.sensor.init().then(() => {
                 this.sensor.read().then((response) => {
 
-                    // res.write(JSON.stringify(response));
-                    // res.end();
-
-                    let ls = new LightSourceSensorBH1750(this.logger);
-                    ls.init().then((err) => {
-                        ls.read().then((light) => {
-                            //@ts-ignore
-                            response.light = light.light_lvl;
-
-                            // res.write(JSON.stringify(response));
-                            // res.end();
-
-                            let pirState = new PirState(this.config, this.logger);
-                            pirState.read().then((pir) => {
-                                //@ts-ignore
-                                response.pir = pir.value;
-
-                                res.write(JSON.stringify(response));
-                                res.end();
-
-                                ls = null;
-                                pirState = null;
-                            }).catch((err) => {
-                                this.logger.error('PIR ERR 1');
-                            });
-
-                        }).catch((err) => {
-                            this.logger.error('LS ERR 2');
-                        });
-                    }).catch((err) => {
-                        this.logger.error('LS ERR 3');
-                    });
+                    if(!this.config.lightLvl.enabled) {
+                        res.write(JSON.stringify(response));
+                        res.end();
+                    } else {
+                        this.read(res, response);
+                    }
 
                 }).catch((error) => {
                     this.logger.error(error);
@@ -144,22 +102,34 @@ export class Routes extends RoutesModuleBase {
                 this.logger.error(error);
             });
         });
+    }
 
-        this.restapi.all('/sensors-some', bodyParser.json(), (req, res) => {
-            this.logger.debug('On route to: /sensors-some');
+    read(res, response) {
+        let ls = new LightSourceSensorBH1750(this.logger);
+        ls.init().then((err) => {
+            ls.read().then((light) => {
+                //@ts-ignore
+                response.light = light.light_lvl;
 
-            this.sensor.init().then(() => {
-                this.sensor.read().then((response) => {
+                let pirState = new PirState(this.config, this.logger);
+                pirState.read().then((pir) => {
                     //@ts-ignore
-                    response.light = light.light_lvl;
+                    response.pir = pir.value;
+
                     res.write(JSON.stringify(response));
                     res.end();
-                }).catch((error) => {
-                    this.logger.error(error);
+
+                    ls = null;
+                    pirState = null;
+                }).catch((err) => {
+                    this.logger.error('PIR ERR 1');
                 });
-            }).catch((error) => {
-                this.logger.error(error);
+            }).catch((err) => {
+                this.logger.error('LS ERR 2');
+                console.log(err)
             });
+        }).catch((err) => {
+            this.logger.error('LS ERR 3');
         });
     }
 }

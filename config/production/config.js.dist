@@ -15,7 +15,11 @@ const config = {
     logger: {
         level: 'debug',
     },
+    host: 'yyy.local',
     secure_api: true,
+    omronSensor: {
+        enabled: false,
+    },
     ledDriver : {
         driver_type: 'i2c',
         driver : {
@@ -47,6 +51,7 @@ const config = {
         hardwareLoader: true,
     },
     lightLvl: {
+        enabled: false,
         address: 0x23,
         type: "BH1750",
         hardwareLoader: true,
