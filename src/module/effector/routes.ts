@@ -4,16 +4,18 @@ import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { FaderAdvanced } from "./effector/fader-advanced";
 import {EffectsRepo} from "./effects-repo";
+import {LedModuleManager} from "../led/led/led-module-manager";
 
 export class Routes extends RoutesModuleBase {
 
     public readonly ROUTE_PREFIX = 'led/effects';
     public logger: Logger;
 
-    private fader: FaderAdvanced;
+    private readonly fader: FaderAdvanced;
     private ledModule;
+    private ledManager: LedModuleManager;
     private repo: EffectsRepo;
-    private effectsManager: EffectsManager;
+    private readonly effectsManager: EffectsManager;
 
     constructor(logger: Logger, ledModule) {
         super(logger);
@@ -22,6 +24,7 @@ export class Routes extends RoutesModuleBase {
         this.logger = logger;
 
         this.fader = this.ledModule.getFader();
+        this.ledManager = this.ledModule.getManager();
         this.effectsManager = new EffectsManager(this.fader, this.logger);
 
         this.repo = new EffectsRepo(this.logger);
@@ -54,7 +57,9 @@ export class Routes extends RoutesModuleBase {
 
     execute(effectKey) {
         const prom = this.effectsManager[effectKey]();
+        this.ledManager.mute();
         prom.then( (resolution) => {
+            this.ledManager.unMute();
             this.logger.debug(`Perform${effectKey} FINISHED`, resolution);
         });
     }

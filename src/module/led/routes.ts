@@ -12,15 +12,10 @@ export class Routes extends RoutesModuleBase {
     public config;
     private requestProcessor: RequestProcessor;
 
-    constructor(logger: Logger, ledModuleManager: LedModuleManager, config) {
+    constructor(logger: Logger, requestProcessor: RequestProcessor, config) {
         super(logger);
         this.logger = logger;
-        this.requestProcessor = new RequestProcessor(
-            ledModuleManager,
-            this.logger,
-            config
-        );
-        this.requestProcessor.loadSavedState();
+        this.requestProcessor = requestProcessor;
         
         this.routes();
     }

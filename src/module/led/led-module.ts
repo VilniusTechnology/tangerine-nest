@@ -6,10 +6,13 @@ import { Pca9685RgbCctDriverManager } from "../../driver/pca9685-rgb-cct-driver-
 import { Logger } from "log4js";
 import { FaderAdvanced } from '../effector/effector/fader-advanced';
 import { LedModuleManager } from './led/led-module-manager';
-import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
-import {LightSourceSensorUN} from "../../sensors/light/light-source-un";
+import { LightSourceSensorBH1750 } from "../../sensors/light/light-source-bh1750";
+import { LightSourceSensorUN } from "../../sensors/light/light-source-un";
+import { connect } from 'mqtt';
+import {RequestProcessor} from "./request-processor";
 
 export class LedModule extends ModuleBase {
+
     public static readonly AUTO_MODE_CODE = 0;
     public static readonly MANUAL_MODE_CODE = 1;
     public static readonly TIMED_MODE_CODE = 2;
@@ -23,6 +26,8 @@ export class LedModule extends ModuleBase {
     protected colors;
     protected config;
     protected lightSource;
+    protected mqttClient;
+    protected requestProcessor;
 
     protected timedRegulator: TimedLightRegulator;
     protected lightRegulator;
@@ -66,10 +71,13 @@ export class LedModule extends ModuleBase {
             this.lightRegulator,
             this.fader
         );
-    };
 
-    getTimedRegulator() {
-        return this.timedRegulator;
+        this.requestProcessor = new RequestProcessor(
+            this.ledModuleManager,
+            this.logger,
+            config
+        );
+        this.requestProcessor.loadSavedState();
     }
 
     init() {
@@ -97,12 +105,32 @@ export class LedModule extends ModuleBase {
         });
     }
 
+    launchMqtts() {
+        this.mqttClient = connect('mqtt://poligonas.local');
+
+        this.mqttClient.on('connect', () => {
+            this.mqttClient.subscribe('zigbee2mqtt/shady/led', (err) => {
+                if (!err) {
+                    console.log('Connected zigbee2mqtt/shady/led');
+                } else {
+                    console.log(err);
+                }
+
+                this.mqttClient.on('message', (topic, message) => {
+                    let qr = JSON.parse(message.toString());
+                    this.requestProcessor.perform(qr);
+                    // console.log(message.toString());
+                });
+            });
+        });
+    }
+
     getFader() {
         return this.fader;
     }
 
     getRoutesForRegistration() {
-        return new Routes(this.logger, this.ledModuleManager, this.config).listRoutes();
+        return new Routes(this.logger, this.requestProcessor, this.config).listRoutes();
     }
 
     getRgbCctLedDriver() {
@@ -111,5 +139,9 @@ export class LedModule extends ModuleBase {
 
     getManager() {
         return this.ledModuleManager;
+    }
+
+    getTimedRegulator() {
+        return this.timedRegulator;
     }
 }

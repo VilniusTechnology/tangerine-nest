@@ -1,13 +1,10 @@
 import {LedModuleManager} from "./led/led-module-manager";
 import {LedModule} from "./led-module";
 import {Logger} from "../../logger/logger";
-import { connect } from 'mqtt';
 
 const sqlite3 = require('sqlite3').verbose();
 
 export class RequestProcessor {
-
-    public client;
 
     private wereLightsRevived: boolean = false;
     private readonly ledModuleManager: LedModuleManager;
@@ -31,25 +28,6 @@ export class RequestProcessor {
     }
 
     public manageModes(query) {
-
-        this.client = connect('mqtt://poligonas.local');
-
-        this.client.on('connect', () => {
-            this.client.subscribe('zigbee2mqtt/shady/led', (err) => {
-                    if (!err) {
-                        console.log('Connected zigbee2mqtt/shady/led');
-                    } else {
-                        console.log(err);
-                    }
-
-                    this.client.on('message', (topic, message) => {
-                        let qr = JSON.parse(message.toString());
-                        this.perform(qr);
-                        // console.log(message.toString());
-                    });
-                });
-            });
-
         this.perform(query);
     }
 

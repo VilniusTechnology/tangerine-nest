@@ -3,16 +3,10 @@ import { Logger } from "log4js";
 import { TimedLightRegulator } from "../../../controller/regulator/timed-light-regulator";
 import { Pca9685RgbCctDriverManager } from '../../../driver/pca9685-rgb-cct-driver-manager';
 import { FaderAdvanced } from '../../effector/effector/fader-advanced';
-import {LightSourceSensor} from "../../../sensors/light/light-source";
 
 const sqlite3 = require('sqlite3').verbose();
 
 export class LedModuleManager {
-    public static readonly AUTO_MODE_CODE = 0;
-    public static readonly MANUAL_MODE_CODE = 1;
-    public static readonly TIMED_MODE_CODE = 2;
-    public static readonly CHECK_MODE_CODE = 3;
-
     protected pwmManager: Pca9685RgbCctDriverManager;
     protected logger: Logger;
     protected colors;
