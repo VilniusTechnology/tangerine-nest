@@ -9,7 +9,7 @@ import { connect } from 'mqtt';
 export class SensorModule extends ModuleBase {
 
     public config;
-    public client;
+    public mqttClient;
     public logger: Logger;
     public container;
     public sensor: Bme280Sensor;
@@ -22,7 +22,7 @@ export class SensorModule extends ModuleBase {
         this.container = container;
 
         this.sensor = new Bme280Sensor(config.bme280, this.logger);
-        this.client = connect('mqtt://poligonas.local');
+        this.mqttClient = container()['MqttModule'].getClient();
     }
 
     init() {
@@ -55,9 +55,9 @@ export class SensorModule extends ModuleBase {
                     //@ts-ignore
                     response.light = light.light_lvl;
 
-                    this.client.on('connect', () => {
+                    this.mqttClient.on('connect', () => {
                         this.logger.debug('.............   connected ');
-                        this.client.publish("zigbee2mqtt/shady/sensors.all", JSON.stringify(response));
+                        this.mqttClient.publish("zigbee2mqtt/shady/sensors.all", JSON.stringify(response));
                         this.logger.debug('.............   ' + JSON.stringify(response));
                     });
 

@@ -64,6 +64,7 @@ export class TangerineNestServer {
                     ]
                 },
                 {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
+                {id: 'MqttModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
                 {id: 'OmronModule', params: [this.logger, this.getContainer()]},
                 {id: 'SensorModule', params: [this.config, this.logger, this.getContainer()]},

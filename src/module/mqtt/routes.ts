@@ -2,7 +2,6 @@ import { Logger } from "log4js";
 import { RoutesModuleBase } from '../routes-module-base';
 import * as bodyParser from "body-parser";
 
-
 export class Routes extends RoutesModuleBase {
 
     public readonly ROUTE_PREFIX = '';
@@ -20,7 +19,7 @@ export class Routes extends RoutesModuleBase {
 
     routes() {
         this.restapi.all(
-            this.getFullRoute('/sensor/fake'),
+            this.getFullRoute('/mqtt/fake'),
             bodyParser.json(),
             (req, res) => {
                 setTimeout(() => {
