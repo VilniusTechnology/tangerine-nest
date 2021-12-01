@@ -63,11 +63,11 @@ export class TangerineNestServer {
                         this.getContainer()
                     ]
                 },
-                {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'MqttModule', params: [this.config, this.logger, this.getContainer() ] },
+                {id: 'SensorModule', params: [this.config, this.logger, this.getContainer()]},
+                {id: 'LedModule', params: [this.config, this.logger, this.getContainer() ] },
                 {id: 'AuthModule', params: [this.logger, this.getContainer()]},
                 {id: 'OmronModule', params: [this.logger, this.getContainer()]},
-                {id: 'SensorModule', params: [this.config, this.logger, this.getContainer()]},
                 {id: 'TimedLightSettingsApi', params: [
                         this.config.ledTimer,
                         this.logger,
@@ -94,6 +94,7 @@ export class TangerineNestServer {
 
             // After all modules were instantiated.
             Promise.all(promises).then((responses) => {
+                this.logger.info('All modules were instantiated. Loading...');
                 responses.forEach((module) => {
                     // Push them to container.
                     this.modules[module.module] = module.container;
@@ -101,6 +102,8 @@ export class TangerineNestServer {
                 this.logger.info('All modules were loaded.');
 
                 resolve(this.modules);
+            }).catch((err) => {
+                this.logger.error('Init failed: ' + err);
             });
         });
     }
@@ -112,13 +115,17 @@ export class TangerineNestServer {
             _.forEach(this.modules, (module, key) => {
                 this.logger.debug(`Will register Routes 4 module ${key}.`);
 
-                module.getRoutesForRegistration().forEach((layer) => {
-                    if (layer.route !== undefined)  {
-                        this.logger.debug( `Will push route: ${layer.route.path}`);
+                const routes = module.getRoutesForRegistration();
+                if (Array.isArray(routes)) {
+                    routes.forEach((layer) => {
+                        if (layer.route !== undefined)  {
+                            this.logger.debug( `Will push route: ${layer.route.path}`);
 
-                        this.app._router.stack.push(layer);
-                    }
-                });
+                            this.app._router.stack.push(layer);
+                        }
+                    });
+                }
+
                 this.logger.debug(`Routes 4 module ${key} were registered.`);
             });
             resolve(true);
@@ -134,17 +141,22 @@ export class TangerineNestServer {
         this.logger.debug('Will prepare for launch.');
 
         this.resgisterModules().then(() => {
-            this.registerModulesRoutes().then( () => {   
+
+            this.logger.info('All modules were registered.');
+
+            this.launchModules();
+
+            this.registerModulesRoutes().then( () => {
                 this.listen().then(() => {
                     if (this.modules.LedModule !== undefined) {
                         this.logger.info('Will start boot DEMO.');
-
-                        this.modules.LedModule.getRgbCctLedDriver()
-                            .setColor('red', 2);
+                        // this.modules.LedModule.getRgbCctLedDriver()
+                        //     .setColor('red', 2);
                         
                         const ledModule :LedModuleManager = this.modules.LedModule;
                         ledModule.getRgbCctLedDriver().setLedState(1);
 
+                        // TODO: refactor for proper launch
                         if (this.config.omronSensor.enabled) {
                             // If led module is initialized start OmronModule.
                             setTimeout(() => {
@@ -166,6 +178,14 @@ export class TangerineNestServer {
 
             res.write(JSON.stringify(routes));
             res.end();
+        });
+    }
+
+    private launchModules() {
+        _.forEach(this.modules, (module, key) => {
+            if (typeof module.launch === 'function') {
+                module.launch();
+            }
         });
     }
 

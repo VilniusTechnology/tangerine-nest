@@ -10,6 +10,7 @@ export class TimedLightRegulator {
 
     private pwmDriver;
     private timer;
+    private interval;
     private dbPath: string;
     private logger: Logger;
 
@@ -18,6 +19,7 @@ export class TimedLightRegulator {
         this.timer = {};
         this.logger = logger;
         this.dbPath = config.database.path;
+        this.interval = config.interval;
     }
 
     clearTimersIntervals() {
@@ -29,7 +31,7 @@ export class TimedLightRegulator {
         this.performCheck();
         this.timer = setInterval(() => { 
             this.performCheck();
-        }, 5000);
+        }, this.interval);
     }
 
     performCheck() {

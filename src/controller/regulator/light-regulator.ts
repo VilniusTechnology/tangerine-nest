@@ -17,14 +17,14 @@ export class LightRegulator {
         this.lightSource = lightSource;
         this.config = config;
 
-        this.desiredLevelTop = config.lightLvl.auto.top;
-        this.desiredLevelBottom = config.lightLvl.auto.bottom;
+        this.desiredLevelTop = config.lightSensor.auto.top;
+        this.desiredLevelBottom = config.lightSensor.auto.bottom;
     }
 
     adaptToConditions() {
         return new Promise((resolve, reject) => {
             this.getLightevel().then((lightLevel) => {
-                if (this.config.lightLvl.auto.cutOff <= lightLevel) {
+                if (this.config.lightSensor.auto.cutOff <= lightLevel) {
                     this.fader.getPwmDriverManager().switchAllLedsOff();
                     return;
                 }

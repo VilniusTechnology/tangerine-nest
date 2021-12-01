@@ -6,10 +6,7 @@ import { Pca9685RgbCctDriverManager } from "../../driver/pca9685-rgb-cct-driver-
 import { Logger } from "log4js";
 import { FaderAdvanced } from '../effector/effector/fader-advanced';
 import { LedModuleManager } from './led/led-module-manager';
-import { LightSourceSensorBH1750 } from "../../sensors/light/light-source-bh1750";
-import { LightSourceSensorUN } from "../../sensors/light/light-source-un";
-import { connect } from 'mqtt';
-import {RequestProcessor} from "./request-processor";
+import { RequestProcessor } from "./request-processor";
 
 export class LedModule extends ModuleBase {
 
@@ -21,6 +18,7 @@ export class LedModule extends ModuleBase {
     public fader: FaderAdvanced;
     public logger: Logger;
     public ledModuleManager: LedModuleManager;
+    public container;
 
     protected pwmManager: Pca9685RgbCctDriverManager;
     protected colors;
@@ -36,37 +34,91 @@ export class LedModule extends ModuleBase {
 
         super(logger, container);
 
+        this.container = container;
         this.config = config;
         this.logger = logger;
+
+        this.logger.debug('LedModule was constructed.');
+    }
+
+    init() {
+        this.logger.info('Will init LED module!');
+        return new Promise((resolve, reject) => {
+            resolve({'module': 'LedModule', container: this});
+        });
+    }
+
+    launch() {
+        this.logger.debug('Will launch LedModule');
+
+        this.resolveDependencies();
+
+        this.requestProcessor.loadSavedState();
+
+        this.pwmManager.setup().then((response) => {
+            this.logger.debug('PwmManager is UP!');
+
+            this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
+            this.logger.debug(
+                'pwmManager LedMode set to: '
+                + LedModule.MANUAL_MODE_CODE
+            );
+
+            this.fader = new FaderAdvanced(this.pwmManager, this.logger);
+
+            this.logger.info('LedModule fully initialized ');
+
+        }).catch( (err) => {
+            this.logger.error(`PWM driver setup error!`, err);
+        });
+
+        this.launchMqtts();
+    }
+
+    launchMqtts() {
+        this.mqttClient = this.container()['MqttModule'].getClient();
+        this.mqttClient.subscribeToTopic(
+            this.mqttClient.buildTopic('led'),
+            (topic, message) => {
+            const qr = message.toString();
+            if (this.validateJSONPayload(qr)) {
+                this.requestProcessor.perform(JSON.parse(qr));
+            }
+        });
+    }
+
+    validateJSONPayload(qr: string) {
+        try {
+            JSON.parse(qr);
+        } catch (e) {
+            this.logger.warn('LedModule got wrong JSON: ' + qr);
+            return false;
+        }
+
+        return true;
+    }
+
+    resolveDependencies() {
         this.pwmManager = new Pca9685RgbCctDriverManager(this.config, this.logger);
         this.fader = new FaderAdvanced(this.pwmManager, this.logger);
         this.colors = this.pwmManager.getState();
 
-        if (this.config.lightLvl.type == "BH1750") {
-            this.lightSource = new LightSourceSensorBH1750(this.logger);
-        } else {
-            this.lightSource = new LightSourceSensorUN();
-        }
-
-        if(!this.config.lightLvl.enabled) {
-            this.lightRegulator = false;
-        } else {
-            this.lightRegulator = new LightRegulator(
-                this.fader,
-                this.lightSource,
-                this.logger,
-                this.config
-            );
-        }
+        this.lightSource = this.container()['SensorModule'].getSensor('lightSensor');
+        this.lightRegulator = new LightRegulator(
+            this.fader,
+            this.lightSource,
+            this.logger,
+            this.config
+        );
 
         this.timedRegulator = new TimedLightRegulator(
-            config.ledTimer,
+            this.config.ledTimer,
             this.pwmManager,
             this.logger
         );
         this.ledModuleManager = new LedModuleManager(
-            config,
-            logger,
+            this.config,
+            this.logger,
             this.pwmManager,
             this.lightRegulator,
             this.fader
@@ -75,54 +127,8 @@ export class LedModule extends ModuleBase {
         this.requestProcessor = new RequestProcessor(
             this.ledModuleManager,
             this.logger,
-            config
+            this.config
         );
-        this.requestProcessor.loadSavedState();
-    }
-
-    init() {
-        this.logger.info('Will init LED module!');
-        return new Promise((resolve, reject) => {
-            this.pwmManager.setup().then((response) => {   
-                this.logger.debug('PwmManager is UP!');
-
-                this.pwmManager.setLedMode(LedModule.MANUAL_MODE_CODE);
-                this.logger.debug(
-                    'pwmManager LedMode set to: '
-                    + LedModule.MANUAL_MODE_CODE
-                );
-
-                this.fader = new FaderAdvanced(this.pwmManager, this.logger);
-    
-                this.logger.info(
-                    'LedModule fully initialized '
-                );
-
-                resolve({'module': 'LedModule', container: this});
-            }).catch( (err) => {
-                this.logger.error(`PWM driver setup error!`, err);
-            }); 
-        });
-    }
-
-    launchMqtts() {
-        this.mqttClient = connect('mqtt://poligonas.local');
-
-        this.mqttClient.on('connect', () => {
-            this.mqttClient.subscribe('zigbee2mqtt/shady/led', (err) => {
-                if (!err) {
-                    console.log('Connected zigbee2mqtt/shady/led');
-                } else {
-                    console.log(err);
-                }
-
-                this.mqttClient.on('message', (topic, message) => {
-                    let qr = JSON.parse(message.toString());
-                    this.requestProcessor.perform(qr);
-                    // console.log(message.toString());
-                });
-            });
-        });
     }
 
     getFader() {

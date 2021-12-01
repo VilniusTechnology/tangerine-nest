@@ -1,4 +1,4 @@
-import { LedModule } from './../led/led-module';
+import { LedModule } from '..';
 import { Disk } from './system/server-hardware/disk';
 import { Memory } from './system/server-hardware/memory';
 import { Os } from './system/server-hardware/os';
@@ -6,9 +6,7 @@ import { Cpu } from './system/server-hardware/cpu';
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { RoutesModuleBase } from '../routes-module-base';
-import { Bme280Sensor } from "../../sensors/bme280";
-import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
-import {PirState} from "../../sensors/pir-state";
+import {SensorModule} from "../sensor/sensor-module";
 
 const heapdump = require("heapdump");
 
@@ -19,15 +17,15 @@ export class Routes extends RoutesModuleBase {
     public config;
     public logger: Logger;
     public ledModule: LedModule;
-    public sensor: Bme280Sensor;
+    public sensorModule: SensorModule;
 
     constructor(logger: Logger, container, config) {
         super(logger);
 
         this.logger = logger;
         this.config = config;
-        this.sensor = new Bme280Sensor(config.bme280, this.logger);
         this.ledModule = container()['LedModule'];
+        this.sensorModule = container()['SensorModule'];
         this.routes();
     }
 
@@ -84,52 +82,12 @@ export class Routes extends RoutesModuleBase {
 
         this.restapi.all('/sensors-all', bodyParser.json(), (req, res) => {
             this.logger.debug('On route to: /sensors-all');
-
-            this.sensor.init().then(() => {
-                this.sensor.read().then((response) => {
-
-                    if(!this.config.lightLvl.enabled) {
-                        res.write(JSON.stringify(response));
-                        res.end();
-                    } else {
-                        this.read(res, response);
-                    }
-
-                }).catch((error) => {
-                    this.logger.error(error);
-                });
+            this.sensorModule.read().then((response) => {
+                res.write(JSON.stringify(response));
+                res.end();
             }).catch((error) => {
                 this.logger.error(error);
             });
-        });
-    }
-
-    read(res, response) {
-        let ls = new LightSourceSensorBH1750(this.logger);
-        ls.init().then((err) => {
-            ls.read().then((light) => {
-                //@ts-ignore
-                response.light = light.light_lvl;
-
-                let pirState = new PirState(this.config, this.logger);
-                pirState.read().then((pir) => {
-                    //@ts-ignore
-                    response.pir = pir.value;
-
-                    res.write(JSON.stringify(response));
-                    res.end();
-
-                    ls = null;
-                    pirState = null;
-                }).catch((err) => {
-                    this.logger.error('PIR ERR 1');
-                });
-            }).catch((err) => {
-                this.logger.error('LS ERR 2');
-                console.log(err)
-            });
-        }).catch((err) => {
-            this.logger.error('LS ERR 3');
         });
     }
 }

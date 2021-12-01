@@ -2,11 +2,8 @@ import {LedModuleManager} from "./led/led-module-manager";
 import {LedModule} from "./led-module";
 import {Logger} from "../../logger/logger";
 
-const sqlite3 = require('sqlite3').verbose();
-
 export class RequestProcessor {
 
-    private wereLightsRevived: boolean = false;
     private readonly ledModuleManager: LedModuleManager;
     private logger: Logger;
     private config;
@@ -20,7 +17,7 @@ export class RequestProcessor {
 
         this.dbPath = this.config.settingsDb.path;
 
-        this.logger.info('RequestProcessor initialized');
+        this.logger.info('RequestProcessor was constructed');
     };
 
     public getLedModule() {

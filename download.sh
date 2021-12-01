@@ -7,9 +7,9 @@
 
 # rsync -avz --progress --exclude '.idea' .  tangerine@tangerine.local:/home/tangerine
 
-# rsync -avz --progress --include='node_modules' --include='node_modules/**' --include='package.json' --exclude='*' tangerine@shady.local:/home/tangerine/tangerine-nest/* .
+ rsync -avz --progress --include='node_modules' --include='node_modules/**' --include='package.json' --exclude='*' tangerine@sunny.local:/home/tangerine/tangerine-nest/* .
 
-rsync -avz --progress --include='package.json' --exclude='*' tangerine@shady.local:/home/tangerine/tangerine-nest/* .
+#rsync -avz --progress --include='package.json' --exclude='*' tangerine@shady.local:/home/tangerine/tangerine-nest/* .
 
 # rsync -avz --progress --exclude 'download.sh' --exclude '.idea' tangerine@shady.local:/home/tangerine/tangerine-nest/* .
 

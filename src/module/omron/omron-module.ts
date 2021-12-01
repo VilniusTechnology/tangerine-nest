@@ -4,12 +4,8 @@ import { Routes } from './routes';
 import { ModuleBase } from '../module-base';
 import * as moment from 'moment'
 import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
-import { connect } from 'mqtt';
 
 const config = require('../../../dist/server/config-loader');
-
-// d6t.d6t_open(d6t_devh.ref(), d6t.D6T_44L_06, null);
-//d6t.d6t_open(d6t_devh.ref(), d6t.D6T_44L_06, '/dev/i2c-1');
 
 // d6t.D6T_44L_06 = 0;
 // d6t.D6T_8L_06  = 1;
@@ -43,28 +39,27 @@ export class OmronModule extends ModuleBase {
     }
 
     launch() {
-        const d6t_devh = new d6t.d6t_devh_t();
-        let isOpen = d6t.d6t_open_js(d6t_devh, 2);
-        // d6t.d6t_open_js(d6t_devh, 3);
-        this.logger.warn('IS d6t ok: ' + isOpen);
+        if (this.config.omronSensor.enabled) {
+            const d6t_devh = new d6t.d6t_devh_t();
+            let isOpen = d6t.d6t_open_js(d6t_devh, 2);
 
-        const client = connect('mqtt://poligonas.local');
+            this.logger.debug('IS d6t ok: ' + isOpen);
 
-        this.startMonitoring(d6t_devh, client);
+            const client = this.container()['MqttModule'].getClient();
+
+            this.startMonitoring(d6t_devh, client);
+        }
     }
 
     startMonitoring (d6t_devh, client) {
-        let tempDiffThresh = 0.5;
-        let lastTemp = 0;
-        let paused = false;
-        let intervalStep = 200;
-        let lightLvl = 0;
-
-
-        let curTemp = 0;
+        let tempDiffThresh = this.config.omronSensor.tempDiffThresh;
+        let lastTemp = this.config.omronSensor.lastTemp;
+        let paused = this.config.omronSensor.paused;
+        let intervalStep = this.config.omronSensor.intervalStep;
+        let lightLvl = this.config.omronSensor.lightLvl;
+        let curTemp = this.config.omronSensor.curTemp;
 
         const manager = this.getModule('LedModule').getManager();
-        // client.publish("zigbee2mqtt/shady.local", "RPI IS ON!");
 
         setInterval(() => {
             const beginningTime = moment();
@@ -80,7 +75,7 @@ export class OmronModule extends ModuleBase {
                 const tempDiff = curTemp - lastTemp;
 
                 let lightLvlOk = true;
-                if(!this.config.lightLvl.enabled) {
+                if(this.config.lightLvl.enabled) {
                     let ls = new LightSourceSensorBH1750();
                     ls.init().then(() => {
                         ls.read().then((light) => {
@@ -104,11 +99,6 @@ export class OmronModule extends ModuleBase {
                 }
 
                 if (tempDiff > 0.2) {
-                    this.logger.warn('tempDiff: ' + tempDiff);
-                    this.logger.warn('lastTemp: ' + lastTemp);
-                    this.logger.warn('curTemp: ' + curTemp);
-                    this.logger.warn('lightLvl: ' + lightLvl);
-
                     const data = {
                         dateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
                         tempDiff: tempDiff,
@@ -117,7 +107,7 @@ export class OmronModule extends ModuleBase {
                         lightLvl: lightLvl
                     };
 
-                    client.publish("zigbee2mqtt/shady.local", JSON.stringify(data));
+                    client.publish("omronTrigger", JSON.stringify(data));
                 }
 
                 if (!lightLvlOk) {
@@ -126,8 +116,7 @@ export class OmronModule extends ModuleBase {
 
                 if (lastTemp > 0) {
                     const isTriggered = (tempDiff > tempDiffThresh);
-                    // const isTriggered = (tempDiff > 0.5 && tempDiff < 5);
-                    // const isTriggered = false;
+
                     if (isTriggered) {
                         const fadeStep = 1;
                         const fadeTimeStep = 5;
@@ -137,7 +126,6 @@ export class OmronModule extends ModuleBase {
 
                         this.logger.debug('INIT SPLASH tempDiff: ' + tempDiff);
                         manager.splash(pauseDuration,  fadeMin,   fadeMax, fadeStep, fadeTimeStep).then(() => {
-                            // this.logger.debug('SPLASH FINISHED');
                             paused = false;
                         });
                         paused = true;
@@ -145,7 +133,6 @@ export class OmronModule extends ModuleBase {
                 }
                 lastTemp = curTemp;
             }
-
 
         }, intervalStep);
     }

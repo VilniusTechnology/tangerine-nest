@@ -37,7 +37,7 @@ export class PirRunner {
                     ['PIR_STATE', stateStr],
                     (err, rs) => {
                         if (err) {
-                            return console.error(err.message);
+                            this.logger.error(err.message);
                         }
                         // this.logger.debug(`PirRunner Rows inserted`, rs);
                     });

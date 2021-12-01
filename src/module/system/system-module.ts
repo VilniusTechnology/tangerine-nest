@@ -21,4 +21,4 @@ export class SystemModule extends ModuleBase {
     getRoutesForRegistration() {
         return new Routes(this.logger, this.container, this.config).listRoutes();
     }
-};
+}

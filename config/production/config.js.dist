@@ -16,9 +16,20 @@ const config = {
         level: 'debug',
     },
     host: 'yyy.local',
+    hostname: 'yyy',
     secure_api: true,
+    mqtt: {
+       url: 'hub.local',
+       topicBase: 'zigbee2mqtt',
+       connectTimeout: 10000,
+    },
     omronSensor: {
         enabled: false,
+        tempDiffThresh: 0.5,
+        lastTemp: 0,
+        paused: false,
+        intervalStep: 200,
+        lightLvl: 0,
     },
     ledDriver : {
         driver_type: 'i2c',
@@ -44,24 +55,46 @@ const config = {
             path: process.env.LED_TIMER_DB_PATH || '/home/tangerine/tangerine-nest/mandarinas-settings',
         },
         hardwareLoader: true,
+        interval: 5000,
     },
-    bme280: {
-        i2cBusNo: 1,
-        i2cAddress: 0x76,
-        hardwareLoader: true,
+    atmoSensor: {
+        type: 'Mqtt',
+        sensors: {
+            Mqtt: {
+                device: 'zigbee2mqtt/sunny/sensors/atmo',
+            },
+            bme280: {
+                i2cBusNo: 1,
+                i2cAddress: 0x76,
+                hardwareLoader: true,
+            },
+            Mock: {
+              lvl: 9999,
+            },
+        },
     },
-    lightLvl: {
-        enabled: false,
-        address: 0x23,
-        type: "BH1750",
-        hardwareLoader: true,
+    lightSensor: {
+        type: 'Mqtt',
+        sensors: {
+            Mqtt: {
+                device: 'zigbee2mqtt/sunny/sensors/light',
+            },
+            BH1750: {
+                address: 0x23,
+                hardwareLoader: true,
+            },
+            Mock: {
+              lvl: 9999,
+            },
+        },
         auto: {
             interval: 500,
             bottom: 45,
             top: 55,
-        }
+        },
     },
     sensorData: {
+        checkInterval: 10000,
         database: {
             path: '/home/tangerine/tangerine-nest/mandarinas-settings',
         }
@@ -70,7 +103,7 @@ const config = {
         path: '/home/tangerine/tangerine-nest/mandarinas-settings',
     },
     storage: {
-            path: '/Users/lukas.mikelionis/Projects/tangerine-nest/mandarinas-settings',
+            path: '/home/tangerine/tangerine-nest/mandarinas-settings',
     },
     neopixel: {
         lenght: 5,
