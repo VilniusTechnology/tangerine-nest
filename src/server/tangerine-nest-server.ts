@@ -150,8 +150,9 @@ export class TangerineNestServer {
                 this.listen().then(() => {
                     if (this.modules.LedModule !== undefined) {
                         this.logger.info('Will start boot DEMO.');
-                        // this.modules.LedModule.getRgbCctLedDriver()
-                        //     .setColor('red', 2);
+
+                        this.modules.LedModule.getManager()
+                            .splash(1000,  1,   255, 2, 50);
                         
                         const ledModule :LedModuleManager = this.modules.LedModule;
                         ledModule.getRgbCctLedDriver().setLedState(1);

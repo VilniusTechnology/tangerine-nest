@@ -2,6 +2,8 @@
 #
 # sudo cp /home/tangerine/tangerine-nest/infrastructure/tangerine-nest.service /etc/systemd/system
 #
+# sudo NODE_ENV='production' node loader.js
+#
 # sudo systemctl enable tangerine-nest
 # sudo systemctl daemon-reload
 # sudo systemctl start tangerine-nest

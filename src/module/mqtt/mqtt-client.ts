@@ -35,11 +35,12 @@ export class MqttClient {
         //     key: keyFile
         // };
 
-
         return new Promise((resolve, reject) => {
             const options = {
                 connectTimeout: this.config.mqtt.connectTimeout,
-                reconnectPeriod: 500,
+                reconnectPeriod: this.config.mqtt.reconnectPeriod,
+                username: this.config.mqtt.username,
+                password: this.config.mqtt.password
             };
 
             this.mqttClient = connect('mqtt://' + this.config.mqtt.url, options);

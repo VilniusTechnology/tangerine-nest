@@ -77,13 +77,18 @@ export class LedModule extends ModuleBase {
 
     launchMqtts() {
         this.mqttClient = this.container()['MqttModule'].getClient();
+        const topicSub = this.mqttClient.buildTopic('led');
         this.mqttClient.subscribeToTopic(
-            this.mqttClient.buildTopic('led'),
+            topicSub,
             (topic, message) => {
-            const qr = message.toString();
-            if (this.validateJSONPayload(qr)) {
-                this.requestProcessor.perform(JSON.parse(qr));
-            }
+             if (topic == topicSub) {
+                 const qr = message.toString();
+                 if (this.validateJSONPayload(qr)) {
+                     this.logger.debug('Request fom MQTT');
+                     this.requestProcessor.perform(JSON.parse(qr));
+                 }
+             }
+
         });
     }
 

@@ -22,6 +22,7 @@ export class OmronModule extends ModuleBase {
     constructor(logger: Logger, container) {
         super(logger, container);
 
+        this.container = container;
         this.config = config.config;
         this.logger = logger;
 
@@ -59,7 +60,9 @@ export class OmronModule extends ModuleBase {
         let lightLvl = this.config.omronSensor.lightLvl;
         let curTemp = this.config.omronSensor.curTemp;
 
-        const manager = this.getModule('LedModule').getManager();
+        // const manager = this.getModule('LedModule').getManager();
+        const manager = this.container()['LedModule'].getManager();
+
 
         setInterval(() => {
             const beginningTime = moment();
@@ -75,20 +78,20 @@ export class OmronModule extends ModuleBase {
                 const tempDiff = curTemp - lastTemp;
 
                 let lightLvlOk = true;
-                if(this.config.lightLvl.enabled) {
-                    let ls = new LightSourceSensorBH1750();
-                    ls.init().then(() => {
-                        ls.read().then((light) => {
-                            //@ts-ignore
-                            lightLvl = light.light_lvl;
-                        }).catch(() => {
-
-                        });
-                    }).catch(() => {
-
-                    });
-                    lightLvlOk = (lightLvl < 1);
-                }
+                // if(this.config.lightLvl.enabled) {
+                //     let ls = new LightSourceSensorBH1750();
+                //     ls.init().then(() => {
+                //         ls.read().then((light) => {
+                //             //@ts-ignore
+                //             lightLvl = light.light_lvl;
+                //         }).catch(() => {
+                //
+                //         });
+                //     }).catch(() => {
+                //
+                //     });
+                //     lightLvlOk = (lightLvl < 1);
+                // }
 
                 // 24 > 0.3
                 // 25 > 0.4

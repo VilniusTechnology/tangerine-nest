@@ -22,6 +22,9 @@ const config = {
        url: 'hub.local',
        topicBase: 'zigbee2mqtt',
        connectTimeout: 10000,
+       reconnectPeriod: 500,
+       username: 'xxxx',
+       password: 'xxxx',
     },
     omronSensor: {
         enabled: false,
