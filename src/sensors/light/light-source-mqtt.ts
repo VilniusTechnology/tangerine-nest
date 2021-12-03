@@ -8,7 +8,6 @@ export class LightSourceSensorMqtt implements LightSourceSensor {
     public container;
     public mqttClient: MqttClient;
 
-
     constructor(config: any, logger, container) {
         this.container = container;
         this.config = config;
@@ -29,7 +28,8 @@ export class LightSourceSensorMqtt implements LightSourceSensor {
                 this.mqttClient.subscribeToTopic(
                     this.config.lightSensor.sensors.Mqtt.device,
                     (topic, message) => {
-                        resolve(JSON.parse(message.toString()));
+                        const sensData = JSON.parse(message.toString());
+                        resolve({light_lvl: sensData.illuminance_lux});
                     });
             });
         });

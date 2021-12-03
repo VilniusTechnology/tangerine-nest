@@ -61,7 +61,7 @@ export class SensorModule extends ModuleBase {
             this.atmoSensor.read().then((response) => {
                 this.readLight().then((lResponse) => {
                     //@ts-ignore
-                    response.light = lResponse.illuminance_lux;
+                    response.light = lResponse.light_lvl;
                     resolve(response);
                 });
             }).catch((error) => {

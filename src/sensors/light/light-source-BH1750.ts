@@ -3,15 +3,13 @@ import {LightSourceSensor} from "./light-source";
 var BH1750 = require('bh1750');
 
 export class LightSourceSensorBH1750 implements LightSourceSensor {
-
+    public config;
     public logger: Logger;
+    public container;
 
-    constructor(logger = null) {
-        if (logger != null) {
-            this.logger = logger;
-        }
-
-        this.log('LightSourceSensorBH1750 initiated');
+    constructor(config: any, logger, container) {
+        this.container = container;
+        this.config = config;
     }
 
     init() {

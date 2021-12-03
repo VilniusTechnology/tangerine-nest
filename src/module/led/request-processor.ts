@@ -65,17 +65,18 @@ export class RequestProcessor {
             this.ledModuleManager.setMode(query.mode);
 
             this.ledModuleManager.mute();
-            let colors = {
-                "coldWhite" : 1,
-                "warmWhite" : 2,
-            };
-            this.ledModuleManager.setColours(colors);
+            // let colors = {
+            //     "coldWhite" : 1,
+            //     "warmWhite" : 2,
+            // };
+            // this.ledModuleManager.setColours(colors);
+
             this.timerOfLightAdaptor = setInterval( () => {
                 this.logger.info('Adapting Light');
                 this.ledModuleManager.adaptLight().then((result) => {
                     this.logger.info(`Adapted to Light level: ${result}`);
                 })
-            }, this.config.lightLvl.auto.interval).unref();
+            }, this.config.lightSensor.auto.interval).unref();
         }
 
         // Manual mode.
