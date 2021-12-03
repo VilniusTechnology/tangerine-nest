@@ -17,7 +17,7 @@ export class TimedLightSettingsApi extends ModuleBase {
         this.config = config;
     }
 
-    init() {
+    init(container) {
         return new Promise((resolve, reject) => {
             this.logger.info('Will init TimedLightSettingsApi module!');
             this.logger.debug(`TimedLightSettingsApi will load DB on path: ${this.config.database.path}`);
@@ -27,10 +27,12 @@ export class TimedLightSettingsApi extends ModuleBase {
                     return this.logger.error(`TimedLightSettingsApi DB error on path: ${this.config.database.path}: `, err.message);
                 }
                 this.logger.debug('TimedLightSettingsApi loaded DB OK.');
-            });
 
-            this.logger.debug('  TimedLightSettingsApi was loaded. ');
-            resolve({'module': 'TimedLightSettingsApi', container: this});
+                this.logger.debug('TimedLightSettingsApi was loaded. ');
+                container.add('TimedLightSettingsApi', this);
+
+                resolve({'module': 'TimedLightSettingsApi', container: this});
+            });
         })
     }
 

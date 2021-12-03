@@ -22,15 +22,19 @@ export class MqttModule extends ModuleBase {
         this.mqttClient = new MqttClient(this.config, this.logger, this.mqttManager);
     }
 
-    init() {
+    init(container) {
         return new Promise((resolve, reject) => {
+            this.logger.info('Will init Mqtt Module!');
             this.mqttClient
                 .init()
                 .then((rs) => {
+                    container.add('MqttModule', this);
+                    this.logger.info('Mqtt Module Initiated!');
+
                     resolve({'module': 'MqttModule', container: this});
-                }).catch((err) => {
+                }).catch((error) => {
                     this.logger.error('Failed to init MqttModule...');
-                    reject(false);
+                reject({module: 'MqttModule', error: error});
             });
         });
     }

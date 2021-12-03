@@ -10,6 +10,13 @@ class OpenpixelModule extends module_base_1.ModuleBase {
         this.logger = logger;
         this.logger.debug('OpenpixelModule was constructed.');
     }
+    init(container) {
+        this.logger.info('Will init Openpixel Module!');
+        return new Promise((resolve, reject) => {
+            container.add('OpenpixelModule', this);
+            resolve({ 'module': 'OpenpixelModule', container: this });
+        });
+    }
     getRoutesForRegistration() {
         return new routes_1.Routes(this.logger).listRoutes();
     }

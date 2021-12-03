@@ -33,23 +33,23 @@ export class OmronModule extends ModuleBase {
         return new Routes(this.logger).listRoutes();
     }
 
-    init() {
+    init(container) {
         return new Promise((resolve, reject) => {
+            container.add('OmronModule', this);
+
+            if (this.config.omronSensor.enabled) {
+                const d6t_devh = new d6t.d6t_devh_t();
+                let isOpen = d6t.d6t_open_js(d6t_devh, 2);
+
+                this.logger.debug('IS d6t ok: ' + isOpen);
+
+                const client = this.container()['MqttModule'].getClient();
+
+                this.startMonitoring(d6t_devh, client);
+            }
+
             resolve({'module': 'OmronModule', container: this});
         });
-    }
-
-    launch() {
-        if (this.config.omronSensor.enabled) {
-            const d6t_devh = new d6t.d6t_devh_t();
-            let isOpen = d6t.d6t_open_js(d6t_devh, 2);
-
-            this.logger.debug('IS d6t ok: ' + isOpen);
-
-            const client = this.container()['MqttModule'].getClient();
-
-            this.startMonitoring(d6t_devh, client);
-        }
     }
 
     startMonitoring (d6t_devh, client) {

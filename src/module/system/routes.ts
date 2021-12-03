@@ -6,7 +6,7 @@ import { Cpu } from './system/server-hardware/cpu';
 import { Logger } from "log4js";
 import * as bodyParser from "body-parser";
 import { RoutesModuleBase } from '../routes-module-base';
-import {SensorModule} from "../sensor/sensor-module";
+import {Container} from "../container";
 
 const heapdump = require("heapdump");
 
@@ -17,15 +17,13 @@ export class Routes extends RoutesModuleBase {
     public config;
     public logger: Logger;
     public ledModule: LedModule;
-    public sensorModule: SensorModule;
 
-    constructor(logger: Logger, container, config) {
+    constructor(logger: Logger, container: Container, config) {
         super(logger);
 
         this.logger = logger;
         this.config = config;
-        this.ledModule = container()['LedModule'];
-        this.sensorModule = container()['SensorModule'];
+        this.ledModule = container.get('LedModule');
         this.routes();
     }
 
@@ -80,14 +78,17 @@ export class Routes extends RoutesModuleBase {
             });
         });
 
-        this.restapi.all('/sensors-all', bodyParser.json(), (req, res) => {
-            this.logger.debug('On route to: /sensors-all');
-            this.sensorModule.read().then((response) => {
-                res.write(JSON.stringify(response));
-                res.end();
-            }).catch((error) => {
-                this.logger.error(error);
+        this.restapi.get('/api/list-routes', bodyParser.json(), (req, res) => {
+            this.logger.debug('On route to: /api/list-routes');
+            const routes = [];
+            this.restapi._router.stack.forEach((layer) => {
+                if (layer.route != undefined) {
+                    routes.push(layer.route.path);
+                }
             });
+
+            res.write(JSON.stringify(routes));
+            res.end();
         });
     }
 }

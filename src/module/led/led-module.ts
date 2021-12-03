@@ -7,6 +7,7 @@ import { Logger } from "log4js";
 import { FaderAdvanced } from '../effector/effector/fader-advanced';
 import { LedModuleManager } from './led/led-module-manager';
 import { RequestProcessor } from "./request-processor";
+import {Container} from "../container";
 
 export class LedModule extends ModuleBase {
 
@@ -34,16 +35,22 @@ export class LedModule extends ModuleBase {
 
         super(logger, container);
 
-        this.container = container;
         this.config = config;
         this.logger = logger;
 
         this.logger.debug('LedModule was constructed.');
     }
 
-    init() {
-        this.logger.info('Will init LED module!');
+    init(container: Container) {
+        this.logger.info('Will init Led Module!');
+
+        this.container = container;
+
         return new Promise((resolve, reject) => {
+            container.add('LedModule', this);
+
+            this.launch();
+
             resolve({'module': 'LedModule', container: this});
         });
     }
@@ -76,7 +83,7 @@ export class LedModule extends ModuleBase {
     }
 
     launchMqtts() {
-        this.mqttClient = this.container()['MqttModule'].getClient();
+        this.mqttClient = this.container.get('MqttModule').getClient();
         const topicSub = this.mqttClient.buildTopic('led');
         this.mqttClient.subscribeToTopic(
             topicSub,
@@ -108,7 +115,7 @@ export class LedModule extends ModuleBase {
         this.fader = new FaderAdvanced(this.pwmManager, this.logger);
         this.colors = this.pwmManager.getState();
 
-        this.lightSource = this.container()['SensorModule'].getSensor('lightSensor');
+        this.lightSource = this.container.get('SensorModule').getSensor('lightSensor');
         this.lightRegulator = new LightRegulator(
             this.fader,
             this.lightSource,

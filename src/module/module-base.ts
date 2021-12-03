@@ -7,10 +7,9 @@ export class ModuleBase {
 
     constructor(logger: Logger, container) {
         this.logger = logger;
-        this.container = container();
     }
 
-    init() {
+    init(container) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 const moduleClassName = this.constructor.name;

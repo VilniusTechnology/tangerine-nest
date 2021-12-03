@@ -8,6 +8,8 @@ export class LightSourceSensorMqtt implements LightSourceSensor {
     public container;
     public mqttClient: MqttClient;
 
+    protected readings = null;
+
     constructor(config: any, logger, container) {
         this.container = container;
         this.config = config;
@@ -16,22 +18,24 @@ export class LightSourceSensorMqtt implements LightSourceSensor {
     init() {
         return new Promise((resolve, reject) => {
             this.mqttClient = this.container()['MqttModule'].getClient();
-            resolve(true);
+            // if (this.readings == null) {
+                this.mqttClient.subscribeToTopic(
+                    this.config.lightSensor.sensors.Mqtt.device,
+                    (topic, message) => {
+                        if (topic == this.config.lightSensor.sensors.Mqtt.device) {
+                            const sensData = JSON.parse(message.toString());
+                            this.readings = {light_lvl: sensData.illuminance_lux};
+                        }
+                        resolve(true);
+                    });
+            // }
+            // resolve(true);
         });
     }
 
     read() {
         return new Promise((resolve, reject) => {
-            this.mqttClient.unSubscribeFromTopic(
-                this.config.lightSensor.sensors.Mqtt.device
-            ).then(() => {
-                this.mqttClient.subscribeToTopic(
-                    this.config.lightSensor.sensors.Mqtt.device,
-                    (topic, message) => {
-                        const sensData = JSON.parse(message.toString());
-                        resolve({light_lvl: sensData.illuminance_lux});
-                    });
-            });
+            resolve(this.readings);
         });
     }
 }

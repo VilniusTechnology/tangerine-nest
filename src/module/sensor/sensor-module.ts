@@ -4,13 +4,14 @@ import { ModuleBase } from '../module-base';
 import {MqttClient} from "../mqtt/mqtt-client";
 import {AtmoSensorFactory} from "../../sensors/atmo/atmo-sensor-factory";
 import {LightSourceFactory} from "../../sensors/light/light-source-factory";
+import {Container} from "../container";
 
 export class SensorModule extends ModuleBase {
 
     public config;
     public mqttClient: MqttClient;
     public logger: Logger;
-    public container;
+    public container: Container;
     public atmoSensor;
     public lightSensor;
 
@@ -19,37 +20,49 @@ export class SensorModule extends ModuleBase {
 
         this.config = config;
         this.logger = logger;
-        this.container = container;
-
-        this.atmoSensor = (new AtmoSensorFactory(config, this.logger, container)).build(this.config.atmoSensor.type);
-        this.lightSensor = (new LightSourceFactory(config, this.logger, container)).build(this.config.lightSensor.type);
 
         this.logger.debug('SensorModule was constructed.');
     }
 
-    init() {
-        return new Promise((resolve, reject) => {
-            this.logger.debug('SensorModule was inited.');
-            resolve({'module': 'SensorModule', container: this});
-        });
-    }
+    init(container: Container) {
+        this.atmoSensor = (new AtmoSensorFactory(this.config, this.logger, container)).build(this.config.atmoSensor.type);
+        this.lightSensor = (new LightSourceFactory(this.config, this.logger, container)).build(this.config.lightSensor.type);
 
-    launch() {
-        this.logger.debug('Will launch SensorModule');
-        this.readAndDispatchMqtt();
+        this.container = container;
+
+        return new Promise((resolve, reject) => {
+            this.logger.info('Will init Sensor Module!');
+
+            const atmoSensorInitProm = this.atmoSensor.init();
+            const lightSensorInitProm = this.lightSensor.init();
+
+            Promise.all([
+                atmoSensorInitProm,
+                lightSensorInitProm,
+            ]).then((rsp) => {
+                container.add('SensorModule', this);
+
+                this.readAndDispatchMqtt();
+
+                resolve({'module': 'SensorModule', container: this});
+                this.logger.debug('SensorModule was inited.');
+            }).catch((error) => {
+                reject({module: 'SensorModule', error: error});
+            });
+        });
     }
 
     readAndDispatchMqtt() {
-        this.mqttClient = this.container()['MqttModule'].getClient();
-        this.atmoSensor.init().then(() => {
-            setInterval(() => {
-                this.read().then((rs) => {
-                    this.publishReadings(JSON.stringify(rs));
-                });
-            }, this.config.sensorData.checkInterval);
-        }).catch((error) => {
-            this.logger.error('SensorModule: ' + error);
-        });
+        this.mqttClient = this.container.get('MqttModule').getClient();
+        // this.atmoSensor.init().then(() => {
+        //     setInterval(() => {
+        //         this.read().then((rs) => {
+        //             this.publishReadings(JSON.stringify(rs));
+        //         }).catch();
+        //     }, this.config.sensorData.checkInterval);
+        // }).catch((error) => {
+        //     this.logger.error('SensorModule: ' + error);
+        // });
     }
 
     publishReadings(message) {
@@ -58,31 +71,21 @@ export class SensorModule extends ModuleBase {
 
     read() {
         return new Promise((resolve, reject) => {
-            this.atmoSensor.read().then((response) => {
-                this.readLight().then((lResponse) => {
-                    //@ts-ignore
-                    response.light = lResponse.light_lvl;
-                    resolve(response);
-                });
-            }).catch((error) => {
-                this.logger.error(error);
-                reject(error);
-            });
-        });
-    }
 
-    readLight() {
-        return new Promise((resolve, reject) => {
-            this.lightSensor.init().then((err) => {
-                this.lightSensor.read().then((light) => {
-                    resolve(light);
-                }).catch((err) => {
-                    this.logger.error('LS ERR 2');
-                    reject(err);
-                });
-            }).catch((err) => {
-                this.logger.error('LS ERR 3');
-                reject(err);
+            const atmoSensorReadProm = this.atmoSensor.read();
+            const lightSensorReadProm = this.lightSensor.read();
+
+            Promise.all([
+                atmoSensorReadProm,
+                lightSensorReadProm,
+            ]).then((data) => {
+                delete (data[0]['battery']);
+                delete (data[0]['voltage']);
+                const response = {...data[0], ...data[1]};
+
+                resolve(response);
+            }).catch(() => {
+                reject(false);
             });
         });
     }

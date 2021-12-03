@@ -18,14 +18,16 @@ export class AtmoBme280Sensor implements AtmoSensor{
 
     public init() {
         return new Promise( (resolve, reject) => {
+            console.log('this.bme280: ', this.bme280);
             this.bme280
-            .init()
-            .then(() => {
-                resolve(true);
-            })
-            .catch((err) => {
-                reject(`BME280 initialization failed: ${err} `);
-            });
+                .init()
+                .then(() => {
+                    console.log('bme280 init OK');
+                    resolve(true);
+                })
+                .catch((err) => {
+                    reject(`BME280 initialization failed: ${err} `);
+                });
         });  
     }
 

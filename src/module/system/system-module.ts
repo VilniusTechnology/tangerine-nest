@@ -13,9 +13,18 @@ export class SystemModule extends ModuleBase {
 
         this.config = config;
         this.logger = logger;
-        this.container = container;
 
         this.logger.debug('SystemModule was constructed.');
+    }
+
+    init(container) {
+        this.logger.info('Will init System Module!');
+        return new Promise((resolve, reject) => {
+            container.add('SystemModule', this);
+            this.container = container;
+
+            resolve({'module': 'SystemModule', container: this});
+        });
     }
 
     getRoutesForRegistration() {

@@ -1,12 +1,15 @@
 import {AtmoSensor} from "./atmo-sensor";
 import {MqttClient} from "../../module/mqtt/mqtt-client";
 import {Logger} from "log4js";
+import {Container} from "../../module/container";
 
 export class AtmoMqttSensor implements AtmoSensor {
     public config;
     public logger: Logger;
-    public container;
+    public container: Container;
     public mqttClient: MqttClient;
+
+    protected readings = null;
 
     constructor(config: any, logger, container) {
         this.container = container;
@@ -15,22 +18,26 @@ export class AtmoMqttSensor implements AtmoSensor {
 
     init() {
         return new Promise((resolve, reject) => {
-            this.mqttClient = this.container()['MqttModule'].getClient();
+            this.mqttClient = this.container.get('MqttModule').getClient();
+
+            if (this.readings == null) {
+                this.mqttClient.subscribeToTopic(
+                    this.config.atmoSensor.sensors.Mqtt.device,
+                    (topic, message) => {
+                        if(topic == this.config.atmoSensor.sensors.Mqtt.device) {
+                            // console.log(topic, message.toString());
+                            this.readings = JSON.parse(message.toString());
+                        }
+                    });
+                resolve(true);
+            }
             resolve(true);
         });
     }
 
     read() {
         return new Promise((resolve, reject) => {
-            this.mqttClient.unSubscribeFromTopic(
-                this.config.atmoSensor.sensors.Mqtt.device
-            ).then(() => {
-                this.mqttClient.subscribeToTopic(
-                    this.config.atmoSensor.sensors.Mqtt.device,
-                    (topic, message) => {
-                        resolve(JSON.parse(message.toString()));
-                    });
-            });
+            resolve(this.readings);
         });
     }
 }
