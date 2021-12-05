@@ -18,12 +18,12 @@ export class ModuleLoader {
 
     public launch(app) {
         return new Promise((resolve, reject) => {
-            this.registerModules().then(() => {
+            this.registerModules().then((container) => {
                 this.logger.info('All modules were registered.');
                 this.registerModulesRoutes(app).then( () => {
                     this.logger.info('All module routes were registered.');
 
-                    resolve(true);
+                    resolve(container);
                 });
             });
         });
@@ -45,7 +45,7 @@ export class ModuleLoader {
                 {id: 'SensorModule', params: [this.config, this.logger, null]},
                 {id: 'LedModule', params: [this.config, this.logger, null ] },
                 {id: 'AuthModule', params: [this.logger, null]},
-                {id: 'OmronModule', params: [this.logger, null]},
+
                 {id: 'TimedLightSettingsApi', params: [
                         this.config.ledTimer,
                         this.logger,
@@ -55,6 +55,10 @@ export class ModuleLoader {
                 {id: 'EffectorModule', params: [this.logger, null]},
                 {id: 'OpenpixelModule', params: [this.logger, null]},
             ];
+
+            if (this.config.omronSensor.enabled) {
+                rawModules.push({id: 'OmronModule', params: [this.logger, null]});
+            }
 
             // Instantiate modules objects.
             let objects = [];
@@ -83,6 +87,7 @@ export class ModuleLoader {
                 // all done here
                 this.logger.info('All modules were loaded.');
                 this.modules = container.getAllModules();
+
                 resolve(container);
             }).catch((err) => {
                 // error here

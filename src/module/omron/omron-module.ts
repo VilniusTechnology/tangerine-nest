@@ -4,6 +4,7 @@ import { Routes } from './routes';
 import { ModuleBase } from '../module-base';
 import * as moment from 'moment'
 import {LightSourceSensorBH1750} from "../../sensors/light/light-source-bh1750";
+import {Container} from "../container";
 
 const config = require('../../../dist/server/config-loader');
 
@@ -16,7 +17,7 @@ const config = require('../../../dist/server/config-loader');
 export class OmronModule extends ModuleBase {
 
     private config;
-    public container;
+    public container: Container;
     public logger: Logger;
 
     constructor(logger: Logger, container) {
@@ -33,20 +34,20 @@ export class OmronModule extends ModuleBase {
         return new Routes(this.logger).listRoutes();
     }
 
-    init(container) {
+    init(container: Container) {
         return new Promise((resolve, reject) => {
             container.add('OmronModule', this);
 
-            if (this.config.omronSensor.enabled) {
-                const d6t_devh = new d6t.d6t_devh_t();
-                let isOpen = d6t.d6t_open_js(d6t_devh, 2);
+            this.container = container;
 
-                this.logger.debug('IS d6t ok: ' + isOpen);
+            const d6t_devh = new d6t.d6t_devh_t();
+            let isOpen = d6t.d6t_open_js(d6t_devh, 2);
 
-                const client = this.container()['MqttModule'].getClient();
+            this.logger.debug('IS d6t ok: ' + isOpen);
 
-                this.startMonitoring(d6t_devh, client);
-            }
+            const client = this.container.get('MqttModule').getClient();
+
+            this.startMonitoring(d6t_devh, client);
 
             resolve({'module': 'OmronModule', container: this});
         });
@@ -60,14 +61,13 @@ export class OmronModule extends ModuleBase {
         let lightLvl = this.config.omronSensor.lightLvl;
         let curTemp = this.config.omronSensor.curTemp;
 
-        // const manager = this.getModule('LedModule').getManager();
-        const manager = this.container()['LedModule'].getManager();
+        const manager = this.container.get('LedModule').getManager();
 
 
         setInterval(() => {
             const beginningTime = moment();
             const morningStart = moment('08:30', 'HH:mm');
-            const eveningEnd = moment('23:30', 'HH:mm');
+            const eveningEnd = moment('22:00', 'HH:mm');
             const timeToWork = (beginningTime.isAfter(morningStart) && beginningTime.isBefore(eveningEnd));
 
             const isOkToWork = !paused && timeToWork;
@@ -77,21 +77,14 @@ export class OmronModule extends ModuleBase {
                 curTemp = parseFloat(data[1]);
                 const tempDiff = curTemp - lastTemp;
 
-                let lightLvlOk = true;
-                // if(this.config.lightLvl.enabled) {
-                //     let ls = new LightSourceSensorBH1750();
-                //     ls.init().then(() => {
-                //         ls.read().then((light) => {
-                //             //@ts-ignore
-                //             lightLvl = light.light_lvl;
-                //         }).catch(() => {
-                //
-                //         });
-                //     }).catch(() => {
-                //
-                //     });
-                //     lightLvlOk = (lightLvl < 1);
-                // }
+                let lightLvlOk = false;
+
+                const ls = this.container.get('SensorModule').getSensor('lightSensor');
+                ls.read().then((light) => {
+                    //@ts-ignore
+                    lightLvl = light.light_lvl;
+                    lightLvlOk = (lightLvl < 1);
+                }).catch(() => {});
 
                 // 24 > 0.3
                 // 25 > 0.4

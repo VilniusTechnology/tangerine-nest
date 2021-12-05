@@ -17,7 +17,7 @@ export class LightSourceSensorMqtt implements LightSourceSensor {
 
     init() {
         return new Promise((resolve, reject) => {
-            this.mqttClient = this.container()['MqttModule'].getClient();
+            this.mqttClient = this.container.get('MqttModule').getClient();
             // if (this.readings == null) {
                 this.mqttClient.subscribeToTopic(
                     this.config.lightSensor.sensors.Mqtt.device,

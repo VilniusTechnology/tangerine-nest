@@ -6,23 +6,27 @@ export class AtmoBme280Sensor implements AtmoSensor{
     private bme280: BME280;
 
     constructor(config: any, logger, container) {
-        if(config == null) {
-            config = {
-                i2cBusNo   : 1,
-                i2cAddress : BME280.BME280_DEFAULT_I2C_ADDRESS(),
+        const conf = config.atmoSensor.sensors.Bme280;
+        let sensConfig = {
+            i2cBusNo   : 1,
+            i2cAddress : BME280.BME280_DEFAULT_I2C_ADDRESS(),
+        };
+
+        if(config != null) {
+            sensConfig = {
+                i2cBusNo   : conf.i2cBusNo,
+                i2cAddress : conf.i2cAddress,
             };
         }
 
-        this.bme280 = new BME280(config);
+        this.bme280 = new BME280(sensConfig);
     }
 
     public init() {
         return new Promise( (resolve, reject) => {
-            console.log('this.bme280: ', this.bme280);
             this.bme280
                 .init()
                 .then(() => {
-                    console.log('bme280 init OK');
                     resolve(true);
                 })
                 .catch((err) => {

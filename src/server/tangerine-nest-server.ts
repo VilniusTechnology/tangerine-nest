@@ -4,6 +4,7 @@ import { config  } from './config-loader';
 import * as bodyParser from "body-parser";
 import {Logger} from "../logger/logger";
 import {ModuleLoader} from "./module-loader";
+import {Container} from "../module/container";
 const auth_mw = require('./../../dist/module/auth/auth-middleware');
 
 // const apm = require('elastic-apm-node').start({
@@ -54,23 +55,14 @@ export class TangerineNestServer {
         this.logger.debug('Will prepare for launch.');
         const loader = new ModuleLoader(this.logger, this.config);
 
-        loader.launch(this.app).then(() => {
+        loader.launch(this.app).then((container: Container) => {
             this.listen().then(() => {
                 this.logger.info('Will start boot DEMO.');
 
-                this.modules.LedModule.getManager()
+                const ledModule = container.get('LedModule');
+                ledModule.getManager()
                     .splash(1000,  1,   255, 2, 50);
-
-                const ledModule :LedModuleManager = this.modules.LedModule;
                 ledModule.getRgbCctLedDriver().setLedState(1);
-
-                // TODO: refactor for proper launch
-                if (this.config.omronSensor.enabled) {
-                    // If led module is initialized start OmronModule.
-                    setTimeout(() => {
-                        this.modules.OmronModule.launch();
-                    }, 10000);
-                }
             });
         });
     }

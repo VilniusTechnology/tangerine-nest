@@ -16,6 +16,8 @@ export class Pca9685RgbCctDriverManager {
 
     constructor(config: any, logger: Logger) {
         this.colors = new Colors();
+        this.colorsMuted = new Colors();
+
         this.logger = logger;
         this.config = config.ledDriver;
         this.logger.debug(
@@ -44,7 +46,7 @@ export class Pca9685RgbCctDriverManager {
                         this.logger.info(`Local (websockets) LED driver ready!`);
                         this.logger.info(`First client IP: ${connected}`);
                     });
-                // this.logger.error(0, this.pwm);
+
                 resolve(true);
             }
 
@@ -117,7 +119,7 @@ export class Pca9685RgbCctDriverManager {
     }
 
     public setLedMode(mode: any) {
-        this.mode = mode
+        this.mode = mode;
         this.logger.debug('setLedMode: ' + this.mode);
     }
 
