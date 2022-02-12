@@ -45,6 +45,7 @@
     "log4js": "^3.0.6",
     "mockery": "^2.1.0",
     "moment-range": "^4.0.1",
+    "mqtt": "^4.3.5",
     "node-json-logger": "0.0.12",
     "nomnom": "^1.8.1",
     "onoff": "^5.0.1",

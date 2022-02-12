@@ -13,7 +13,7 @@
 #
 # sudo NODE_ENV='production' node server.js
 #
-# sudo journalctl -u tangerine-nest
+# sudo journalctl -u tangerine-nest -f
 
 [Unit]
 Description=TangerineNest controller
