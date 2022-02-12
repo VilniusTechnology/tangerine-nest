@@ -9,13 +9,15 @@ export class RequestProcessor {
     private config;
     private readonly dbPath;
     private timerOfLightAdaptor;
-    
+    private manualTimeout;
+
     constructor(ledModuleManager: LedModuleManager, logger, config) {
         this.ledModuleManager = ledModuleManager;
         this.logger = logger;
         this.config = config;
 
         this.dbPath = this.config.settingsDb.path;
+        this.manualTimeout = 350;
 
         this.logger.info('RequestProcessor was constructed');
     };
@@ -24,16 +26,28 @@ export class RequestProcessor {
         return this.ledModuleManager;
     }
 
-    public manageModes(query) {
+    public manageModes(query, res) {
+        if (query.state == undefined) {
+            this.respondState(res);
+            return;
+        }
+
         this.perform(query);
+
+        setTimeout(() => {
+            this.respondState(res);
+        }, this.manualTimeout + 150);
     }
 
     protected perform(query) {
+        const prevState = this.returnState();
+
         this.logger.debug(
-            'Will manage modes::this.ledModuleManager.getState().ledState: ' +
+            'Will manage modes [saved state]: ' +
             this.ledModuleManager.getState().ledState
         );
-        this.logger.debug('query.state: ' + query.state);
+        this.logger.debug('Incoming state: ' + query.state);
+        this.logger.debug(`LED Mode: ${this.codeToMode(query.mode)}`);
 
         // If state changes LEDs must be set ON/OFF
         if (parseInt(query.state) != this.ledModuleManager.getState().ledState) {
@@ -55,46 +69,50 @@ export class RequestProcessor {
             }
         }
 
+        // Manual mode.
+        if (query.mode == LedModule.MANUAL_MODE_CODE) {
+            // Cleanup timed and auto modes timers
+            if (prevState.main.ledMode == LedModule.AUTO_MODE_CODE) {
+                clearInterval(this.timerOfLightAdaptor);
+            }
+            this.ledModuleManager.clearTimersIntervals();
+
+            // Manage manual mode.
+            setTimeout(() => {
+                this.ledModuleManager.setMode(query.mode);
+                this.logger.info('---------- Manual mode  -------------');
+                if (prevState.main.ledMode == LedModule.AUTO_MODE_CODE) {
+                    this.loadSavedState();
+                }
+
+                // Set lights colours.
+                if (query.state == 1 && !(prevState.main.ledMode == LedModule.AUTO_MODE_CODE)) {
+                    this.logger.debug('WILL SET Colours');
+                    this.ledModuleManager.setColours(query);
+                }
+            }, this.manualTimeout);
+        }
+
         // AUTO mode.
         if (query.mode == LedModule.AUTO_MODE_CODE) {
             this.logger.info('-------------  Auto mode -------------');
+            if (prevState.main.ledMode == LedModule.MANUAL_MODE_CODE) {
+                this.returnAndSaveState();
+            }
 
             this.ledModuleManager.clearTimersIntervals();
             clearInterval(this.timerOfLightAdaptor);
 
             this.ledModuleManager.setMode(query.mode);
-
-            this.ledModuleManager.mute();
-            // let colors = {
-            //     "coldWhite" : 1,
-            //     "warmWhite" : 2,
-            // };
-            // this.ledModuleManager.setColours(colors);
 
             this.timerOfLightAdaptor = setInterval( () => {
                 this.logger.info('Adapting Light');
-                this.ledModuleManager.adaptLight().then((result) => {
-                    this.logger.info(`Adapted to Light level: ${result}`);
-                })
+                setTimeout(() => {
+                    this.ledModuleManager.adaptLight().then((result) => {
+                        this.logger.info(`Adapted to Light level: ${result}`);
+                    })
+                }, 25);
             }, this.config.lightSensor.auto.interval).unref();
-        }
-
-        // Manual mode.
-        if (query.mode == LedModule.MANUAL_MODE_CODE) {
-            this.logger.info('---------- Manual mode  -------------');
-
-            this.ledModuleManager.clearTimersIntervals();
-            clearInterval(this.timerOfLightAdaptor);
-
-            this.ledModuleManager.setMode(query.mode);
-
-            this.logger.info(`query.state: ${query.state}`);
-
-            // Set lights colours.
-            if (query.state == 1) {
-                this.logger.debug('WILL SET Colours ');
-                this.ledModuleManager.setColours(query);
-            }
         }
 
         // Timed mode.
@@ -108,15 +126,17 @@ export class RequestProcessor {
 
             this.handleTimedMode(query);
         }
-
-        const saveState = this.returnState({});
-        this.logger.debug(`LED State to be saved: ${saveState}`);
-
-        this.saveState(saveState);
     }
 
-    public clearTimersIntervals() {
-        
+    protected compareStates() {
+
+    }
+
+    protected returnAndSaveState() {
+        const saveState = this.returnState();
+        this.logger.debug('LED State to be saved:' + JSON.stringify(saveState));
+
+        this.saveState(saveState);
     }
 
     public handleTimedMode(query) {
@@ -124,13 +144,18 @@ export class RequestProcessor {
         this.ledModuleManager.setTimedSettings();
     }
 
-    public returnState(query) {
-        this.logger.debug('WILL returnState: ' + this.ledModuleManager.getState());
-
+    public returnState() {
         return {
             'main': this.ledModuleManager.getState()
         };
-    };
+    }
+
+    public respondState(res) {
+        setTimeout(() => {
+            let ledStateObj = this.returnState();
+            this.prepareResponse(res, ledStateObj);
+        }, 300);
+    }
 
     public prepareResponse(res, data) {
         // Set CORS headers
@@ -141,7 +166,7 @@ export class RequestProcessor {
 
         res.writeHead(200, {'Content-Type': 'application/json'});
 
-        this.logger .debug(
+        this.logger.debug(
             'Response data: ' + JSON.stringify(data)
         );
 
@@ -155,5 +180,9 @@ export class RequestProcessor {
 
     loadSavedState() {
         this.ledModuleManager.loadSavedState();
+    }
+
+    public codeToMode(code) {
+        return this.ledModuleManager.codeToMode(code);
     }
 }

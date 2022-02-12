@@ -21,32 +21,18 @@ export class Routes extends RoutesModuleBase {
 
     routes() {
         this.restapi.all(this.getFullRoute(''), bodyParser.json(), (req, res) => {
-            this.logger.debug('LED Incomming: ', req.url);
+            this.logger.debug('LED Incomming: ' + req.url);
 
             let query = url.parse(req.url, true).query;
-            this.requestProcessor.manageModes(query);
-
-            setTimeout(() => {
-                this.respondState(res);
-            }, 100);
+            this.requestProcessor.manageModes(query, res);
         });
 
         this.restapi.all(
             this.getFullRoute('/healthcheck'),
             bodyParser.json(),
             (req, res) => {
-                // this.respondState(res);
-                setTimeout(() => {
-                    this.respondState(res);
-                }, 100);
+                this.requestProcessor.respondState(res);
             }
         );
-    }
-
-
-    respondState(res) {
-        let ledStateObj = this.requestProcessor.returnState({});
-        this.logger.debug('LED ledStateObj : ', ledStateObj);
-        this.requestProcessor.prepareResponse(res, ledStateObj);
     }
 }

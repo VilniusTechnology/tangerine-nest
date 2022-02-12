@@ -45,6 +45,8 @@ export class LightRegulator {
                         this.logger.error('LL ERR 2');
                     });
                 }
+
+                resolve(lightLevel);
             }).catch( (err) => {
                 this.logger.error('LL ERR 3');
             });
@@ -156,13 +158,13 @@ export class LightRegulator {
 
     isTooMuch(lightLevel) {
         let isIt = (lightLevel > this.desiredLevelTop);
-        this.logger.debug(`isTooMuch: ${isIt}`);
+        // this.logger.debug(`isTooMuch: ${isIt}`);
         return isIt;
     }
 
     isToLow(lightLevel) {
         let isIt = (lightLevel < this.desiredLevelBottom);
-        this.logger.debug(`isToLow: ${isIt}`);
+        // this.logger.debug(`isToLow: ${isIt}`);
         return isIt;
     }
 };

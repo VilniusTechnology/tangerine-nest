@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { Logger } from 'log4js';
 import { PwmDriverEmulator } from 'tangerine-nest-local-light-driver';
 import { PwmDriverPca9685 } from './pwm-driver-pca9685';
+import {LedModule} from "../module";
 
 export class Pca9685RgbCctDriverManager {
     private logger: Logger;
@@ -83,7 +84,7 @@ export class Pca9685RgbCctDriverManager {
         let prepared_value = this.getRgbValueInPercents(value);
         let colourPin = this.config.contours.main[colorName];
 
-        // this.logger.debug(`Color ${colorName} resolved to PIN: ${colourPin}.`);
+        this.logger.debug(`Color ${colorName}, Valued: ${prepared_value} resolved to PIN: ${colourPin}.`);
 
         this.pwm.setDutyCycle(colourPin, prepared_value, colorName);
 
@@ -120,7 +121,21 @@ export class Pca9685RgbCctDriverManager {
 
     public setLedMode(mode: any) {
         this.mode = mode;
-        this.logger.debug('setLedMode: ' + this.mode);
+        this.logger.debug('setLedMode: ' + this.codeToMode(this.mode));
+    }
+
+    public codeToMode(code) {
+        if (code == LedModule.AUTO_MODE_CODE) {
+            return 'Auto';
+        }
+
+        if (code == LedModule.MANUAL_MODE_CODE) {
+            return 'Manual';
+        }
+
+        if (code == LedModule.TIMED_MODE_CODE) {
+            return 'Timed';
+        }
     }
 
     public getLedMode(): any {

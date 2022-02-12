@@ -23,7 +23,7 @@ export class TimedLightRegulator {
     }
 
     clearTimersIntervals() {
-        this.logger.debug('Will clearTimersIntervals');
+        this.logger.debug('Will TimedLightRegulator clearTimersIntervals');
         clearInterval(this.timer);
     }
 
@@ -50,7 +50,7 @@ export class TimedLightRegulator {
         _.forEach(intervals, (interval) => {
             let {title, from, to, settings} = interval;
             if (this.isTimeInCurrentRange(from, to)) {
-                this.logger.debug(`In interval: `, JSON.stringify(interval));
+                this.logger.debug(`In interval: ` + JSON.stringify(interval));
                 this.setColors(settings);
             }
         });
@@ -100,7 +100,6 @@ export class TimedLightRegulator {
     }
 
     setColors(colors) {
-        // console.log('colors', colors);
         try {
             let jsonObject = JSON.parse(colors);
 
@@ -110,10 +109,11 @@ export class TimedLightRegulator {
                 // console.log('KV: ', key, value);
                 this.pwmDriver.setColor(key, value);
             });
+
             this.pwmDriver.setColor('warmWhite', 0);
             this.pwmDriver.setColor('coldWhite', 0);
         } catch (e) {
 
         }
     }
-};
+}

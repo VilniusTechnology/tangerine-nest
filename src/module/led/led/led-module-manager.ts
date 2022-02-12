@@ -46,7 +46,7 @@ export class LedModuleManager {
                 && key !== 'ledState'
                 && key !== 'ledIliminationState'
             ) {
-                this.logger.debug(`'Will setColor: ${key} - ${val}'`);
+                this.logger.debug(`Will setColor: ${key} - ${val}`);
                 this.colors[key].value = val;
                 this.pwmManager.setColor(key, parseInt(val));
             }
@@ -166,49 +166,39 @@ export class LedModuleManager {
     }
 
     loadSavedState() {
-        setTimeout(() => {
-            this.loadStateFromDb().then((state:any) => {
-                this.logger.info(`Loaded state: ` + JSON.stringify(state));
-                const rState = state.main;
+        this.getStateFromDb().then((state:any) => {
+            this.logger.info(`Loaded state: ` + JSON.stringify(state));
 
-                if (rState.ledMode == null || rState.ledMode == undefined) {
-                    state.ledMode = 1;
-                }
+            // Set lights colours.
+            if (state.main.ledState == 1) {
+                let colors = {};
+                const keys = Object.keys(state.main);
 
-                this.setMode(rState.ledMode);
+                _.forEach(keys, (val, key, ind) => {
+                    if (
+                        val !== 'state'
+                        && val !== 'mode'
+                        && val !== 'ledMode'
+                        && val !== 'ledState'
+                        && val !== 'ledIliminationState'
+                    ) {
+                        colors[val] = state.main[val].value;
+                    }
 
-                // Set lights colours.
-                if (rState.ledState == 1) {
-                    this.logger.debug('WILL SET Colours ');
-
-                    let colors = {};
-                    const keys = Object.keys(rState);
-
-                    _.forEach(keys, (val, key, ind) => {
-                        if (
-                            val !== 'state'
-                            && val !== 'mode'
-                            && val !== 'ledMode'
-                            && val !== 'ledState'
-                            && val !== 'ledIliminationState'
-                        ) {
-                            colors[val] = rState[val].value;
-                        }
-
-                        if (key === (ind.length -1)) {
-                            this.setColours(colors);
-                        }
-                    });
-                }
-            }).catch((e) => {
-                this.logger.error(e);
-            });
-        }, 5500);
+                    if (key === (ind.length -1)) {
+                        this.setColours(colors);
+                    }
+                });
+            }
+        }).catch((e) => {
+            this.logger.error(e);
+        });
     }
 
-    loadStateFromDb() {
+    getStateFromDb() {
+        this.logger.debug(`getStateFromDb`);
         return new Promise((resolve, reject) => {
-            this.logger.debug(`Will list loadStateFromDb.`);
+            this.logger.debug(`Will get State From DB.`);
 
             const db = new sqlite3.Database(this.dbPath, (err) => {
                 if (err) {
@@ -255,6 +245,8 @@ export class LedModuleManager {
                     ?
                 )`;
 
+        this.logger.debug(`Will save state: ` + stateStr);
+
         db.run(
             insertQuery,
             ['LED_STATE', stateStr],
@@ -262,10 +254,31 @@ export class LedModuleManager {
                 if (err) {
                     return console.error(err.message);
                 }
-                this.logger.debug(`Rows inserted: ` + rs);
+                // console.log('rs: ', rs);
+                // this.logger.debug(`Rows inserted: ` + JSON.stringify(rs));
             });
         db.close();
 
+        // db.serialize(function() {
+        //     db.run("CREATE TABLE lorem (info TEXT)");
+        //
+        //     var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+        //     for (var i = 0; i < 10; i++) {
+        //         stmt.run("Ipsum " + i);
+        //     }
+        //     stmt.finalize();
+        //
+        //     db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
+        //         console.log(row.id + ": " + row.info);
+        //     });
+        // });
+        //
+        // db.close();
+
         this.logger.error('Saved');
+    }
+
+    public codeToMode(code) {
+        return this.pwmManager.codeToMode(code);
     }
 }
