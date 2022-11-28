@@ -5,7 +5,8 @@ import {MqttClient} from "../mqtt/mqtt-client";
 import {AtmoSensorFactory} from "../../sensors/atmo/atmo-sensor-factory";
 import {LightSourceFactory} from "../../sensors/light/light-source-factory";
 import {Container} from "../container";
-
+import { PirRunner } from '../../runners/pir';
+import * as _ from 'lodash';
 export class SensorModule extends ModuleBase {
 
     public config;
@@ -14,6 +15,8 @@ export class SensorModule extends ModuleBase {
     public container: Container;
     public atmoSensor;
     public lightSensor;
+    public pirSensor;
+    public allSensors;
 
     constructor(config, logger: Logger, container) { 
         super(logger, container);
@@ -32,14 +35,21 @@ export class SensorModule extends ModuleBase {
 
         return new Promise((resolve, reject) => {
             this.logger.info('Will init Sensor Module!');
-
             const atmoSensorInitProm = this.atmoSensor.init();
             const lightSensorInitProm = this.lightSensor.init();
 
-            Promise.all([
+            let sensors = [];
+            sensors = [
                 atmoSensorInitProm,
                 lightSensorInitProm,
-            ]).then((rsp) => {
+            ];
+
+            if (this.config.pir == true) {
+                this.pirSensor = new PirRunner(this.config, this.logger);
+                sensors.push(this.pirSensor.init());
+            }
+
+            Promise.all(sensors).then((rsp) => {
                 container.add('SensorModule', this);
 
                 this.readAndDispatchMqtt();
@@ -70,37 +80,40 @@ export class SensorModule extends ModuleBase {
     }
 
     read() {
+        this.logger.debug('Will read Sensor Module!');
         return new Promise((resolve, reject) => {
-
             const atmoSensorReadProm = this.atmoSensor.read();
             const lightSensorReadProm = this.lightSensor.read();
 
-            Promise.all([
+            let sensors = [];
+            sensors = [
                 atmoSensorReadProm,
                 lightSensorReadProm,
-            ]).then((data) => {
+            ];
+
+            if (this.config.pir == true) {
+                sensors.push(this.pirSensor.read());
+            }
+
+            Promise.all(sensors).then((data) => {
                 delete (data[0]['battery']);
                 delete (data[0]['voltage']);
-                const response = {...data[0], ...data[1]};
 
-                resolve(response);
-            }).catch(() => {
-                reject(false);
+                let response = {};
+
+                _.forEach(data, (metrics, idx, array) => {
+                    for (const [key, value] of Object.entries(metrics)) {
+                        response[key] = value;
+                    }
+
+                    if (idx === array.length - 1){ 
+                        resolve(response);
+                    }
+                });  
+            }).catch((err) => {
+                reject(err);
             });
         });
-    }
-
-    readPir() {
-        // let pirState = new PirState(this.config, this.logger);
-        // pirState.read().then((pir) => {
-        //     //@ts-ignore
-        //     response.pir = pir.value;
-        //
-        //     ls = null;
-        //     pirState = null;
-        // }).catch((err) => {
-        //     this.logger.error('PIR ERR 1');
-        // });
     }
 
     getRoutesForRegistration() {

@@ -26,6 +26,7 @@ export class PirState {
                     query,
                     (err, rows) => {
                         if (err) {
+                            this.logger.error('PIR DB err');
                             this.logger.error(err.message);
                         }
 
@@ -37,6 +38,4 @@ export class PirState {
             });
         });
     }
-
-
 }

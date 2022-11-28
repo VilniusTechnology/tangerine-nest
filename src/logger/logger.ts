@@ -6,10 +6,9 @@ export class Logger {
     public config;
     public logger;
 
-    constructor(options: any) {
-        this.logger = new LoggerJson({ level: options.level});
-        // log4js = getLogger();
-        // log4js.debug('Logger started initialized.');
+    constructor(logLevel: string) {
+        // this.logger = new LoggerJson({ level: logLevel});
+        this.logger = new LoggerJson({ level: 'error'});
     }
 
     warn(message: string) {

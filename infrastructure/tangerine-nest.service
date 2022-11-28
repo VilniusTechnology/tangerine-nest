@@ -14,6 +14,7 @@
 # sudo NODE_ENV='production' node server.js
 #
 # sudo journalctl -u tangerine-nest -f
+# sudo journalctl -u zigbee2mqtt -f
 
 [Unit]
 Description=TangerineNest controller

@@ -57,9 +57,15 @@ export class LedModule extends ModuleBase {
 
     launch() {
         this.logger.debug('Will launch LedModule');
-
         this.resolveDependencies();
 
+        // try {
+        //     this.resolveDependencies();
+        // } catch (e) {
+        //     this.logger.warn('LedModule was not launched.');
+        //     return false;
+        // }
+        
         this.requestProcessor.loadSavedState();
 
         this.pwmManager.setup().then((response) => {
@@ -74,9 +80,8 @@ export class LedModule extends ModuleBase {
             this.fader = new FaderAdvanced(this.pwmManager, this.logger);
 
             this.logger.info('LedModule fully initialized ');
-
         }).catch( (err) => {
-            this.logger.error(`PWM driver setup error!`, err);
+            this.logger.error(`PWM driver setup error!`);
         });
 
         this.launchMqtts();
@@ -115,7 +120,12 @@ export class LedModule extends ModuleBase {
         this.fader = new FaderAdvanced(this.pwmManager, this.logger);
         this.colors = this.pwmManager.getState();
 
-        this.lightSource = this.container.get('SensorModule').getSensor('lightSensor');
+        try {
+            this.lightSource = this.container.get('SensorModule').getSensor('lightSensor');
+        } catch (e) {
+            this.lightSource = null;
+        }
+        
         this.lightRegulator = new LightRegulator(
             this.fader,
             this.lightSource,

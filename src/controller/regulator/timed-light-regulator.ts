@@ -106,7 +106,6 @@ export class TimedLightRegulator {
             this.logger.debug(`Will setColors: ${colors}`);
 
             _.forEach(jsonObject, (value, key) => {
-                // console.log('KV: ', key, value);
                 this.pwmDriver.setColor(key, value);
             });
 

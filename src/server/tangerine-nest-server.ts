@@ -60,9 +60,15 @@ export class TangerineNestServer {
                 this.logger.info('Will start boot DEMO.');
 
                 const ledModule = container.get('LedModule');
-                ledModule.getManager()
-                    .splash(1000,  1,   255, 2, 50);
-                ledModule.getRgbCctLedDriver().setLedState(1);
+                const ledManager = ledModule.getManager();
+                
+                if (ledManager !== undefined) {
+                    ledManager.splash(1000,  1,   255, 2, 50);
+                }
+
+                const ledDriver = ledModule.getRgbCctLedDriver();    
+
+                ledDriver.setLedState(1);
             });
         });
     }
@@ -130,16 +136,11 @@ export class TangerineNestServer {
                 https.createServer(credentials, this.app)
                     .listen(443, () => {
                         this.logger.info( `Server started at https://localhost` );
-
-                        // this.app.listen(this.port, () => {
-                        //     this.logger.info( `Server started at http://localhost:${this.port}` );
-                        //     this.logger.info('Listening...');
-                        //
                         resolve(true);
-                        // });
                     });
             } catch (e) {
-                this.logger.error(e);
+                this.logger.error('Listen err...');
+                this.logger.error(JSON.stringify(e));
             }
         });
     }

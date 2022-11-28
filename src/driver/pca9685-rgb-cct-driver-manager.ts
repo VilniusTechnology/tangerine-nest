@@ -59,11 +59,11 @@ export class Pca9685RgbCctDriverManager {
                 .then( (data: any) =>{
                     this.logger.info('PCA9685 PWM driver ready! ');
                     resolve(data);
-                    
                 })
                 .catch((data: any) =>{
-                    this.logger.error(`PCA9685 PWM driver error 001! : ${data} `);
-                    this.logger.error(config);
+                    this.logger.error(`PCA9685 PWM driver error 001!`);
+                    console.error(config);
+
                     reject({deep: data, config: config});
                 });
             }
@@ -84,7 +84,7 @@ export class Pca9685RgbCctDriverManager {
         let prepared_value = this.getRgbValueInPercents(value);
         let colourPin = this.config.contours.main[colorName];
 
-        this.logger.debug(`Color ${colorName}, Valued: ${prepared_value} resolved to PIN: ${colourPin}.`);
+        this.logger.debug(`Color ${colorName}, Value: ${prepared_value} resolved to PIN: ${colourPin}.`);
 
         this.pwm.setDutyCycle(colourPin, prepared_value, colorName);
 
