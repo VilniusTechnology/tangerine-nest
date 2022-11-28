@@ -12,6 +12,8 @@ export class MqttManager {
         const config = this.config;
         const topic = `${config.mqtt.topicBase}/${config.hostname}/${deviceSuffix}`;
 
+        console.log(topic);
+
         return topic;
     }
 }

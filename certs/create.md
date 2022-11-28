@@ -1,10 +1,8 @@
-openssl genrsa -des3 -out wurk.local.rootCA.key 2048
+openssl genrsa -des3 -out homeassistant.local.rootCA.key 2048
 
-openssl req -x509 -new -nodes -key wurk.local.rootCA.key -sha256 -days 1024 -out wurk.local.rootCA.pem
+openssl req -x509 -new -nodes -key homeassistant.local.rootCA.key -sha256 -days 3650 -out homeassistant.local.rootCA.pem
 
-openssl req -new -nodes -out wurk.local.server.csr -newkey rsa:2048 -keyout wurk.local.server.key 
+openssl req -new -nodes -out homeassistant.local.server.csr -newkey rsa:2048 -keyout homeassistant.local.server.key 
 
-openssl x509 -req -in wurk.local.server.csr -CA wurk.local.rootCA.pem -CAkey wurk.local.rootCA.key -CAcreateserial -out wurk.local.server.crt -days 500 -sha256 -extfile v3.ext 
-
-
+openssl x509 -req -in homeassistant.local.server.csr -CA homeassistant.local.rootCA.pem -CAkey homeassistant.local.rootCA.key -CAcreateserial -out homeassistant.local.server.crt -days 500 -sha256 -extfile v3.ext 
 

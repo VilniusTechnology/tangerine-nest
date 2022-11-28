@@ -3,6 +3,9 @@ config/production/config.js
 .idea/
 
 dist/
+certs/
+
+.DS_Store
 
 # Logs
 logs

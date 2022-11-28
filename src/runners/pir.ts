@@ -35,20 +35,14 @@ export class PirRunner {
                     ads1115.measure('0+GND').then((rs) =>{
                         let res = false;
     
-                        console.log('PIR res: ', rs);
-    
                         if (rs > 20000) {
                             res = true;
                         }
-    
-                        console.log({pir: rs, state: res});
                     });
                 }, 1500);
 
                 ads1115.measure('0+GND').then((rs) =>{
                     let res = false;
-
-                    console.log('PIR res: ', rs);
 
                     if (rs > 20000) {
                         res = true;
