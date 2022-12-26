@@ -53,6 +53,22 @@ export class LedModuleManager {
         });   
     };
 
+    setMqttColours(state) {
+        let keySet = '';
+        _.forEach(state.color, (val, key) => {
+            if(key == 'r') { keySet = 'red'; }
+            if(key == 'g') { keySet = 'green'; }
+            if(key == 'b') { keySet = 'blue'; }
+
+            if(key == 'c') { keySet = 'coldWhite'; }
+            if(key == 'w') { keySet = 'warmWhite'; }
+
+            this.logger.debug(`Will setColor: ${keySet} - ${val}`);
+            this.colors[keySet].value = val;
+            this.pwmManager.setColor(keySet, parseInt(val));
+        });   
+    };
+
     mute() {
         this.pwmManager.switchAllLedsOff();
         this.colors.ledState = 0;

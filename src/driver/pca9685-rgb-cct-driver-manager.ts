@@ -86,6 +86,14 @@ export class Pca9685RgbCctDriverManager {
 
         this.logger.debug(`Color ${colorName}, Value: ${prepared_value} resolved to PIN: ${colourPin}.`);
 
+        if (colorName == 'green') {
+            prepared_value = prepared_value / 55;
+        }
+
+        if (colorName == 'blue') {
+            prepared_value = prepared_value / 245;
+        }
+
         this.pwm.setDutyCycle(colourPin, prepared_value, colorName);
 
         this.colors[colorName] = {'value': value, 'vp': prepared_value};
@@ -93,7 +101,9 @@ export class Pca9685RgbCctDriverManager {
 
     public getRgbValueInPercents(raw: number) {
         let value_in_precents = raw / 255;
-        return Math.round(Number.parseFloat(value_in_precents.toString()) * 100) / 100;
+        let finVal = Math.round(Number.parseFloat(value_in_precents.toString()) * 100) / 100;
+
+        return finVal;
     }
 
     public setLedState(newState: number) {

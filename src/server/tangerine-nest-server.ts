@@ -63,7 +63,7 @@ export class TangerineNestServer {
                 const ledManager = ledModule.getManager();
                 
                 if (ledManager !== undefined) {
-                    ledManager.splash(1000,  1,   255, 2, 50);
+                    ledManager.splash(1000, 1, 255, 2, 50);
                 }
 
                 const ledDriver = ledModule.getRgbCctLedDriver();    

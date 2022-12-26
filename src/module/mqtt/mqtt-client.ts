@@ -1,6 +1,7 @@
 import { Logger } from 'log4js';
 import { connect } from 'mqtt';
 import {MqttManager} from "./mqtt-manager";
+import * as _ from 'lodash';
 
 export class MqttClient {
 
@@ -102,5 +103,30 @@ export class MqttClient {
 
     getManager() {
         return this.mqttManager;
+    }
+
+    hashString(string) {         
+        var hash = 0;
+          
+        if (string.length == 0) return hash;
+          
+        var i = 0;
+        for (i = 0; i < string.length; i++) {
+            var char = string.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+          
+        return hash;
+    }
+
+    buildDeviceConfig() {
+        return  {
+            "identifiers": this.config.hostname + this.hashString(this.config.hostname),
+            "name": _.capitalize(this.config.hostname) + " tangerine",
+            "model": "Tangerine RPI mini" + this.config.hostname,
+            "manufacturer": "LM",
+            "sw_version": "1.0"
+        };
     }
 }

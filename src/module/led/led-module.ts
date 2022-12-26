@@ -58,13 +58,6 @@ export class LedModule extends ModuleBase {
     launch() {
         this.logger.debug('Will launch LedModule');
         this.resolveDependencies();
-
-        // try {
-        //     this.resolveDependencies();
-        // } catch (e) {
-        //     this.logger.warn('LedModule was not launched.');
-        //     return false;
-        // }
         
         this.requestProcessor.loadSavedState();
 
@@ -101,7 +94,52 @@ export class LedModule extends ModuleBase {
                  }
              }
 
+        });       
+
+        const configPayload = this.buildMqttConfig();
+
+        this.mqttClient.publishRawDevice(configPayload.discoveryTopic, JSON.stringify(configPayload));
+
+        setTimeout(() => {
+            this.publishMqttState(configPayload.state_topic, this.mapStateToMqtt('OFF'));
+        }, 1500);
+        
+        this.mqttClient.subscribeToTopic(configPayload.command_topic, (topic, message) => {
+            const state = JSON.parse(message.toString()).state;
+            if (state == 'OFF') {
+                this.ledModuleManager.mute();
+
+                this.publishMqttState(configPayload.state_topic, this.mapStateToMqtt(state));
+            }
+
+            if (state == 'ON') {
+                this.ledModuleManager.unMute();
+
+                this.ledModuleManager.setMqttColours(JSON.parse(message.toString()));
+                this.publishMqttState(configPayload.state_topic, this.mapStateToMqtt(state));
+            }
         });
+    }
+
+    publishMqttState(state_topic, statePayload) {
+        const state = JSON.stringify(statePayload);
+        this.mqttClient.publishRawDevice(state_topic, state);
+    }
+ 
+    mapStateToMqtt(state) {
+        const oldstate = this.ledModuleManager.getState();
+        return {
+            "brightness": 0,
+            "color_mode": "rgbww",
+            "color": {
+              "r": oldstate.red.value,
+              "g": oldstate.green.value,
+              "b": oldstate.blue.value,
+              "c": oldstate.coldWhite.value,
+              "w": oldstate.warmWhite.value
+            },
+            "state": state,
+        };
     }
 
     validateJSONPayload(qr: string) {
@@ -171,5 +209,26 @@ export class LedModule extends ModuleBase {
 
     getTimedRegulator() {
         return this.timedRegulator;
+    }
+
+    buildMqttConfig() {
+        const did = this.mqttClient.hashString(this.config.hostname);
+        return {
+            "name": "Led " + this.config.hostname, 
+            "schema":"json",
+
+            "state_topic": "homeassistant/light/led" + this.config.hostname + did + "/state",
+            "command_topic": "homeassistant/light/led" + this.config.hostname + did + "/set", 
+
+            "brightness": true,
+            "color_mode": true,
+            "supported_color_modes": ["rgbww"],
+
+            "object_id": "led-" + this.config.hostname,
+            "unique_id": this.config.hostname + did + "led",   
+            "device": this.mqttClient.buildDeviceConfig(),
+
+            "discoveryTopic": "homeassistant/light/led" + this.config.hostname + did + "/config"
+        };
     }
 }
